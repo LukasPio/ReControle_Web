@@ -3,12 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Login</title>
     <link rel="stylesheet" href="../css/home.css">
-    <script src="../js/index.js" defer></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js"></script>
+    <script src="../js/index.js"></script>
+
 </head>
 <body>
-    <h1 class="title">Home Page</h1>
-    <img src="../assets/image.png" alt="tiger-image">
+    <center>
+    <h1 class="title">Aba de Login</h1>
+    <fieldset> 
+        
+        <SubTitle>E-Mail de Usuário</SubTitle>
+        <br><input type="email" placeholder="Digite o seu e-mail de usuário" name="User" id="email">
+        
+        <br><br><SubTitle>Senha</SubTitle>
+        <br><input type="password" placeholder="Digite a senha" id="password">
+
+        <br><br><SubTitle>Confirmar Senha</SubTitle>
+        <br><input type="password" placeholder="Digite a senha novamente" id="Confirm_password">
+        
+        <br><br><input type="button" class="button" onclick="Login()"  value="Login">
+        
+        <br><br><input type="button" class="button" onclick="window.location.href='cadastro.html'" value="Cadastrar">
+
+    </fieldset>
 </body>
 </html>
