@@ -1,9 +1,7 @@
-import {firebaseConfig} from "../js/Config.js";
-
 document.addEventListener('DOMContentLoaded', () => {
     const botao = document.getElementById('teste');
     botao.addEventListener('click', () => {
-        alert(firebaseConfig.apiKey);
+        alert("OPA");
     });
 });
 

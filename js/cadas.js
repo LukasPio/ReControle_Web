@@ -1,6 +1,5 @@
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
 import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js';
-import { } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {firebaseConfig} from "../js/Config.js";
 
@@ -37,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             var errorCode = error.code;
             var errorMessage = error.message;
-            alert('Erro: ' + errorMessage + "- codigo de erro:" + errorCode);
+            alert('Erro ao Tentar realizar o cadastro:       ' + errorMessage + "\n\n- codigo de erro:" + errorCode);
         });
     }
     else

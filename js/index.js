@@ -1,25 +1,26 @@
+import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
+import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js';
+import { getAuth, signInWithEmailAndPassword } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
+import {firebaseConfig} from "../js/Config.js";
 
-function Login() {
+document.addEventListener('DOMContentLoaded', () => {
+  const botao = document.getElementById('Login');
+  botao.addEventListener('click', () => {
 
-     // Configuração do Firebase
-     const firebaseConfig = {
-        apiKey: "AIzaSyBjtun6IwUqrqQv4hnU9hgrS5AZnDG8z7o",
-        authDomain: "recontrole-b3815.firebaseapp.com",
-        projectId: "recontrole-b3815",
-        storageBucket: "recontrole-b3815.firebasestorage.app",
-        messagingSenderId: "413353502819",
-        appId: "1:413353502819:web:9c224ddb95ab38459b7056",
-        measurementId: "G-RWBS6ZYLER"
-      };
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth();
+    
+    //----------------------------------
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const C_password = document.getElementById('Confirm_password').value;
 
-      // Inicialização do Firebase
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
 
-      function login() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        auth.signInWithEmailAndPassword(email, password)
+    if (password == C_password ) {
+      
+        signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
 
             alert('Usuário logado:' + userCredential.user);
@@ -27,7 +28,14 @@ function Login() {
           })
           .catch((error) => {
 
-            alert('Erro no login:' + error.message);
+            alert('Erro ao tentar realizar o login:       ' + error.message);
           });
-      }
-}
+      
+        }
+        else
+        {
+          alert('Digite corretamente a senha de confirmação!');
+        }
+    });
+
+  });
