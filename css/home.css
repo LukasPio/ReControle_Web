@@ -1,12 +1,80 @@
-.title {
-    font-size: 3.25rem;
+
+
+/*
+Temporário para fixar a barra de cima
+    Tanto que este css foi feito no primeiro ano,
+    e este cargo ficará aos encarregados de css,
+    que são mais capacitados
+
+*/
+*{
+    margin: 0;
+    padding: 0;
     
 }
 
-.button{
-    
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
 }
 
-SubTitle{
-    
+.menu{
+    list-style: none;
+    border: 1px solid #c0c0c0;
+    float: right;
 }
+
+.menu li{
+    position: relative;
+    float: left;
+    border-right: 1px solid #c0c0c0;
+}
+
+.menu li a{
+    color: #333;
+    text-decoration: none;
+    padding: 5px 10px;
+    display: block;
+}
+
+.menu li a:hover{
+    background: #333;
+    color: #fff;
+    box-shadow: 0 3px 10px 0 #CCC;
+    text-shadow: 0px 0px 5px #fff;
+}
+
+.menu li ul{
+    position: absolute;
+    top: 25px;
+    left: 0;
+    background-color: #fff;
+    display: none;
+}
+
+.menu li:hover ul{
+    display: block;
+}
+.menu li ul li{
+border: 1px solid #c0c0c0;
+display: block;
+width: 150px;
+}
+
+#salas ul{
+    position: right;
+    top: 0%;
+    left: 100%;
+    background-color: #fff;
+    display: none;
+}
+
+#salas:hover ul {
+    display: block;
+}
+
+#salas ul li{
+    border: 1px solid #c0c0c0;
+    display: block;
+    width: 150px;
+    }

@@ -8,3 +8,10 @@ export const firebaseConfig = {
     appId: "1:413353502819:web:9c224ddb95ab38459b7056",
     measurementId: "G-RWBS6ZYLER"
   };
+
+  export const hrefsConfig = {
+    index: "index.html",
+    home: "home.html",
+    cadas: "cadas.html",
+    geren_obj: "geren_obj.html"
+  };

@@ -1,6 +1,6 @@
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
 import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js';
-import { getAuth, signInWithEmailAndPassword } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {firebaseConfig} from "../js/Config.js";
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,9 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     //----------------------------------
     
     const email = document.getElementById('email').value;
+    
     const password = document.getElementById('password').value;
     const C_password = document.getElementById('Confirm_password').value;
-
+ 
 
     if (password == C_password ) {
       
@@ -24,7 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
           .then((userCredential) => {
 
             alert('Usuário logado:' + userCredential.user);
-            window.location.href='home.html';
+
+            const url = `home.html?email=${encodeURIComponent(email)}`;
+            window.location.href = url; 
+
+           // window.location.href='home.html';
+
           })
           .catch((error) => {
 
@@ -39,3 +45,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
   });
+
+
+  
+
+
+
+  //Login pelo Google
+
+/*
+
+
+
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    const botao = document.getElementById('L_google');
+    botao.addEventListener('click', () => {
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const provider = new GoogleAuthProvider();
+      const auth = getAuth();
+
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // Usuário autenticado com sucesso
+        const user = result.user;
+        console.log("Usuário:", user.displayName, user.email);
+      })
+      .catch((error) => {
+        // Trata erros
+        console.error("Erro ao autenticar:", error.message);
+      });
+});
+  });*/
