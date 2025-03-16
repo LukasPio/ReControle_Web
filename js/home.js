@@ -1,30 +1,58 @@
-     import {hrefsConfig} from "../js/Config.js";
+import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
+import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js';
+//import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
+import {firebaseConfig} from "../js/Config.js";
+
+
+
+    // No segundo arquivo
+const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+};
+const email = getCookie('email');
+const password = getCookie('password');
+
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth();
+
+  
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+
+        var user = userCredential.user;
+
+        alert(`Bem vindo, ${user.displayName}`);
+
+      })
+      .catch((error) => {
+
+        alert('Erro ao tentar realizar o login:       ' + error.message);
+      });
+  
+
+document.getElementById("account").innerHTML = email;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /*
+    
         const index_get = hrefsConfig.index;
 
-        
-       /*  Os ids serão dados por:
-           - id="função_destino_origem".
-    */
-
-    
-
-    
-   /* n0= .replace(/0/g, ""),
-    n1= .replace(/1/g, ""),
-    n2= .replace(/2/g, ""),  
-    n3= .replace(/3/g, ""), 
-    n4= .replace(/4/g, ""), 
-    n5= .replace(/5/g, ""), 
-    n6= .replace(/6/g, ""), 
-    n7= .replace(/7/g, ""), 
-    n8= .replace(/8/g, ""), 
-    n9= .replace(/9/g, "") 
-  
-*/
     
     
-    const params = new URLSearchParams(window.location.search);
-    const email = params.get("email");
+    
 
 
         console.log(email);
