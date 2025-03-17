@@ -26,78 +26,21 @@ const auth = getAuth();
 
         var user = userCredential.user;
 
-        alert(`Bem vindo, ${user.displayName}`);
-
+        document.getElementById('name').innerHTML = ` ${user.displayName}`;
+        document.getElementById("account").innerHTML = `${user.email}`;
       })
       .catch((error) => {
 
-        alert('Erro ao tentar realizar o login:       ' + error.message);
+        console.log('Erro ao tentar realizar o login:       ' + error.message + "\n\n Tente novamente.");
+        window.location.href = "index.html";
+
       });
   
 
-document.getElementById("account").innerHTML = email;
-    
-    
-    
-    
+
     
     
     
     
     
     
-    /*
-    
-        const index_get = hrefsConfig.index;
-
-    
-    
-    
-
-
-        console.log(email);
-        console.log(email.substring(0, email.indexOf('@')));
-        console.log(email.substring(0, email.indexOf('@')).replace(/0/g, "").replace(/1/g, "").replace(/2/g, "").replace(/3/g, "").replace(/4/g, "").replace(/5/g, "").replace(/6/g, "").replace(/7/g, "").replace(/8/g, "").replace(/9/g, ""));
-        document.getElementById("account").innerHTML = email;
-
-
-         if (email == null) {
-            document.getElementById("account").innerHTML = "<button id='back_login_home' >Fazer Login</button>";
-
-                document.addEventListener('DOMContentLoaded', () => {
-                const botao = document.getElementById('back_login_home');
-                botao.addEventListener('click', () => { window.location.href = index_get;  });  });
-
-         }
-         else {
-
-            if (email.substring(0, email.indexOf('@')).includes(".")) {
-                names = email.substring(0, email.indexOf('@')).split('.');
-                firstN = names[0].replace(/0/g, "").replace(/1/g, "").replace(/2/g, "").replace(/3/g, "").replace(/4/g, "").replace(/5/g, "").replace(/6/g, "").replace(/7/g, "").replace(/8/g, "").replace(/9/g, "");
-                lastN = names[1].replace(/0/g, "").replace(/1/g, "").replace(/2/g, "").replace(/3/g, "").replace(/4/g, "").replace(/5/g, "").replace(/6/g, "").replace(/7/g, "").replace(/8/g, "").replace(/9/g, "");
-                nome = firstN + " " + lastN;
-            }
-            else
-            {
-                nome = email.substring(0, email.indexOf("@")).replace(/0/g, "").replace(/1/g, "").replace(/2/g, "").replace(/3/g, "").replace(/4/g, "").replace(/5/g, "").replace(/6/g, "").replace(/7/g, "").replace(/8/g, "").replace(/9/g, "");
-                conso
-            }
-
-            document.getElementById("ul_account").innerHTML = "<li href='#'> Perfil de " + nome + "</li> " +
-                                                              "<li href='#'>Configurações da conta</li>";
-         }
-    /* Botão de teste
-
-document.addEventListener('DOMContentLoaded', () => {
-    const botao = document.getElementById('teste');
-    botao.addEventListener('click', () => {
-        
-        
-
-        
-
-
-    });
-});
-
-*/

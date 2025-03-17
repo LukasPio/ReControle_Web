@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
 
-            alert('Usuário logado:' + userCredential.user);
+            alert('Usuário logado:  ' + userCredential.user.email);
 
             document.cookie = `email=${email}`;
             document.cookie = `password=${password}`;

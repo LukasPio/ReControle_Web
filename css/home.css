@@ -61,7 +61,7 @@ display: block;
 width: 150px;
 }
 
-#salas ul{
+#sec_menu ul{
     position: right;
     top: 0%;
     left: 100%;
@@ -69,11 +69,11 @@ width: 150px;
     display: none;
 }
 
-#salas:hover ul {
+#sec_menu:hover ul {
     display: block;
 }
 
-#salas ul li{
+#sec_menu ul li{
     border: 1px solid #c0c0c0;
     display: block;
     width: 150px;
