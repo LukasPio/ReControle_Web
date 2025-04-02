@@ -4,6 +4,8 @@ import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/fire
 import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider  } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {firebaseConfig} from "./Config.js";
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const botao = document.getElementById('Cadastro');
   botao.addEventListener('click', () => {
@@ -89,6 +91,8 @@ signInWithPopup(auth, provider)
     });
 });
 */
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const botao = document.getElementById('Login');
