@@ -1,16 +1,18 @@
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
 import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js';
 //import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider  } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
-import {firebaseConfig} from "./Config.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, signOut, signInWithPopup, GoogleAuthProvider  } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
+import {firebaseConfig, hrefsConfig} from "./Config.js";
 
+    const index = hrefsConfig.index;
+    const home = hrefsConfig.home;
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const botao = document.getElementById('Cadastro');
-  botao.addEventListener('click', () => {
-            
-            const app = initializeApp(firebaseConfig);
+
+    const button = document.getElementById('Cadastro');
+    if (button){
+  button.addEventListener('click', () => { const app = initializeApp(firebaseConfig);
             getAnalytics(app);
             const auth = getAuth();
 
@@ -34,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             alert('Para terminar seu cadastro, verifique o seu email' );
 
-            window.location.href='index.html';
+            window.location.href=index;
         
             }
         })  
@@ -54,6 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
   });
+}
+  
+            
+           
 });
 
 
@@ -91,12 +97,25 @@ signInWithPopup(auth, provider)
     });
 });
 */
+ 
+
+
+
+
+
+// Login
+
+
+
 
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const botao = document.getElementById('Login');
-  botao.addEventListener('click', () => {
+
+
+    const button = document.getElementById('Login');
+    if (button){
+    button.addEventListener('click', () => {
 
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
@@ -105,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
     //----------------------------------
     
     const email = document.getElementById('email').value;
-    
     const password = document.getElementById('password').value;
     const C_password = document.getElementById('Confirm_password').value;
  
@@ -119,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             document.cookie = `email=${email}`;
             document.cookie = `password=${password}`;
-            window.location.href='home.html';
+            window.location.href=home;
 
           })
           .catch((error) => {
@@ -133,6 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
           alert('Digite corretamente a senha de confirmação!');
         }
     });
+}
+  
 
   });
 
@@ -169,3 +189,37 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 });
   });*/
+
+
+
+
+
+
+  //Logout
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+
+       const button = document.getElementById('logout');
+
+       if(button){
+
+      button.addEventListener('click', () => {
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const auth = getAuth();
+
+        auth.signOut().then(() => {
+
+      document.cookie = `email=; expires=Thu, 01 Jan 2000 00:00:00 UTC`;
+      document.cookie = `password=; expires=Thu, 01 Jan 2000 00:00:00 UTC`;
+      window.location.href = index;
+
+    });
+  
+    });
+  }
+
+    
+  });

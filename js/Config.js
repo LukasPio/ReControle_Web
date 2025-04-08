@@ -13,5 +13,6 @@ export const firebaseConfig = {
     index: "index.html",
     home: "home.html",
     cadas: "cadas.html",
-    geren_obj: "geren_obj.html"
+    geren_obj: "H_geren_obj.html",
+    conf_acc: "H_config_acc.html"
   };
