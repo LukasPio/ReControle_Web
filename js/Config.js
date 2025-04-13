@@ -14,5 +14,6 @@ export const firebaseConfig = {
     home: "home.html",
     cadas: "cadas.html",
     geren_obj: "H_geren_obj.html",
-    conf_acc: "H_config_acc.html"
+    conf_acc: "H_config_acc.html",
+    e_verif: "email_verif.html"
   };

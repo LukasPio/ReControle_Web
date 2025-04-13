@@ -6,6 +6,11 @@ import {firebaseConfig, hrefsConfig} from "./Config.js";
 
     const index = hrefsConfig.index;
     const home = hrefsConfig.home;
+    const e_verif = hrefsConfig.e_verif;
+
+
+
+  // Sign up
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -64,50 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-//Cadastro com o Google
-/*
-document.addEventListener('DOMContentLoaded', () => {
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
-
-    const botao = document.getElementById('C_Google');
-    botao.addEventListener('click', () => {
-
-    const db = getFirestore(app);
-
-signInWithPopup(auth, provider)
-  .then((result) => {
-    const user = result.user;
-    return setDoc(doc(db, "usuarios", user.uid), {
-      nome: user.displayName,
-      email: user.email,
-      foto: user.photoURL
-    });
-  })
-  .then(() => {
-    console.log("Usuário cadastrado/atualizado no Firestore.");
-  })
-  .catch((error) => {
-    console.error("Erro ao salvar no Firestore:", error.message);
-  });
-
-
-    });
-});
-*/
- 
-
-
-
-
 
 // Login
-
-
-
-
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -133,11 +96,23 @@ document.addEventListener('DOMContentLoaded', () => {
         signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
 
+            if (userCredential.user.emailVerified){
+
             alert('Usuário logado:  ' + userCredential.user.email);
 
             document.cookie = `email=${email}`;
             document.cookie = `password=${password}`;
             window.location.href=home;
+          
+          }
+          else
+          {
+            
+            alert("Este E-Mail ainda não foi cadastrado.");
+            
+            window.location.href = e_verif;
+            
+          }
 
           })
           .catch((error) => {
@@ -158,44 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   
-
-
-
-  //Login pelo Google
-
-/*
-
-
-
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    const botao = document.getElementById('L_google');
-    botao.addEventListener('click', () => {
-
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-      const provider = new GoogleAuthProvider();
-      const auth = getAuth();
-
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // Usuário autenticado com sucesso
-        const user = result.user;
-        console.log("Usuário:", user.displayName, user.email);
-      })
-      .catch((error) => {
-        // Trata erros
-        console.error("Erro ao autenticar:", error.message);
-      });
-});
-  });*/
-
-
-
-
-
-
-  //Logout
+  //Logout e outros
 
   document.addEventListener('DOMContentLoaded', () => {
 
@@ -220,6 +158,12 @@ document.addEventListener('DOMContentLoaded', () => {
   
     });
   }
+
+
+
+
+
+  
 
     
   });
