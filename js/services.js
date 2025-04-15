@@ -1,8 +1,8 @@
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
 import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js';
 //import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, signOut, signInWithPopup, GoogleAuthProvider  } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
-import {firebaseConfig, hrefsConfig} from "./Config.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, signInWithPopup, GoogleAuthProvider  } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
+import {FEC,EMF, firebaseConfig, hrefsConfig} from "./Config.js";
 
     const index = hrefsConfig.index;
     const home = hrefsConfig.home;
@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
        const button = document.getElementById('logout');
+       const recuperar = document.getElementById("recuperar");
 
        if(button){
 
@@ -160,7 +161,41 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
+       if (recuperar) {
 
+        recuperar.addEventListener('click', () => {
+
+          const r_email = document.getElementById("rec_email").value;
+
+          initializeApp(firebaseConfig);
+          const auth = getAuth();
+
+          sendPasswordResetEmail(auth, r_email)
+          .then(() => alert("Email de Recuperação de senha enviado com sucesso!"),
+                          document.getElementById("rec_email").value = ""
+                          
+          )
+          .catch((Error) => { switch (Error.code) {
+
+      case `${FEC.c_inv_e}`:      alert(EMF.inv_email);
+        break;
+      
+      case `${FEC.c_user_dis}`:   alert(EMF.user_dis);
+        break;
+        
+      case `${FEC.C_too_r}`:      alert(EMF.too_req);
+        break;
+
+      case `${FEC.C_miss_e}`:     alert(EMF.miss_email);
+        break;
+      
+      default: alert("Erro ao enviar. Tente novamente.")}
+
+          })
+
+        })
+
+  }
 
 
   

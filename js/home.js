@@ -19,6 +19,15 @@ import {firebaseConfig, hrefsConfig} from "./Config.js";
     document.cookie = `email=${email}`;
     document.cookie = `password=${password}`;
 
+    const savedTheme = localStorage.getItem('theme');
+
+    if (savedTheme) {
+      document.body.className = savedTheme;
+      document.getElementById('Geren_obj').className = savedTheme;
+      document.getElementById('denucias').className = savedTheme;
+      document.getElementById('account').className = savedTheme;
+    }
+
     const app = initializeApp(firebaseConfig);
     //const analytics = getAnalytics(app);
     const auth = getAuth();

@@ -17,3 +17,23 @@ export const firebaseConfig = {
     conf_acc: "H_config_acc.html",
     e_verif: "email_verif.html"
   };
+
+  //Error Messages from Firebase
+  export const EMF = {
+    miss_email: "O E-Mail não foi digitado.",
+    miss_pass:  "A senha não foi digitada.",
+    inv_email:  "Email inválido.",
+    inv_cred:   "Senha inválida.",
+    user_dis:   "Conta desativada.",
+    too_req:    "Muitos requerimentos, tente novamente mais tarde."
+  };
+
+  //Firebase Error Codes
+  export const FEC = {
+    C_miss_e: "auth/missing-email",
+    C_miss_p: "",
+    c_inv_e: "auth/invalid-email",
+    c_inv_c: "auth/invalid-credential",
+    c_user_dis: "auth/user-disabled",
+    C_too_r: "auth/too-many-requests"
+  }

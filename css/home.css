@@ -1,5 +1,3 @@
-
-
 /*
 Temporário para fixar a barra de cima
     Tanto que este css foi feito no primeiro ano,
@@ -7,6 +5,22 @@ Temporário para fixar a barra de cima
     que são mais capacitados
 
 */
+
+body.light-mode, #Geren_obj.light-mode, #denucias.light-mode, #account.light-mode {
+    background-color: white;
+    color: black;
+}
+body.dark-mode, #Geren_obj.dark-mode, #denucias.dark-mode, #account.dark-mode {
+    background-color: black;
+    color: white;
+}
+
+body.gray-mode, #Geren_obj.gray-mode, #denucias.gray-mode, #account.gray-mode {
+    background-color: #333;
+    color: white;
+}
+
+
 *{
     margin: 0;
     padding: 0;
