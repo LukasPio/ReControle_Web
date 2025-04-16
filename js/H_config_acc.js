@@ -26,18 +26,8 @@ if (savedTheme) {
       document.getElementById('tema').className = 'light-mode';
   }
 
-const getCookie = (name) => {
-    
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-
-  };
-        const email = getCookie('email');
-        const password = getCookie('password');
-        
-        document.cookie = `email=${email}`;
-        document.cookie = `password=${password}`;
+const email = localStorage.getItem('email');
+const password = localStorage.getItem('password')
     
     const app = initializeApp(firebaseConfig);
     //const analytics = getAnalytics(app);

@@ -75,8 +75,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-
     const button = document.getElementById('Login');
+
+  if (localStorage.getItem('email') && localStorage.getItem('password') &&  button) {
+
+    initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const email = localStorage.getItem('email');
+    const password = localStorage.getItem('password');
+
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+
+      alert('Usuário logado:  ' + userCredential.user.email);
+      window.location.href=home;
+    })
+    .catch((error) => {
+      
+        alert('Erro ao tentar realizar o login:       ' + error.message);
+    });
+  }
+
+
+    
     if (button){
     button.addEventListener('click', () => {
 
@@ -100,8 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             alert('Usuário logado:  ' + userCredential.user.email);
 
-            document.cookie = `email=${email}`;
-            document.cookie = `password=${password}`;
+            localStorage.setItem('email', email);
+            localStorage.setItem('password', password);
+
             window.location.href=home;
           
           }
@@ -117,7 +139,29 @@ document.addEventListener('DOMContentLoaded', () => {
           })
           .catch((error) => {
 
-            alert('Erro ao tentar realizar o login:       ' + error.message);
+            //alert('Erro ao tentar realizar o login:       ' + error.message);
+
+            switch (error.code) {
+
+              case `${FEC.c_inv_e}`:      alert(EMF.inv_email);
+                break;
+
+              case `${FEC.C_miss_p}`:     alert(EMF.miss_pass);
+                break;
+              
+              case `${FEC.c_inv_c}`:     alert(EMF.inv_cred);
+                break;
+              
+              case `${FEC.c_user_dis}`:   alert(EMF.user_dis);
+                break;
+                
+              case `${FEC.C_too_r}`:      alert(EMF.too_req);
+                break;
+        
+              case `${FEC.C_miss_e}`:     alert(EMF.miss_email);
+                break;
+              
+              default: alert("Erro ao enviar. Tente novamente." + error.code)}
           });
       
         }
@@ -151,8 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         auth.signOut().then(() => {
 
-      document.cookie = `email=; expires=Thu, 01 Jan 2000 00:00:00 UTC`;
-      document.cookie = `password=; expires=Thu, 01 Jan 2000 00:00:00 UTC`;
+      localStorage.clear();
       window.location.href = index;
 
     });

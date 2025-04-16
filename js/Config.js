@@ -25,15 +25,17 @@ export const firebaseConfig = {
     inv_email:  "Email inválido.",
     inv_cred:   "Senha inválida.",
     user_dis:   "Conta desativada.",
-    too_req:    "Muitos requerimentos, tente novamente mais tarde."
+    too_req:    "Muitos requerimentos, tente novamente mais tarde.",
+    too_p_req:  "Muitos requrimentos da senha, tente novamente mais tarde"
   };
 
   //Firebase Error Codes
   export const FEC = {
     C_miss_e: "auth/missing-email",
-    C_miss_p: "",
+    C_miss_p: "auth/missing-password",
     c_inv_e: "auth/invalid-email",
     c_inv_c: "auth/invalid-credential",
     c_user_dis: "auth/user-disabled",
-    C_too_r: "auth/too-many-requests"
+    C_too_r: "auth/too-many-requests",
+    C_too_p_r: "auth/quota-exceeded"
   }
