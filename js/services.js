@@ -2,7 +2,7 @@ import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/fire
 import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js';
 //import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, signInWithPopup, GoogleAuthProvider  } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
-import {FEC,EMF, firebaseConfig, hrefsConfig} from "./Config.js";
+import {FEC,EMF, firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 
     const index = hrefsConfig.index;
     const home = hrefsConfig.home;

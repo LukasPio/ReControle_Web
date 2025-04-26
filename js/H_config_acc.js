@@ -1,6 +1,6 @@
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, updateProfile/*, updateEmail, updatePassword*/} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
-import {firebaseConfig, hrefsConfig} from "./Config.js";
+import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 
 const perfil = document.getElementById("perfil");
 const back = document.getElementById("back");
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
                 if (tema) {      tema.addEventListener('click', () => {
                    document.getElementById("change").innerHTML = `<h2>Tema</h2>
-                   <select id='t_select'><option id='light' value='light-mode'>Branco</option><option id='dark' value='dark-mode'>Preto</option><option id='gray' value='gray-mode'>Cinza</option></select>
+                   <select id='t_select'><option id='light' value='light-mode'>Branco</option><option id='dark' value='dark-mode'>Preto</option><option id='gray' value='gray-mode'>Azul marinho</option></select>
                    <br><br><input type='color' id='t_color'>`;
                    /*O branco será o primeiramente selecionado atualmente pelo localstorage*/
                    
@@ -186,7 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
           // Salvar email
           if (edit_2) {
             edit_2.addEventListener('click', () => {
-              /*const user = userCredential.user;
+              
+              const user = userCredential.user;/*
               if (user.updateEmail(document.getElementById('in_2').value)) {
                 console.log("Alterado com sucesso.")
               }*/

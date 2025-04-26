@@ -1,0 +1,52 @@
+input {
+    width: 50%;
+    height: 5%;
+    border-radius: 0%;
+    
+}
+
+#email {
+    width: 60%;
+    height: 5%;
+}
+
+#hide_show_1, #hide_show_2 {
+    width: 10%;
+    border-radius: 0%;
+}
+
+button {
+    width: 25%;
+    height: 6%;
+    border-radius:15%;
+}
+
+fieldset {
+    width: 40%;
+    height: 80%;
+    border-radius:15%;
+    background-color: rgb(16, 12, 30);
+    color: aliceblue;
+    font-weight: bold;
+}
+
+legend {
+    color: rgb(255, 255, 255);
+    width: 25%;
+    text-align: center;
+}
+
+img {
+width: 45%;
+}
+
+/*
+center {
+    height: 65;
+}*/
+
+body {
+    height: auto;
+    background-color: rgb(19, 27, 35);
+}
+

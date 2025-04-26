@@ -1,6 +1,6 @@
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
 import { getAuth, sendEmailVerification, signInWithEmailAndPassword} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
-import {firebaseConfig, hrefsConfig} from "./Config.js";
+import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 
     const index = hrefsConfig.index;
     const home = hrefsConfig.home;
