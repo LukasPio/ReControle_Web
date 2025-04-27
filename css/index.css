@@ -1,52 +1,123 @@
-input {
-    width: 50%;
-    height: 5%;
-    border-radius: 0%;
-    
+body{
+    margin: 0;
+    padding: 0;
 }
 
-#email {
-    width: 60%;
-    height: 5%;
+.container{
+    background-color: #2c558a; 
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-#hide_show_1, #hide_show_2 {
-    width: 10%;
-    border-radius: 0%;
+.container-right{
+    background-color: rgb(180, 180, 180);
+    width: 65%;
+    height: 90%;
 }
 
-button {
-    width: 25%;
-    height: 6%;
-    border-radius:15%;
+.container-left{
+    height: 100%;
+    width: 45%;
+    background-color: white;  /*#777779 é a cor da logo*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 5%;
 }
 
-fieldset {
-    width: 40%;
-    height: 80%;
-    border-radius:15%;
-    background-color: rgb(16, 12, 30);
-    color: aliceblue;
+.login-title{
+    color: #003376;
+    font-size: 2rem;
+    font-family: Arial;
     font-weight: bold;
 }
 
-legend {
-    color: rgb(255, 255, 255);
-    width: 25%;
-    text-align: center;
+.slogan{
+    color: #003376;
+    font-size: 2.5rem;
+    font-family: Arial;
+    font-weight: bold;
 }
 
-img {
-width: 45%;
+.litlle-texts{
+    color: rgb(134, 134, 134);
+    font-size: 0.75rem;
+    font-family: Arial;
+    padding-bottom: 3.5%;
 }
 
-/*
-center {
-    height: 65;
-}*/
+input[type="email"], [type="password"]{
+    width: 70%;
+    padding: 1.5%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
 
-body {
-    height: auto;
-    background-color: rgb(19, 27, 35);
+.subcontainer{
+    display: flex;
+    flex-direction: row;
+}
+
+.label-checkbox{
+    margin-right: 30%;
+    color: rgb(134, 134, 134);
+    font-size: 0.75rem;
+    font-family: Arial;
+}
+
+a{
+    margin-top: 1%;
+    text-decoration: none;
+
+}
+
+.buttons{
+    margin-top: 10%;
+    display: flex;
+    flex-direction: row;
+}
+
+input[type="button"]{
+    width: 30%;
+    padding: 1.5%;
+}
+
+#login-button{
+    margin-right: 5%;
+    background: #003376;
+    color: white;
+    font-family: Arial;
+    border-width: 1px;
+    border-color: #003376;
+    border-style: solid;
+}
+
+#sign-up-button{
+    background: #ffffff;
+    color: #003376;
+    font-family: Arial;
+    border-width: 1px;
+    border-color: #003376;
+    border-style: solid;
+}
+
+#login-button:hover{
+    transition: 600ms;
+    background-color: #ffffff;
+    color: #003376;
+}
+
+#sign-up-button:hover{
+    transition: 600ms;
+    background-color: #003376;
+    color: #ffffff;
+}
+
+a:hover{
+    transition: 500ms;
+    color: rgb(61, 61, 61);;
 }
 
