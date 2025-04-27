@@ -16,31 +16,26 @@ import {FEC,EMF, firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 document.addEventListener('DOMContentLoaded', () => {
 
     const button = document.getElementById('Cadastro');
-    if (button){
-  button.addEventListener('click', () => { const app = initializeApp(firebaseConfig);
+    if (button){      button.addEventListener('click', () => { 
+            
+            const app = initializeApp(firebaseConfig);
             getAnalytics(app);
             const auth = getAuth();
-
-             
+  
         var name = document.getElementById('name_cadas').value;
         var email = document.getElementById('email_cadas').value;
         var password = document.getElementById('password_cadas').value;
         var C_password = document.getElementById('C_password_cadas').value;
     
-
     if (password == C_password) {
-    // Usa o Firebase Authentication para criar um novo usuário
-        createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+        createUserWithEmailAndPassword(auth, email, password)   .then((userCredential) => {
             
             var user = userCredential.user;
-
             updateProfile(user, {displayName: name});
 
             if (sendEmailVerification(user)) {
 
             alert('Para terminar seu cadastro, verifique o seu email' );
-
             window.location.href=index;
         
             }
@@ -75,72 +70,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const button = document.getElementById('Login');
-
-  if (localStorage.getItem('email') && localStorage.getItem('password') &&  button) {
-
     initializeApp(firebaseConfig);
     const auth = getAuth();
+    
+    
+
+    const login = document.getElementById('login-button');
+    const check = document.getElementById('checkbox');
+    
+    if (login) {
+
+   if (localStorage.getItem('email') && localStorage.getItem('password')){
+
     const email = localStorage.getItem('email');
     const password = localStorage.getItem('password');
 
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
+    signInWithEmailAndPassword(auth, email, password ).then((userCredential) => {
 
-      alert('Usuário logado:  ' + userCredential.user.email);
-      window.location.href=home;
-    })
-    .catch((error) => {
-      
-        alert('Erro ao tentar realizar o login:       ' + error.message);
+      console.log('user loged: ' + userCredential.user.displayName);
+      window.location.href = home;
+
+    }).catch((error) => {
+
     });
-  }
 
+   }
 
+   check.addEventListener('change', () => {
     
-    if (button){
-    button.addEventListener('click', () => {
-
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
     
-    //----------------------------------
-    
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const C_password = document.getElementById('Confirm_password').value;
- 
+    if (check.checked == true && email && password) {      login.addEventListener('click', () => {
 
-    if (password == C_password ) {
-      
-        signInWithEmailAndPassword(auth, email, password)
+          signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
 
-            if (userCredential.user.emailVerified){
-
-            alert('Usuário logado:  ' + userCredential.user.email);
-
+            console.log("User loged: " + userCredential.user.displayName);
             localStorage.setItem('email', email);
             localStorage.setItem('password', password);
 
-            window.location.href=home;
-          
-          }
-          else
-          {
-            
-            alert("Este E-Mail ainda não foi cadastrado.");
-            
-            window.location.href = e_verif;
-            
-          }
-
+            window.location.href = home;
           })
           .catch((error) => {
-
-            //alert('Erro ao tentar realizar o login:       ' + error.message);
-
             switch (error.code) {
 
               case `${FEC.c_inv_e}`:      alert(EMF.inv_email);
@@ -161,17 +133,75 @@ document.addEventListener('DOMContentLoaded', () => {
               case `${FEC.C_miss_e}`:     alert(EMF.miss_email);
                 break;
               
-              default: alert("Erro ao enviar. Tente novamente." + error.code)}
-          });
+              default: alert("Erro ao enviar. Tente novamente.  \n\n" + error.code)}
+          })
+
+      });
+    }
+   });
+
+   if (check.checked == false) {
+    login.addEventListener('click', () => {
+
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+
+      const password_ex = {
+        value: document.getElementById('login-password').value,
+        expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
+      };
+
+      const email_ex = {
+        value: document.getElementById('login-email').value,
+        expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
+    };
+
+   
+
+    ///*
+
+    localStorage.setItem('email', JSON.stringify(email_ex));
+    localStorage.setItem('password', JSON.stringify(password_ex));
+    
+    window.location.href = home;
+
+//*/
+    alert(localStorage.getItem('email') + localStorage.getItem('password') + new Date().getTime());
+
+  })
+  .catch((error) => {
+    switch (error.code) {
+
+      case `${FEC.c_inv_e}`:      alert(EMF.inv_email);
+        break;
+
+      case `${FEC.C_miss_p}`:     alert(EMF.miss_pass);
+        break;
       
-        }
-        else
-        {
-          alert('Digite corretamente a senha de confirmação!');
-        }
-    });
-}
-  
+      case `${FEC.c_inv_c}`:     alert(EMF.inv_cred);
+        break;
+      
+      case `${FEC.c_user_dis}`:   alert(EMF.user_dis);
+        break;
+        
+      case `${FEC.C_too_r}`:      alert(EMF.too_req);
+        break;
+
+      case `${FEC.C_miss_e}`:     alert(EMF.miss_email);
+        break;
+      
+      default: alert("Erro ao enviar. Tente novamente.  \n\n" + error.code)}
+
+  });
+
+    })
+   }
+
+   }
+    
 
   });
 

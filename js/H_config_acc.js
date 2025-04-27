@@ -26,11 +26,21 @@ if (savedTheme) {
       document.getElementById('tema').className = 'light-mode';
   }
 
-const email = localStorage.getItem('email');
-const password = localStorage.getItem('password')
+  let email, password;
+
+  try{
+const email_ex = JSON.parse(localStorage.getItem('email'));
+const password_ex = JSON.parse(localStorage.getItem('password'));
+
+ email = email_ex.value;
+ password = password_ex.value;
+ 
+}   catch {
+  email = localStorage.getItem('email');
+  password = localStorage.getItem('password');
+}
     
-    const app = initializeApp(firebaseConfig);
-    //const analytics = getAnalytics(app);
+    initializeApp(firebaseConfig);
     const auth = getAuth();
 
 if (email != null || password != null){

@@ -5,22 +5,7 @@ import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
     const index = hrefsConfig.index;
     const H_acc = hrefsConfig.conf_acc;
 
-    const getCookie = (name) => {
-    
-      const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-
-    };
-  
-    const email = getCookie('email');
-    const password = getCookie('password');
-  
-    document.cookie = `email=${email}`;
-    document.cookie = `password=${password}`;
-
     const savedTheme = localStorage.getItem('theme');
-
     if (savedTheme) {
       document.body.className = savedTheme;
       document.getElementById('Geren_obj').className = savedTheme;
@@ -28,26 +13,65 @@ import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
       document.getElementById('account').className = savedTheme;
     }
 
-    const app = initializeApp(firebaseConfig);
-    //const analytics = getAnalytics(app);
+    initializeApp(firebaseConfig);
     const auth = getAuth();
 
-  if (email != null && password != null) {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+    if (localStorage.getItem('email') && localStorage.getItem('password')) {
 
-        var user = userCredential.user;
+      try {
 
-        document.getElementById('name').innerHTML = ` ${user.displayName}`;
-        document.getElementById("account").innerHTML = `${user.email}`;
-      })
-      .catch((error) => {
+            const email_ex = JSON.parse(localStorage.getItem('email'));
+            const password_ex = JSON.parse(localStorage.getItem('password'));
 
-        console.log('Erro ao tentar realizar o login:       ' + error.message + "\n\n Tente novamente.");
+      if (email_ex.expiresIn > new Date().getTime() && password_ex.expiresIn > new Date().getTime()) {
+        const email = email_ex.value;
+        const password = password_ex.value;
+
+        signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+  
+          var user = userCredential.user;
+  
+          document.getElementById('name').innerHTML = ` ${user.displayName}`;
+          document.getElementById("account").innerHTML = `${user.email}`;
+        })
+        .catch((error) => {
+  
+          console.log('Erro ao tentar realizar o login:       ' + error.message + "\n\n Tente novamente.");
+          window.location.href = index;
+  
+        });
+
+      }
+      else{
+          
+
+        localStorage.clear();
+
         window.location.href = index;
+      
+    }
+    }
+    catch {
+      const email = localStorage.getItem('email');
+      const password = localStorage.getItem('password');
 
-      });
-
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+  
+          var user = userCredential.user;
+  
+          document.getElementById('name').innerHTML = ` ${user.displayName}`;
+          document.getElementById("account").innerHTML = `${user.email}`;
+        })
+        .catch((error) => {
+  
+          console.log('Erro ao tentar realizar o login:       ' + error.message + "\n\n Tente novamente.");
+          window.location.href = index;
+  
+        });
+    }
+      
     }
     else
     {

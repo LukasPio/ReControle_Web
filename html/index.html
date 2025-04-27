@@ -6,7 +6,7 @@
     <title>Login</title>
     <link rel="stylesheet" href="../css/index.css">
     <link rel="icon" href="../assets/recontrole_logo_icon.png">
-    <script type="module" src="../js/index.js"></script>
+    <!--<script type="module" src="../js/index.js"></script>-->
     <script type="module" src="../js/services.js"></script>
 </head>
 <body> 
@@ -25,14 +25,14 @@
                 
                 <div class="subcontainer">
                     <label class="label-checkbox">
-                        <input type="checkbox" name="checkbox" value="value" class="checkbox">
+                        <input type="checkbox" name="checkbox" value="value" class="checkbox" id="checkbox">
                         Lembrar de mim
                     </label>
                     <a href="Email_rec.html" class="litlle-texts">Esqueceu sua senha?</a>
                 </div>
                 <div class="buttons">
                     <input type="button" name="login-button" id="login-button" value="Login">
-                    <input type="button" name="sign-up-button" id="sign-up-button" value="Registrar">
+                    <input type="button" name="sign-up-button" id="sign-up-button" onclick="window.location.href='cadastro.html'" value="Registrar">
                 </div>
             </div>
         </div>
