@@ -28,11 +28,15 @@ body {
   align-items: center;
 }
 
+.secondary-logo {
+  display: none;
+}
+
 .container {
   background-color: var(--secondary-color);
-  min-height: 90vh;
+  height: 90%;
+  min-height: 600px;
   width: 95%;
-  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -41,14 +45,11 @@ body {
 /* Estilos da parte direita */
 .container-right {
   background-color: var(--white);
-  width: 30%;
   height: 100%;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  position: relative;
 }
 
 /* Estilos para a imagem */
@@ -60,20 +61,14 @@ body {
 }
 
 .container-left {
-  width: 80%;
+  width: 75%;
   height: 100%;
-  padding: 5% 5% 5% 5%;
+  padding: 5% 5% 7% 5%;
   background-color: var(--white);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  transition: transform 0.5s ease;
-  padding: 3rem 2rem;
-  overflow-y: auto;
-}
-.form-header {
-  margin-bottom: 2rem;
-  margin-top: 8rem;
+  align-items: start;
 }
 
 .login-title {
@@ -90,11 +85,13 @@ body {
   line-height: 1.3;
   margin-bottom: 1.5rem;
 }
+
 .welcome-text {
   color: var(--dark-gray);
   font-size: 1rem;
   margin-bottom: 2rem;
 }
+
 .form-content {
   width: 100%;
 }
@@ -181,7 +178,7 @@ body {
   background-color: var(--medium-gray);
 }
 
-.checkbox-container input:checked ~ .checkmark {
+.checkbox-container input:checked~.checkmark {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
 }
@@ -192,7 +189,7 @@ body {
   display: none;
 }
 
-.checkbox-container input:checked ~ .checkmark:after {
+.checkbox-container input:checked~.checkmark:after {
   display: block;
 }
 
@@ -260,6 +257,7 @@ body {
 
 .register-text {
   text-align: center;
+  width: 100%;
   margin-top: 2rem;
   color: var(--dark-gray);
   font-size: 0.9rem;
@@ -277,126 +275,56 @@ body {
   text-decoration: underline;
 }
 
-/* MUDANDO O SCROLL PRA FICAR BONITINHO */
-
-.container-left {
-  overflow-y: auto;
-}
-
-.container-left::-webkit-scrollbar {
-  width: 8px;
-}
-
-.container-left::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  border-radius: 10px;
-}
-
-.container-left::-webkit-scrollbar-thumb {
-  background-color: #004080;
-  border-radius: 10px;
-  border: 2px solid #f0f0f0;
-}
-
-@media screen and (max-width: 5000px) {
-  .container-right {
-    width: 90%;
-  }
-
-  .login-title {
-    font-size: 2rem;
-  }
-
-  .slogan {
-    font-size: 1.5rem;
-  }
-  .form-header {
-    margin-bottom: 2rem;
-    margin-top: 2rem;
-  }
-}
-@media screen and (max-width: 1400px) {
-  .container-right {
-    width: 90%;
-  }
-
-  .login-title {
-    font-size: 2rem;
-  }
-
-  .slogan {
-    font-size: 1.5rem;
-  }
-  .form-header {
-    margin-bottom: 2rem;
-    margin-top: 2rem;
-  }
-}
-@media screen and (max-width: 1200px) {
-  .container-right {
-    width: 90%;
-  }
-
-  .login-title {
-    font-size: 2rem;
-  }
-
-  .slogan {
-    font-size: 1.5rem;
-  }
-  .form-header {
-    margin-bottom: 2rem;
-    margin-top: 10rem;
-  }
-}
-
-@media screen and (max-width: 992px) {
-  .container-right {
-    flex-direction: column;
-    height: auto;
-  }
-
+@media screen and (max-width: 1000px) {
   .container-left {
-    width: 100%;
-    padding: 2rem;
+    width: 90%;
   }
-
-  .container-right::before {
+  .logo-recontrole {
+    width: 50%;
+    height: 50%;
+  }
+  .container-right {
     display: none;
   }
-  @media screen and (max-width: 1600px) {
-    .container-right {
-      width: 90%;
-    }
-
-    .login-title {
-      font-size: 2rem;
-    }
-
-    .slogan {
-      font-size: 1.5rem;
-    }
-    .form-header {
-      margin-bottom: 2rem;
-      margin-top: 2rem;
-    }
+  .up-section {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .secondary-logo {
+    display: flex;
+    width: 16vw;
+    height: 10vw;
   }
 }
 
-@media screen and (max-width: 768px) {
-  .form-header {
-    text-align: center;
+@media screen and (max-width: 600px) {
+  .container-left {
+    width: 100%;
   }
-
-  .login-title {
-    font-size: 1.8rem;
+  .secondary-logo {
+    display: none;
   }
+}
 
-  .slogan {
-    font-size: 1.3rem;
+@media screen and (max-width: 350px) {
+  .checkbox-container {
+    font-size: 0.7rem;
   }
-
+  .checkmark {
+    height: 16px;
+    width: 16px;
+  }
+  .forgot-password {
+    font-size: 0.8rem;
+  }
+  .btn {
+    margin: 0;
+  }
   .form-buttons {
-    flex-direction: column;
+    margin-top: 0;
   }
-}
+  .slogan {
+    font-size: rem;
+  }
+} 
