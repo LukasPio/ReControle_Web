@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     signInWithEmailAndPassword(auth, email, password ).then((userCredential) => {
 
       console.log('user loged: ' + userCredential.user.displayName);
-      window.location.href = home;
+      window.location.href = './html/' + home;
 
     }).catch((error) => {
 
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('email', email);
             localStorage.setItem('password', password);
 
-            window.location.href = home;
+            window.location.href = './html/' + home;
           })
           .catch((error) => {
             switch (error.code) {
@@ -166,10 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('email', JSON.stringify(email_ex));
     localStorage.setItem('password', JSON.stringify(password_ex));
     
-    window.location.href = home;
+    window.location.href = './html/' + home;
 
-//*/
-    alert(localStorage.getItem('email') + localStorage.getItem('password') + new Date().getTime());
+
 
   })
   .catch((error) => {
@@ -226,13 +225,14 @@ document.addEventListener('DOMContentLoaded', () => {
         auth.signOut().then(() => {
 
       localStorage.clear();
-      window.location.href = index;
+      window.location.href = '../' + index;
 
     });
   
     });
   }
 
+      //Recuperação de senha
 
        if (recuperar) {
 
