@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         alert("O E-Mail de verificação foi enviado.");
 
-        window.location.href = index;
+        window.location.href = '../' + index;
 
     }).catch((error) => {
         console.log(error.message + "\n" + error.code);
