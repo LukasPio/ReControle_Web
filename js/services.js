@@ -1,7 +1,7 @@
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
 import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js';
 //import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, signInWithPopup, GoogleAuthProvider  } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
+import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, /*signOut*/} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {FEC,EMF, firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 
     const index = hrefsConfig.index;
@@ -15,17 +15,17 @@ import {FEC,EMF, firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const button = document.getElementById('Cadastro');
+    const button = document.getElementById('sign-button');
     if (button){      button.addEventListener('click', () => { 
             
             const app = initializeApp(firebaseConfig);
             getAnalytics(app);
             const auth = getAuth();
   
-        var name = document.getElementById('name_cadas').value;
-        var email = document.getElementById('email_cadas').value;
-        var password = document.getElementById('password_cadas').value;
-        var C_password = document.getElementById('C_password_cadas').value;
+        var name = document.getElementById('sign-name').value;
+        var email = document.getElementById('sign-email').value;
+        var password = document.getElementById('sign-password').value;
+        var C_password = document.getElementById('sign-password-c').value;
     
     if (password == C_password) {
         createUserWithEmailAndPassword(auth, email, password)   .then((userCredential) => {
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sendEmailVerification(user)) {
 
             alert('Para terminar seu cadastro, verifique o seu email' );
-            window.location.href=index;
+            window.location.href = '../' + index;
         
             }
         })  
@@ -102,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = document.getElementById('login-password').value;
     
     if (check.checked == true && email && password) {      login.addEventListener('click', () => {
-
           signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
 
@@ -140,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
    });
 
-   if (check.checked == false) {
+   if (check.checked == false && localStorage.getItem('email') != document.getElementById('login-email')) {
     login.addEventListener('click', () => {
 
       const email = document.getElementById('login-email').value;
