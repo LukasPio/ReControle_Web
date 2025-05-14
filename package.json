@@ -1,0 +1,23 @@
+{
+  "name": "recontrole_web",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LukasPio/ReControle_Web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LukasPio/ReControle_Web/issues"
+  },
+  "homepage": "https://github.com/LukasPio/ReControle_Web#readme",
+  "description": "",
+  "dependencies": {
+    "sweetalert2": "^11.21.0"
+  }
+}
