@@ -8,12 +8,13 @@ import {FEC,EMF, firebaseConfig, hrefsConfig} from "./js_config/Config.js";
     const home = hrefsConfig.home;
     const e_verif = hrefsConfig.e_verif;
 
-
+    
 
   // Sign up
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  
 
     const button = document.getElementById('sign-button');
     if (button){      button.addEventListener('click', () => { 
@@ -43,10 +44,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         .catch((error) => {
-            
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            alert('Erro ao Tentar realizar o cadastro:       ' + errorMessage + "\n\n- codigo de erro:" + errorCode);
+            switch (error.code) {
+
+              case `${FEC.c_inv_e}`:
+              
+                Swal.fire({
+                    title: 'Erro',
+                    text: EMF.inv_email,
+                    icon: 'error'
+                });
+
+                break;
+
+              case `${FEC.C_miss_p}`:     
+              
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.miss_pass,
+                  icon: 'error'
+                });
+                break;
+              
+              case `${FEC.c_inv_c}`:
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.inv_cred,
+                  icon: 'error'
+                });
+
+                break;
+              
+              case `${FEC.c_user_dis}`:
+                
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.user_dis,
+                  icon: 'error'
+                });
+
+                break;
+                
+              case `${FEC.C_too_r}`:
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.too_req,
+                  icon: 'error'
+                });
+
+                break;
+        
+              case `${FEC.C_miss_e}`: 
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.miss_email,
+                  icon: 'error'
+                });
+
+                break;
+              
+              default: Swal.fire({
+                  title: 'Erro',
+                  text: 'Erro ao entrar, tente novamente',
+                  icon: 'error'
+                });
+              }
+
         });
     }
     else
@@ -91,7 +156,77 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = './html/' + home;
 
     }).catch((error) => {
+        switch (error.code) {
 
+          case `${FEC.c_inv_e}`:
+              
+            Swal.fire({
+              title: 'Erro',
+              text: EMF.inv_email,
+              icon: 'error'
+            });
+            break;
+
+          case `${FEC.C_miss_p}`:     
+              
+            Swal.fire({
+              title: 'Erro',
+              text: EMF.miss_pass,
+              icon: 'error'
+            });
+            break;
+              
+          case `${FEC.c_inv_c}`:
+
+            Swal.fire({
+              title: 'Erro',
+              text: EMF.inv_cred,
+              icon: 'error'
+          });
+            break;
+              
+          case `${FEC.c_user_dis}`:
+                
+            Swal.fire({
+              title: 'Erro',
+              text: EMF.user_dis,
+              icon: 'error'
+          });
+            break;
+                
+          case `${FEC.C_too_r}`:
+
+            Swal.fire({
+              title: 'Erro',
+              text: EMF.too_req,
+              icon: 'error'
+          });
+            break;
+        
+          case `${FEC.C_miss_e}`: 
+
+            Swal.fire({
+              title: 'Erro',
+              text: EMF.miss_email,
+              icon: 'error'
+          });
+            break;
+              
+          case `${FEC.C_too_p_r}`:
+                
+            Swal.fire({
+              title: 'Erro',
+              text: EMF.too_p_req,
+              icon: 'error'
+          });
+            break;
+              
+          default: Swal.fire({
+              title: 'Erro',
+              text: 'Erro ao entrar, tente novamente.',
+              icon: 'error'
+          });
+        }
     });
 
    }
@@ -112,27 +247,82 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = './html/' + home;
           })
           .catch((error) => {
-            switch (error.code) {
+             switch (error.code) {
 
-              case `${FEC.c_inv_e}`:      alert(EMF.inv_email);
+              case `${FEC.c_inv_e}`:
+              
+                Swal.fire({
+                    title: 'Erro',
+                    text: EMF.inv_email,
+                    icon: 'error'
+                });
+
                 break;
 
-              case `${FEC.C_miss_p}`:     alert(EMF.miss_pass);
+              case `${FEC.C_miss_p}`:     
+              
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.miss_pass,
+                  icon: 'error'
+                });
                 break;
               
-              case `${FEC.c_inv_c}`:     alert(EMF.inv_cred);
+              case `${FEC.c_inv_c}`:
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.inv_cred,
+                  icon: 'error'
+                });
+
                 break;
               
-              case `${FEC.c_user_dis}`:   alert(EMF.user_dis);
+              case `${FEC.c_user_dis}`:
+                
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.user_dis,
+                  icon: 'error'
+                });
+
                 break;
                 
-              case `${FEC.C_too_r}`:      alert(EMF.too_req);
+              case `${FEC.C_too_r}`:
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.too_req,
+                  icon: 'error'
+                });
+
                 break;
         
-              case `${FEC.C_miss_e}`:     alert(EMF.miss_email);
+              case `${FEC.C_miss_e}`: 
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.miss_email,
+                  icon: 'error'
+                });
+
                 break;
               
-              default: alert("Erro ao enviar. Tente novamente.  \n\n" + error.code)}
+              case `${FEC.C_too_p_r}`:
+                
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.too_p_req,
+                  icon: 'error'
+                });
+                break;
+              
+              default: Swal.fire({
+                  title: 'Erro',
+                  text: 'Erro ao entrar, tente novamente.',
+                  icon: 'error'
+                });
+              }
           })
 
       });
@@ -147,16 +337,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       signInWithEmailAndPassword(auth, email, password)
       .then(() => {
+      if (auth.currentUser.emailVerified) {
+        const password_ex = {
+          value: document.getElementById('login-password').value,
+          expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
+        };
 
-      const password_ex = {
-        value: document.getElementById('login-password').value,
-        expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
+        const email_ex = {
+          value: document.getElementById('login-email').value,
+          expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
       };
-
-      const email_ex = {
-        value: document.getElementById('login-email').value,
-        expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
-    };
 
    
 
@@ -168,30 +358,84 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = './html/' + home;
 
 
-
+    }
+    else
+    {
+      // Para verificar o email
+    }
   })
   .catch((error) => {
-    switch (error.code) {
+     switch (error.code) {
 
-      case `${FEC.c_inv_e}`:      alert(EMF.inv_email);
-        break;
+              case `${FEC.c_inv_e}`:
+              
+                Swal.fire({
+                    title: 'Erro',
+                    text: EMF.inv_email,
+                    icon: 'error'
+                });
+                break;
 
-      case `${FEC.C_miss_p}`:     alert(EMF.miss_pass);
-        break;
-      
-      case `${FEC.c_inv_c}`:     alert(EMF.inv_cred);
-        break;
-      
-      case `${FEC.c_user_dis}`:   alert(EMF.user_dis);
-        break;
+              case `${FEC.C_miss_p}`:     
+              
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.miss_pass,
+                  icon: 'error'
+                });
+                break;
+              
+              case `${FEC.c_inv_c}`:
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.inv_cred,
+                  icon: 'error'
+                });
+                break;
+              
+              case `${FEC.c_user_dis}`:
+                
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.user_dis,
+                  icon: 'error'
+                });
+                break;
+                
+              case `${FEC.C_too_r}`:
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.too_req,
+                  icon: 'error'
+                });
+                break;
         
-      case `${FEC.C_too_r}`:      alert(EMF.too_req);
-        break;
+              case `${FEC.C_miss_e}`: 
 
-      case `${FEC.C_miss_e}`:     alert(EMF.miss_email);
-        break;
-      
-      default: alert("Erro ao enviar. Tente novamente.  \n\n" + error.code)}
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.miss_email,
+                  icon: 'error'
+                });
+                break;
+
+              case `${FEC.C_too_p_r}`:
+              
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.too_p_req,
+                  icon: 'error'
+              });
+                break;
+              
+              default: Swal.fire({
+                  title: 'Erro',
+                  text: 'Erro ao entrar, tente novamente',
+                  icon: 'error'
+                });
+              }
 
   });
 
@@ -247,21 +491,75 @@ document.addEventListener('DOMContentLoaded', () => {
                           document.getElementById("rec_email").value = ""
                           
           )
-          .catch((Error) => { switch (Error.code) {
+          .catch((Error) => { 
 
-      case `${FEC.c_inv_e}`:      alert(EMF.inv_email);
-        break;
-      
-      case `${FEC.c_user_dis}`:   alert(EMF.user_dis);
-        break;
+       switch (error.code) {
+
+              case `${FEC.c_inv_e}`:
+              
+                Swal.fire({
+                    title: 'Erro',
+                    text: EMF.inv_email,
+                    icon: 'error'
+                });
+
+                break;
+
+              case `${FEC.C_miss_p}`:     
+              
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.miss_pass,
+                  icon: 'error'
+                });
+                break;
+              
+              case `${FEC.c_inv_c}`:
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.inv_cred,
+                  icon: 'error'
+                });
+
+                break;
+              
+              case `${FEC.c_user_dis}`:
+                
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.user_dis,
+                  icon: 'error'
+                });
+
+                break;
+                
+              case `${FEC.C_too_r}`:
+
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.too_req,
+                  icon: 'error'
+                });
+
+                break;
         
-      case `${FEC.C_too_r}`:      alert(EMF.too_req);
-        break;
+              case `${FEC.C_miss_e}`: 
 
-      case `${FEC.C_miss_e}`:     alert(EMF.miss_email);
-        break;
-      
-      default: alert("Erro ao enviar. Tente novamente.")}
+                Swal.fire({
+                  title: 'Erro',
+                  text: EMF.miss_email,
+                  icon: 'error'
+                });
+
+                break;
+              
+              default: Swal.fire({
+                  title: 'Erro',
+                  text: 'Erro ao entrar, tente novamente',
+                  icon: 'error'
+                });
+              }
 
           })
 

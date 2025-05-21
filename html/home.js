@@ -1,5 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+} from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { firebaseConfig, hrefsConfig } from "./js_config/Config.js";
 
 const index = hrefsConfig.index;
@@ -21,7 +24,10 @@ if (localStorage.getItem("email") && localStorage.getItem("password")) {
     const email_ex = JSON.parse(localStorage.getItem("email"));
     const password_ex = JSON.parse(localStorage.getItem("password"));
 
-    if (email_ex.expiresIn > new Date().getTime() && password_ex.expiresIn > new Date().getTime()) {
+    if (
+      email_ex.expiresIn > new Date().getTime() &&
+      password_ex.expiresIn > new Date().getTime()
+    ) {
       const email = email_ex.value;
       const password = password_ex.value;
 

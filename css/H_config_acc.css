@@ -1,31 +1,18 @@
-body.light-mode {
+.light-mode:not(#change) {
     background-color: white;
     color: black;
 }
-body.dark-mode {
+.dark-mode:not(#change) {
     background-color: black;
     color: white;
 }
 
-body.gray-mode {
+.gray-mode:not(#change) {
     background-color: rgb(16, 12, 30);
     color: aliceblue;
 }
 
-#perfil.light-mode, #seguranca.light-mode, #tema.light-mode {
-    background-color: white;
-    color: #333;
-}
 
-#perfil.dark-mode, #seguranca.dark-mode, #tema.dark-mode {
-    background-color: black;
-    color: white;
-}
-
-#perfil.gray-mode, #seguranca.gray-mode, #tema.gray-mode {
-    background-color: rgb(16, 12, 30);
-    color: aliceblue;
-}
 
 
 table{
@@ -37,38 +24,27 @@ table{
     width: 85%;
 }
 
-#perfil.light-mode:hover, #seguranca.light-mode:hover, #tema.light-mode:hover{
+
+.light-mode:not(#change, body):hover{
     background-color: rgb(38, 28, 69);
-    color: aliceblue;
+    color: aliceblue; 
     box-shadow: 0 3px 10px 0 #CCC;
     text-shadow: 0px 0px 5px #fff;
 }
 
-button {
-    width: 15%;
-    height: 5%;
-    color: aliceblue;
-    background-color: rgb(16, 12, 30);
-    border-color: aliceblue;
-}
-
-button:hover {
-    background-color: rgb(34, 28, 59);
-    color: aliceblue;
-    border-color: rgb(138, 170, 255);
-
-}
-
-#perfil.dark-mode:hover, #seguranca.dark-mode:hover, #tema.dark-mode:hover{
+.dark-mode:not(#change, body):hover{
     background: white;
     color: black;
     box-shadow: 0 3px 10px 0 #CCC;
     text-shadow: 0px 0px 5px #fff;
 }
 
-#perfil.gray-mode:hover, #seguranca.gray-mode:hover, #tema.gray-mode:hover{
+.gray-mode:not(#change, body):hover{
     background-color: rgb(34, 28, 59);
     color: aliceblue;
     box-shadow: 0 3px 10px 0 #CCC;
     text-shadow: 0px 0px 5px #fff;
+}
+iframe {
+    width: 100%;
 }

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="module" src="..\js\H_config_acc.js"></script>
     <link rel="stylesheet" href="../css/H_config_Acc.css"></head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.0/dist/sweetalert2.all.min.js" integrity="sha256-TU2eIihLYclo7k5+qmqLlo4q4A8/R0TC5sfcvbzDDFI=" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.0/dist/sweetalert2.min.css" rel="stylesheet">
     <title>Conta</title>
 </head>
 <body>
@@ -18,24 +20,26 @@
             <tbody>
 
             <tr>
-                <td id="perfil" class="tdbutton">Perfil</td>
-                <td rowspan="5" id="change"></td>
+                <td id="perfil" class="tdbutton"><a target="exibir">Perfil</a></td>
+                <td rowspan="5" id="change"> 
+                    <iframe src="iframes\perfil.html" style="width:80%; height:600px;" id="exibir" name="exibir"></iframe>
+                </td>
             </tr>
 
             <tr>
-                <td id="seguranca" class="tdbutton">Segurança</td>    
+                <td id="seguranca" class="tdbutton"><a target="exibir">Segurança</a></td>    
             </tr>
             
             <tr>
-                <td id="tema" class="tdbutton">Tema</td>
+                <td id="tema" class="tdbutton"><a target="exibir">Tema</a></td>
             </tr>
 
             <tr>
-                <td id="Aba4" class="tdbutton">Segurança</td>    
+                <td id="Aba4" class="tdbutton">Aba</td>    
             </tr>
             
             <tr>
-                <td id="Aba5" class="tdbutton">Segurança</td>
+                <td id="Aba5" class="tdbutton">Aba</td>
             </tr>
 
             </tbody>

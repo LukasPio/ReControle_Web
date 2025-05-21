@@ -1,5 +1,5 @@
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
-import { getAuth, signInWithEmailAndPassword, updateProfile/*, updateEmail, updatePassword*/} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 
 const perfil = document.getElementById("perfil");
@@ -9,288 +9,142 @@ const tema = document.getElementById("tema");
 //const aba4 = document.getElementById(""); Pode ou não ser inserido
 //const aba5 = document.getElementById(""); Pode ou não ser inserido
 
+//try{
+if (localStorage.getItem('iframe')){
+      document.getElementById('exibir').src = localStorage.getItem('iframe');
+      console.log(document.getElementById('exibir').src);
+}
+   // }
+    //catch {
+      
+    //}
+
 const savedTheme = localStorage.getItem('theme');
-                    
-if (savedTheme) {
-  console.log(savedTheme);
-  document.body.className = savedTheme;
-  document.getElementById('perfil').className = savedTheme;
-  document.getElementById('seguranca').className = savedTheme;
-  document.getElementById('tema').className = savedTheme;
 
-} else {
-      // Tema padrão
-      document.body.className = 'light-mode';
-      document.getElementById('perfil').className = 'light-mode';
-      document.getElementById('seguranca').className = 'light-mode';
-      document.getElementById('tema').className = 'light-mode';
-  }
+let email, password;
 
-  let email, password;
+try{
+  const email_ex = JSON.parse(localStorage.getItem('email'));
+  const password_ex = JSON.parse(localStorage.getItem('password'));
 
-  try{
-const email_ex = JSON.parse(localStorage.getItem('email'));
-const password_ex = JSON.parse(localStorage.getItem('password'));
-
- email = email_ex.value;
- password = password_ex.value;
+  email = email_ex.value;
+  password = password_ex.value;
  
-}   catch {
+} catch {
   email = localStorage.getItem('email');
   password = localStorage.getItem('password');
 }
     
-    initializeApp(firebaseConfig);
-    const auth = getAuth();
+initializeApp(firebaseConfig);
+const auth = getAuth();
 
 if (email != null || password != null){
+  document.addEventListener('DOMContentLoaded', () => {
 
-document.addEventListener('DOMContentLoaded', () => {
+    if (back) {  back.addEventListener('click', () => {
+      localStorage.removeItem('iframe');
+      window.location.href = hrefsConfig.home;
+    })  }
 
-  signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-  
-          var C_user = userCredential.user;
-          const C_name = C_user.displayName;
-          const C_email = C_user.email;
+    if (perfil) {perfil.addEventListener('click', () => {            
+      document.getElementById("exibir").src = './iframes/perfil.html';
+      if (localStorage.getItem('confirmation') == 1) {
+        Swal.fire({
+          title: "Gostaria de salvar suas mudanças?",
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "Salvar",
+          denyButtonText: `Não Salvar`
+        }).then((result) => {
+          if (result.isConfirmed) {
 
-          if (C_user !== null)
+            if (Swal.fire("Saved!", "", "success")) 
+              localStorage.setItem('iframe', './iframes/perfil.html');
+              window.location.reload();
 
-          console.log("Usuário logado:  " + C_email);
+          } else if (result.isDenied) {
 
-          
-
-          if (C_user) {
-
-            if (auth.currentUser){
-                
-              document.getElementById("change").innerHTML = `<p><input type='text' id='in_1' value='${C_user.displayName}'>
-              <button id='edit_1'>Salvar</button><button id='back_1'>Reverter </button></p>
-             
-              <br><p><input id='in_2' type='email' value='${C_user.email}'>
-              <button id='edit_2'>Salvar</button><button id='back_2'>Reverter </button></p>
-              
-              <br><p><input type='password' id='in_3'value='${password}'>
-              <button id='hide_show'><svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/></svg></button>
-              <button id='edit_3'>Salvar</button><button id=back_3>Reverter</button></p>`;                                                                                 
-
-        
-
-                  perfil.addEventListener('click', () => {
-      
-                    document.getElementById("change").innerHTML = `<p><input type='text' id='in_1' value='${C_user.displayName}'>
-                              <button id='edit_1'>Salvar</button><button id='back_1'>Reverter </button></p>
-             
-                              <br><p><input id='in_2' type='email' value='${C_user.email}'>
-                              <button id='edit_2'>Salvar</button><button id='back_2'>Reverter </button></p>
-              
-                              <br><p><input type='password' id='in_3'value='${password}'>
-                              <button id='hide_show'><svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/></svg></button>
-                              <button id='edit_3'>Salvar</button><button id=back_3>Reverter</button></p>`;
-
-                             
-                })    
-      
-                if (tema) {      tema.addEventListener('click', () => {
-                   document.getElementById("change").innerHTML = `<h2>Tema</h2>
-                   <select id='t_select'><option id='light' value='light-mode'>Branco</option><option id='dark' value='dark-mode'>Preto</option><option id='gray' value='gray-mode'>Azul marinho</option></select>
-                   <br><br><input type='color' id='t_color'>`;
-                   /*O branco será o primeiramente selecionado atualmente pelo localstorage*/
-                   
-                   const light = document.getElementById("light");
-                   const gray = document.getElementById("gray");
-                   const dark  = document.getElementById("dark");
-                   const select = document.getElementById("t_select");
-                   const sel_color = document.getElementById("t_color");
-                   
-                   if (select) {select.addEventListener('change', (event) => {
-                    
-
-
-                          const selectedValue = event.target.value;
-                          document.body.className = selectedValue;
-                          document.getElementById('perfil').className = selectedValue;
-                          document.getElementById('seguranca').className = selectedValue;
-                          document.getElementById('tema').className = selectedValue;
-                          //document.getElementById('').className = selectedValue;
-                          //document.getElementById('').className = selectedValue;
-                          localStorage.setItem('theme', selectedValue);
-
-
-
-                    })}
-
-                   if (sel_color) { sel_color.addEventListener('change', (event) => {
-                      const hexColor = event.target.value;
-                      const elements = document.getElementById('change');
-                      document.getElementById("change").innerHTML += " " + hexColor + "- Em andamento...";
-                      
-                    })}
-                }) 
-                 
-                }
-
-                if (seguranca) {   seguranca.addEventListener('click', () => {
-
-                  if (C_user.emailVerified) {
-                
-                    document.getElementById("change").innerHTML = "<br><p> Email verificado. </p>";
-                    
-                  }
-
-                })
-
-                }
-
-                if (back) {  back.addEventListener('click', () => {
-
-                  window.location.href = hrefsConfig.home;
-
-                  })  }
-      
-              /*
-
-        // Carregar o tema do localStorage
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-        document.body.className = savedTheme;
-        } else {
-            // Tema padrão
-            document.body.className = 'light-mode';
-        }
-
-        // Alternar tema e guardar no localStorage
-            document.getElementById('').addEventListener('click', () => {
-            const currentTheme = document.body.className;
-            const newTheme = currentTheme === 'light-mode' ? 'dark-mode' : 'light-mode';
-            document.body.className = theme;
-            localStorage.setItem('theme', newTheme);
+            if (Swal.fire("Changes are not saved", "", "info"))
+              localStorage.setItem('theme', localStorage.getItem('old_theme'));
+              localStorage.setItem('iframe', './iframes/perfil.html');
+          }
         });
+        localStorage.removeItem('confirmation');
+      }
+      else
+      {
+        localStorage.setItem('iframe', './iframes/perfil.html');
+        document.getElementById("exibir").src = './iframes/perfil.html';
+      }      
+    })
+  }
+      
+  if (tema) {      
+    tema.addEventListener('click', () => {
+      localStorage.setItem('iframe', './iframes/tema.html');
+      document.getElementById("exibir").src = './iframes/tema.html';             
+    })
+  }
 
-    */
+  if (seguranca) {   seguranca.addEventListener('click', () => {
 
-              
+      if (localStorage.getItem('confirmation') == 1) {
+        Swal.fire({
+          title: "Gostaria de salvar suas mudanças?",
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "Salvar",
+          denyButtonText: `Não Salvar`
+        }).then((result) => {
+          if (result.isConfirmed) {
+                            
+            if (Swal.fire("Saved!", "", "success")) 
+              localStorage.setItem('iframe', './iframes/seguranca.html');
+              window.location.reload();
+
+            } else if (result.isDenied) {
+
+              if (Swal.fire("Changes are not saved", "", "info"))
+                localStorage.setItem('theme', localStorage.getItem('old_theme'));
+                localStorage.setItem('iframe', './iframes/seguranca.html');
+
             }
-          }
-
-          const edit_1 = document.getElementById("edit_1");
-          const edit_2 = document.getElementById("edit_2");
-          const edit_3 = document.getElementById("edit_3");
-          const back_1 = document.getElementById("back_1");
-          const back_2 = document.getElementById("back_2");
-          const back_3 = document.getElementById("back_3");
-          const pass_in = document.getElementById('hide_show');
-
-          const passwordInput = document.getElementById('in_3');
-
-          
-          // Salvar nome
-          if (edit_1) {
-            edit_1.addEventListener('click', () => {
-              if (updateProfile(C_user, {displayName: document.getElementById("in_1").value})) {
-                console.log("Alterado com sucesso.")
-              }
-            })
-          }
-
-          // Salvar email
-          if (edit_2) {
-            edit_2.addEventListener('click', () => {
-              
-              const user = userCredential.user;/*
-              if (user.updateEmail(document.getElementById('in_2').value)) {
-                console.log("Alterado com sucesso.")
-              }*/
-             alert("Em andamento.");
-            })
-          }
-
-          // Salvar senha
-          if(edit_3) {
-            edit_3.addEventListener('click', () => {
-             /* if (auth.currentUser.updatePassword(document.getElementById("in_3").value)) {
-                console.log("Alterado com sucesso.")
-              }*/
-               alert("Em andamento...")
-            })
-          }
-
-          // Reverter nome
-          if (back_1) {
-            back_1.addEventListener('click', () => {
-
-              document.getElementById("in_1").value = C_name;
-
-              if(updateProfile(C_user,{displayName : C_name}))
-                console.log("Revertido")
-
-            })
-          }
-
-          // Reverter email
-          if (back_2) {
-            back_2.addEventListener('click', () => {
-
-              document.getElementById("in_2").value = C_email;
-
-              if(updateProfile(C_user,{email: C_email}))
-                console.log("Revertido")
-              
-            })
-          }
-
-          // Reverter senha
-          if (back_3) {
-            back_3.addEventListener('click', () => {
-
-              document.getElementById("in_3").value = password;
-
-              alert("Reversão em andamento...");
-          })
+          });
+          localStorage.removeItem('confirmation');
         }
-  
-        if (pass_in){
-        pass_in.addEventListener('click', () => {
-    
-            
-    
-            if (passwordInput.getAttribute('type') === 'password') {
-                pass_in.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z"/></svg>';
-                passwordInput.setAttribute('type', 'text');
-            } else {
-                pass_in.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="24px" fill="#000"><path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/></svg>';
-                passwordInput.setAttribute('type', 'password');
-            }
-    
-        });}
-
-
-
-
-
-
-
-
-
-
-    
-
-
-        })
-        .catch((error) => {
-  
-          console.log('Erro ao tentar realizar o login:       ' + error.message + "\n\n Tente novamente.");
-          window.location.href = hrefsConfig.home;
-  
-        });
-
+        else
+        {
+          localStorage.setItem('iframe', './iframes/seguranca.html');
+          document.getElementById("exibir").src = './iframes/seguranca.html';
+        }
       })
     }
-    else
-    {
-        console.log("Erro de envio");
-    }
 
+      signInWithEmailAndPassword(auth, email, password).catch((error) => {
+        Swal.fire({
+          title: 'Erro',
+          text: 'Erro ao tentar realizar o login:       ' + error.message + '\n\n Tente novamente.',
+          icon: 'error'
+        }).then(() => window.location.href = hrefsConfig.home )
+      });
+    })
+  }
+  else
+  {
+    console.log("Erro de envio");
+  }
 
    
-    
+if (savedTheme) {
+  console.log(savedTheme);
+  document.body.className = savedTheme;
+  document.querySelectorAll("td").forEach(td => {
+    td.className = savedTheme;
+  });
+} else {
+  // Tema padrão
+  document.body.className = 'light-mode';
+  document.querySelectorAll("td").forEach(td => {
+    td.className = "light-mode";
+  });
+}
