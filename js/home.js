@@ -78,18 +78,9 @@ if (localStorage.getItem("email") && localStorage.getItem("password")) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const botao = document.getElementById("name");
-  const botaoTeste = document.getElementById("sweetalert2");
 
   botao.addEventListener("click", () => {
     window.location.href = H_acc;
   });
 
-  botaoTeste.addEventListener("click", () => {
-    Swal.fire({
-      title: "Error!",
-      text: "Do you want to continue",
-      icon: "error",
-      confirmButtonText: "Cool",
-    });
-  });
 });
