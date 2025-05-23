@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-   const old_theme = localStorage.getItem('theme');
+
 
    switch (localStorage.getItem('theme')) {
       case 'white-mode':
@@ -21,8 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
          const selectedValue = event.target.value;     
          localStorage.setItem('theme', selectedValue);
          localStorage.setItem('confirmation', 1);
-         localStorage.setItem('old_theme', old_theme);
-
       })
    }
 })

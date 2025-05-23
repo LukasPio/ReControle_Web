@@ -2,6 +2,10 @@ import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/fire
 import { getAuth, signInWithEmailAndPassword} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {firebaseConfig} from "../js_config/Config.js";
 
+if (localStorage.getItem('theme')) {
+  document.getElementById('l_verif').className = localStorage.getItem('theme');
+}
+
 let email, password;
 
 try{
@@ -25,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then ((userCredential) => {
 
             if (auth.currentUser.emailVerified) 
-                document.body.innerHTML = 'E-mail verificado';
+                document.getElementById('l_verif').textContent = 'E-mail verificado';
         
     })
 })

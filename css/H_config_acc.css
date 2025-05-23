@@ -13,8 +13,6 @@
 }
 
 
-
-
 table{
     width:  70%;
     height: 500px;
@@ -25,21 +23,21 @@ table{
 }
 
 
-.light-mode:not(#change, body):hover{
+.light-mode:not(#change, body, #l_verif):hover{
     background-color: rgb(38, 28, 69);
     color: aliceblue; 
     box-shadow: 0 3px 10px 0 #CCC;
     text-shadow: 0px 0px 5px #fff;
 }
 
-.dark-mode:not(#change, body):hover{
+.dark-mode:not(#change, body, #l_verif):hover{
     background: white;
     color: black;
     box-shadow: 0 3px 10px 0 #CCC;
     text-shadow: 0px 0px 5px #fff;
 }
 
-.gray-mode:not(#change, body):hover{
+.gray-mode:not(#change, body, #l_verif):hover{
     background-color: rgb(34, 28, 59);
     color: aliceblue;
     box-shadow: 0 3px 10px 0 #CCC;

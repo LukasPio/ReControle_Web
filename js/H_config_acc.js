@@ -49,26 +49,10 @@ if (email != null || password != null){
     if (perfil) {perfil.addEventListener('click', () => {            
       document.getElementById("exibir").src = './iframes/perfil.html';
       if (localStorage.getItem('confirmation') == 1) {
-        Swal.fire({
-          title: "Gostaria de salvar suas mudanças?",
-          showDenyButton: true,
-          showCancelButton: true,
-          confirmButtonText: "Salvar",
-          denyButtonText: `Não Salvar`
-        }).then((result) => {
-          if (result.isConfirmed) {
-
-            if (Swal.fire("Saved!", "", "success")) 
+        
               localStorage.setItem('iframe', './iframes/perfil.html');
               window.location.reload();
 
-          } else if (result.isDenied) {
-
-            if (Swal.fire("Changes are not saved", "", "info"))
-              localStorage.setItem('theme', localStorage.getItem('old_theme'));
-              localStorage.setItem('iframe', './iframes/perfil.html');
-          }
-        });
         localStorage.removeItem('confirmation');
       }
       else
@@ -89,27 +73,10 @@ if (email != null || password != null){
   if (seguranca) {   seguranca.addEventListener('click', () => {
 
       if (localStorage.getItem('confirmation') == 1) {
-        Swal.fire({
-          title: "Gostaria de salvar suas mudanças?",
-          showDenyButton: true,
-          showCancelButton: true,
-          confirmButtonText: "Salvar",
-          denyButtonText: `Não Salvar`
-        }).then((result) => {
-          if (result.isConfirmed) {
-                            
-            if (Swal.fire("Saved!", "", "success")) 
+
               localStorage.setItem('iframe', './iframes/seguranca.html');
               window.location.reload();
-
-            } else if (result.isDenied) {
-
-              if (Swal.fire("Changes are not saved", "", "info"))
-                localStorage.setItem('theme', localStorage.getItem('old_theme'));
-                localStorage.setItem('iframe', './iframes/seguranca.html');
-
-            }
-          });
+                
           localStorage.removeItem('confirmation');
         }
         else
