@@ -9,16 +9,9 @@ const tema = document.getElementById("tema");
 //const aba4 = document.getElementById(""); Pode ou não ser inserido
 //const aba5 = document.getElementById(""); Pode ou não ser inserido
 
-//try{
 if (localStorage.getItem('iframe')){
       document.getElementById('exibir').src = localStorage.getItem('iframe');
-      console.log(document.getElementById('exibir').src);
 }
-   // }
-    //catch {
-      
-    //}
-
 const savedTheme = localStorage.getItem('theme');
 
 let email, password;

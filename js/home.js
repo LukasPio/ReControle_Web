@@ -33,17 +33,12 @@ if (localStorage.getItem("email") && localStorage.getItem("password")) {
           document.getElementById("account").innerHTML = `${user.email}`;
         })
         .catch((error) => {
-          console.log(
-            "Erro ao tentar realizar o login:       " +
-              error.message +
-              "\n\n Tente novamente."
-          );
-          window.location.href = index;
+          window.location.href = '../' + index;
         });
     } else {
       localStorage.clear();
 
-      window.location.href = index;
+      window.location.href = '../' + index;
     }
   } catch {
     const email = localStorage.getItem("email");
@@ -57,23 +52,13 @@ if (localStorage.getItem("email") && localStorage.getItem("password")) {
         document.getElementById("account").innerHTML = `${user.email}`;
       })
       .catch((error) => {
-        console.log(
-          "Erro ao tentar realizar o login:       " +
-            error.message +
-            "\n\n Tente novamente."
-        );
-        window.location.href = index;
+        window.location.href = '../' + index;
       });
   }
 } else {
-  const b_acc = document.getElementById("account");
 
-  b_acc.innerHTML = `Faça login`;
-  document.addEventListener("DOMContentLoaded", () => {
-    b_acc.addEventListener("click", () => {
-      window.location.href = index;
-    });
-  });
+      window.location.href = '../' + index;
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
