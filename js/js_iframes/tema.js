@@ -1,26 +1,31 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
+  const select = document.getElementById("theme_select");
+  const colorPicker = document.getElementById("t_color");
 
+  const savedTheme = localStorage.getItem("theme") || "white-mode";
+  document.body.classList.add(savedTheme);
+  select.value = savedTheme;
 
-   switch (localStorage.getItem('theme')) {
-      case 'white-mode':
-         document.getElementById('theme_select').selectedIndex = 0;
-         break;
-      case 'dark-mode':
-         document.getElementById('theme_select').selectedIndex = 1;
-         break;
-      case 'gray-mode':
-         document.getElementById('theme_select').selectedIndex = 2;
-         break;
-      default:
-         document.getElementById('theme_select').selectedIndex = 0;
-   }
-   
-   const select = document.getElementById("theme_select");
-                   
-   if (select) {select.addEventListener('change', (event) => {
-         const selectedValue = event.target.value;     
-         localStorage.setItem('theme', selectedValue);
-         localStorage.setItem('confirmation', 1);
-      })
-   }
-})
+  const savedColor = localStorage.getItem("primaryColor");
+  if (savedColor) {
+    document.documentElement.style.setProperty("--primary-color", savedColor);
+    colorPicker.value = savedColor;
+  }
+
+  select.addEventListener("change", (event) => {
+    const newTheme = event.target.value;
+
+    document.body.classList.remove("white-mode", "dark-mode");
+    document.body.classList.add(newTheme);
+
+    localStorage.setItem("theme", newTheme);
+    localStorage.setItem("confirmation", 1);
+  });
+
+  colorPicker.addEventListener("input", (event) => {
+    const color = event.target.value;
+
+    document.documentElement.style.setProperty("--primary-color", color);
+    localStorage.setItem("primaryColor", color);
+  });
+});
