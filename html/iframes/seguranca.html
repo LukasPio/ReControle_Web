@@ -1,15 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="module" src="../../js/js_iframes/seguranca.js"></script>
-    <link rel="stylesheet" href="../../css/iframes/iframes.css">
-    <title>Document</title>
-</head>
-<body>
-    <div class="seg_verif" id="seg_verif">
-        <label id="l_verif"></label>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Segurança | ReControle</title>
+    <link rel="stylesheet" href="../../css/iframes/iframe.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script type="module" src="../../js/js_iframes/seguranca.js" defer></script>
+  </head>
+  <body>
+    <div class="iframe-security">
+      <h2 class="iframe-title">Segurança da Conta</h2>
+
+      <div class="security-section">
+        <p id="seg_verif" class="status-text">
+          <!-- Exibe aqui o estado da verificação -->
+        </p>
+        <div class="form-actions">
+          <button
+            type="button"
+            id="btn-send-verification"
+            class="btn-reset-pass"
+          >
+            Enviar E-mail de Verificação
+          </button>
+        </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>

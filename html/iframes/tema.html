@@ -1,15 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-<head> 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../../css/iframes/iframes.css" rel="stylesheet">
-    <script type="module" src="../../js/js_iframes/tema.js"></script>
-    <title>Document</title>
-</head>
-<body>
-    <h2>Tema</h2>
-    <select id='theme_select'><option id='light' value='light-mode'>Branco</option><option id='dark' value='dark-mode'>Preto</option><option id='gray' value='gray-mode'>Azul marinho</option></select>
-    <br><br><input type='color' id='t_color'>
-</body>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tema | ReControle</title>
+    <link rel="stylesheet" href="../../css/iframes/iframe.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script type="module" src="../../js/js_iframes/tema.js" defer></script>
+  </head>
+  <body class="iframe-theme">
+    <h2 class="iframe-title">Escolha o Tema</h2>
+
+    <div class="theme-controls">
+      <label for="theme_select" class="theme-label">Tema:</label>
+      <select id="theme_select" class="theme-select">
+        <option value="light-mode">Claro</option>
+        <option value="dark-mode">Escuro</option>
+      </select>
+    </div>
+
+    <div class="theme-controls">
+      <label for="t_color" class="theme-label">Cor primária:</label>
+      <input type="color" id="t_color" class="theme-color-picker" />
+    </div>
+  </body>
 </html>

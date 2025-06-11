@@ -1,48 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="module" src="..\js\H_config_acc.js"></script>
-    <link rel="stylesheet" href="../css/H_config_Acc.css"></head>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.0/dist/sweetalert2.all.min.js" integrity="sha256-TU2eIihLYclo7k5+qmqLlo4q4A8/R0TC5sfcvbzDDFI=" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.0/dist/sweetalert2.min.css" rel="stylesheet">
-    <title>Conta</title>
-</head>
-<body>
-    <center>
-        <button id="back">Voltar</button>
-        <table border="1"  cellspacing="1" cellpadding="1">
-            <thead>
-                <tr><th colspan="2"> Configurações da conta</th></tr>
-            </thead>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Conta | ReControle</title>
+    <link rel="stylesheet" href="../css/H_config_Acc.css" />
+    <script type="module" src="../js/H_config_acc.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+  </head>
+  <body>
+    <div class="config-container">
+      <button id="back" class="btn-back">Voltar</button>
 
-            <tbody>
+      <div class="config-inner">
+        <nav class="config-aside">
+          <ul class="tab-list">
+            <li>
+              <button
+                id="perfil"
+                class="tab-button"
+                data-src="iframes/perfil.html"
+              >
+                Perfil
+              </button>
+            </li>
+            <li>
+              <button
+                id="seguranca"
+                class="tab-button"
+                data-src="iframes/seguranca.html"
+              >
+                Segurança
+              </button>
+            </li>
+            <li>
+              <button id="tema" class="tab-button" data-src="iframes/tema.html">
+                Tema
+              </button>
+            </li>
+          </ul>
+        </nav>
 
-            <tr>
-                <td id="perfil" class="tdbutton"><a target="exibir">Perfil</a></td>
-                <td rowspan="5" id="change"> 
-                    <iframe src="iframes\perfil.html" style="width:80%; height:600px;" id="exibir" name="exibir"></iframe>
-                </td>
-            </tr>
-
-            <tr>
-                <td id="seguranca" class="tdbutton"><a target="exibir">Segurança</a></td>    
-            </tr>
-            
-            <tr>
-                <td id="tema" class="tdbutton"><a target="exibir">Tema</a></td>
-            </tr>
-
-            <tr>
-                <td id="Aba4" class="tdbutton">Aba</td>    
-            </tr>
-            
-            <tr>
-                <td id="Aba5" class="tdbutton">Aba</td>
-            </tr>
-
-            </tbody>
-        </table>
-</body>
+        <!-- Área de conteúdo -->
+        <section class="config-content">
+          <iframe
+            id="exibir"
+            name="exibir"
+            src="iframes/perfil.html"
+            title="Conteúdo da Configuração"
+          ></iframe>
+        </section>
+      </div>
+    </div>
+  </body>
 </html>

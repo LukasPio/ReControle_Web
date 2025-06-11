@@ -1,24 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.0/dist/sweetalert2.all.min.js" integrity="sha256-TU2eIihLYclo7k5+qmqLlo4q4A8/R0TC5sfcvbzDDFI=" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.21.0/dist/sweetalert2.min.css" rel="stylesheet">
-    <link href="../../css/iframes/iframes.css" rel="stylesheet">
-    <script type="module" src="..\..\js\pass_visibility.js"></script>
-    <script type="module" src="../../js/js_iframes/perfil.js"></script>
-    <title>Document</title>
-</head>
-<body>
-    <p><input type='text' id='in_name'>
-    <button id='edit_name'>Salvar</button><button id='back_name'>Reverter </button><button id='cancel_name' >Cancelar</button></p>
-             
-    <br><p><div id='div_email'><input id='in_email' type='email' >
-    <button id='edit_email' >Salvar</button><button id='back_email' >Reverter</button><button id='cancel_email' >Cancelar</button></div></p>
-              
-    <br><p><input type='password' id='in_pass'>
-    <button id='toggle-password'><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M480-312q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Zm0-72q-40 0-68-28t-28-68q0-40 28-68t68-28q40 0 68 28t28 68q0 40-28 68t-68 28Zm0 192q-142.6 0-259.8-78.5Q103-349 48-480q55-131 172.2-209.5Q337.4-768 480-768q142.6 0 259.8 78.5Q857-611 912-480q-55 131-172.2 209.5Q622.6-192 480-192Zm0-288Zm0 216q112 0 207-58t146-158q-51-100-146-158t-207-58q-112 0-207 58T127-480q51 100 146 158t207 58Z"/></svg></button>
-    <a id='edit_pass' style='color:blue;'>Enviar redefinição de senha</a></p>
-</body>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil | ReControle</title>
+    <link rel="stylesheet" href="../../css/iframes/iframe.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script
+      type="module"
+      src="../../js/js_iframes/pass_visibility.js"
+      defer
+    ></script>
+    <script type="module" src="../../js/js_iframes/perfil.js" defer></script>
+  </head>
+  <body>
+    <div class="iframe-profile">
+      <h2 class="iframe-title">Meu Perfil</h2>
+
+      <form class="profile-form">
+        <div class="form-group">
+          <label for="in_name">Nome de usuário</label>
+          <input
+            type="text"
+            id="in_name"
+            name="username"
+            placeholder="Seu nome"
+          />
+          <div class="form-actions">
+            <button type="button" id="edit_name" class="btn-save">
+              Salvar
+            </button>
+            <button type="button" id="back_name" class="btn-revert">
+              Reverter
+            </button>
+            <button type="button" id="cancel_name" class="btn-cancel">
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="in_email">E-mail</label>
+          <input
+            id="in_email"
+            type="email"
+            name="email"
+            placeholder="seu@email.com"
+          />
+          <div class="form-actions">
+            <button type="button" id="edit_email" class="btn-save">
+              Salvar
+            </button>
+            <button type="button" id="back_email" class="btn-revert">
+              Reverter
+            </button>
+            <button type="button" id="cancel_email" class="btn-cancel">
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="in_pass">Senha</label>
+          <div class="password-field">
+            <input
+              type="password"
+              id="in_pass"
+              name="password"
+              placeholder="Nova senha"
+            />
+            <button
+              type="button"
+              id="toggle-password"
+              class="btn-toggle-pass"
+              aria-label="Mostrar/Ocultar senha"
+            >
+              <!-- ícone SVG -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 -960 960 960"
+                width="20"
+                height="20"
+                fill="#666"
+              >
+                <path
+                  d="M480-312q70 0 119-49t49-119q0-70-49-119t-119-49q-70 0-119 49t-49 119q0 70 49 119t119 49Zm0-72q-40 0-68-28t-28-68q0-40 28-68t68-28q40 0 68 28t28 68q0 40-28 68t-68 28Zm0 192q-142.6 0-259.8-78.5Q103-349 48-480q55-131 172.2-209.5Q337.4-768 480-768q142.6 0 259.8 78.5Q857-611 912-480q-55 131-172.2 209.5Q622.6-192 480-192Zm0-288Zm0 216q112 0 207-58t146-158q-51-100-146-158t-207-58q-112 0-207 58T127-480q51 100 146 158t207 58Z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="form-actions">
+            <button type="button" id="edit_pass" class="btn-reset-pass">
+              Enviar redefinição de senha
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>
 </html>
