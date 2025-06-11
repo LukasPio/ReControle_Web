@@ -1,94 +1,187 @@
-/*
-Temporário para fixar a barra de cima
-    Tanto que este css foi feito no primeiro ano,
-    e este cargo ficará aos encarregados de css,
-    que são mais capacitados
-
-*/
-
-body.light-mode, #Geren_obj.light-mode, #denucias.light-mode, #account.light-mode {
-    background-color: white;
-    color: black;
-}
-body.dark-mode, #Geren_obj.dark-mode, #denucias.dark-mode, #account.dark-mode {
-    background-color: black;
-    color: white;
+/* Reset e base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
 }
 
-body.gray-mode, #Geren_obj.gray-mode, #denucias.gray-mode, #account.gray-mode {
-    background-color: rgb(16, 12, 30);
-    color: aliceblue;
+body {
+  display: flex;
+  height: 100vh;
+  background-color: #f7f9fc;
 }
 
-
-*{
-    margin: 0;
-    padding: 0;
-    
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
 }
 
-body{
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 40px;
 }
 
-.menu{
-    list-style: none;
-    border: 1px solid #c0c0c0;
-    float: right;
+.sidebar ul {
+  list-style: none;
 }
 
-.menu li{
-    position: relative;
-    float: left;
-    border-right: 1px solid #c0c0c0;
+.sidebar li {
+  padding: 12px 8px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-.menu li a{
-    color: #333;
-    text-decoration: none;
-    padding: 5px 10px;
-    display: block;
+.sidebar li:hover,
+.sidebar li.active {
+  background: #e3e9fd;
+  color: #2f5cf3;
+  font-weight: bold;
 }
 
-.menu li a:hover{
-    background: #141454;
-    color: #fff;
-    box-shadow: 0 3px 10px 0 #CCC;
-    text-shadow: 0px 0px 5px #fff;
+/* Main area */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.menu li ul{
-    position: absolute;
-    top: 25px;
-    left: 0;
-    background-color: #fff;
-    display: none;
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 15px 30px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.menu li:hover ul{
-    display: block;
-}
-.menu li ul li{
-border: 1px solid #c0c0c0;
-display: block;
-width: 150px;
+.topbar input[type="search"] {
+  width: 300px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
 }
 
-#sec_menu ul{
-    position: right;
-    top: 0%;
-    left: 100%;
-    background-color: #fff;
-    display: none;
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-#sec_menu:hover ul {
-    display: block;
+.actions img {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
 }
 
-#sec_menu ul li{
-    border: 1px solid #c0c0c0;
-    display: block;
-    width: 150px;
-    }
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+/* Dashboard */
+.dashboard {
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.chamados {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.chamado-card {
+  flex: 1;
+  min-width: 250px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chamado-card a {
+  color: #2f5cf3;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+/* Gráfico */
+.grafico-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.grafico-box h2 {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+.account-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.account-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.account-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Menu escondido inicialmente */
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 10px 0;
+  border-radius: 8px;
+  width: 180px;
+  display: none;
+  z-index: 1000;
+}
+
+.account-menu li {
+  padding: 10px 20px;
+}
+
+.account-menu li a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  transition: background 0.2s ease;
+}
+
+.account-menu li a:hover {
+  background: #f0f0f0;
+}

@@ -1,73 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOME</title>
-    <link rel="stylesheet" href="../css/home.css"></head>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home | Recontrole</title>
+    <link rel="icon" href="../assets/recontrole_logo_icon.png" />
+    <link rel="stylesheet" href="../css/home.css" />
+    <!-- Chart.js e SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <!-- Módulos de serviço e autenticação -->
+    <script type="module" src="../js/services.js" defer></script>
     <script type="module" src="../js/home.js" defer></script>
-    <script type="module" src="../js/services.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <body>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <h2 class="logo"><span style="color: #2f5cf3">Re</span>Controle</h2>
+      <nav>
+        <ul>
+          <li class="active">Visão Geral</li>
+          <li>Instituição</li>
+          <li>Chamados</li>
+          <li>Gerenciar Contas</li>
+          <li>Prioridades</li>
+        </ul>
+      </nav>
+    </aside>
 
-        <nav><ul class="menu">
-            
-            
-            <li ><a id="Geren_obj" >Gerenciamento dos objetos</a>
-            
-                <ul >
-                    <li id="sec_menu"><a href="#">Objetos</a>
-                    
-                        <ul>
-
-                            <li id="li_obj"><a href="#" >Computadores</a></li>
-                            <li id="li_obj"><a href="#" >Componentes eletrônicos</a></li>
-                            <li id="li_obj"><a href="#" >Outros</a></li>
-
-                        </ul>
-                    
-                    </li>
-                    <li  id="sec_menu"><a href="#" >Salas</a>
-                    
-                        <ul>
-
-                            <li id="li_sala"><a href="#" >Setups</a></li>
-                            <li id="li_sala"><a href="#" >Alterar salas</a></li>
-                            <li id="li_sala"><a href="#" >Alterar objetos/Setups</a></li>
-
-                        </ul>
-
-                    </li>
-                </ul>
-
-            </li> 
-
-            <li ><a id="denucias">Denúncias</a>
-            
-                <ul>
-
-                    <li ><a href="#">Abas</a></li>
-                    <li ><a href="#">Abas</a></li>
-                    <li ><a href="#">Abas</a></li>
-
-
-                </ul>
-            
-            </li>
-
-
-            <li id="li_account" class="account_config" name="choose"><a id="account"></a>
-            <ul id="ul_account">
-                <li><a id="name">Nome</a></li>
-                <li><a id="logout">Fazer Logout</a></li>
+    <main>
+      <header class="topbar">
+        <input type="search" placeholder="Search..." />
+        <div class="actions">
+          <img src="../assets/bell-icon.png" alt="Notificações" />
+          <div class="account-dropdown">
+            <div class="account-toggle" onclick="toggleDropdown()">
+              <span class="account-name" id="accountName"></span>
+              <img
+                src="../assets/avatar.png"
+                alt="Foto de Perfil"
+                class="account-img"
+              />
+            </div>
+            <ul class="account-menu" id="accountMenu">
+              <li><a href="#" id="name"></a></li>
+              <li><a href="#" id="logout">Fazer Logout</a></li>
             </ul>
-            </li>
-        </ul></nav><br><br><br>
+          </div>
+        </div>
+      </header>
 
-        
-        <h1>HOME</h1><br><br>
-        
-       <p id="welcome"></p>
-    </body>
-    </html>
+      <section class="dashboard">
+        <h1>Visão Geral</h1>
+
+        <div class="chamados">
+          <div class="chamado-card">
+            <p><strong>1234</strong> HDD está apresentando problemas...</p>
+            <a href="#">Ver mais</a>
+            <p>Laboratório 2 - Segundo Andar</p>
+          </div>
+          <div class="chamado-card">
+            <p><strong>1235</strong> Impressora não conecta...</p>
+            <a href="#">Ver mais</a>
+            <p>Laboratório 3 - Térreo</p>
+          </div>
+          <div class="chamado-card">
+            <p><strong>1236</strong> Falha na rede wifi...</p>
+            <a href="#">Ver mais</a>
+            <p>Biblioteca - Primeiro Andar</p>
+          </div>
+        </div>
+
+        <div class="grafico-box">
+          <h2>Chamados Resolvidos (últimos 5 meses)</h2>
+          <canvas id="graficoLinha"></canvas>
+        </div>
+      </section>
+    </main>
+
+    <!-- Scripts auxiliares -->
+    <script>
+      // Dropdown de conta
+      function toggleDropdown() {
+        const menu = document.getElementById("accountMenu");
+        menu.style.display = menu.style.display === "block" ? "none" : "block";
+      }
+      window.addEventListener("click", (e) => {
+        if (!document.querySelector(".account-dropdown").contains(e.target)) {
+          document.getElementById("accountMenu").style.display = "none";
+        }
+      });
+
+      // Gráfico Chart.js após DOM carregar
+      document.addEventListener("DOMContentLoaded", () => {
+        const ctx = document.getElementById("graficoLinha").getContext("2d");
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio"],
+            datasets: [
+              {
+                label: "Chamados Resolvidos",
+                data: [12, 19, 3, 5, 2],
+                fill: true,
+                backgroundColor: "rgba(47, 92, 243, 0.1)",
+                borderColor: "#2f5cf3",
+                tension: 0.4,
+                pointBackgroundColor: "#2f5cf3",
+              },
+            ],
+          },
+          options: { responsive: true },
+        });
+      });
+    </script>
+  </body>
+</html>
