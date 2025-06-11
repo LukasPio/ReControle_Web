@@ -52,9 +52,37 @@ button{
     height: 100%;
     margin-bottom: 1%;
     border-style: solid;
-    border-width: 1px;
-    border-radius: 8px;
+    border-width: 0px;
+    border-radius: 4px;
     font-size: 1rem;
+}
+
+.btn-back {
+  display: inline-block;
+  margin-bottom: 1rem; 
+  padding: 0.5rem 1rem;
+  background-color: #ffffff;
+  color: #244bb8;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-back:hover {
+  background-color: #003376;
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.btn-primary {
+  background-color: #003376;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #002a5e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #recuperar{

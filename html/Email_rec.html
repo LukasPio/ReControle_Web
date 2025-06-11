@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chart.js e SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <!-- Módulos de serviço e autenticação -->
     <script type="module" src="../js/services.js"></script>
     <link rel="stylesheet" href="../css/email_rec.css"></head>
     <title>Recuperação da senha</title>
 </head>
 <body>
-
+ 
 
         <div id="r_field">
 
@@ -21,8 +25,8 @@
 
             
             <div class="button-container">
-                <button id="recuperar">Enviar</button>
-                <button onclick="window.location.href='../index.html'">Voltar</button>
+                <button id="recuperar" class="btn-primary">Enviar</button>
+                <button id="btn-back" class="btn-back" onclick="window.location.href='../index.html'">Voltar</button>
             </div>
             
         </div>

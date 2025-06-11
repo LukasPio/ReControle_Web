@@ -19,7 +19,7 @@
 /* Botão Voltar */
 .btn-back {
   display: inline-block;
-  margin-bottom: 1rem;
+  margin-bottom: 1rem; 
   padding: 0.5rem 1rem;
   background-color: #2f5cf3;
   color: #fff;

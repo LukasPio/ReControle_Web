@@ -11,7 +11,8 @@ toString;
 initializeApp(firebaseConfig);
 const auth = getAuth();
 
-// Aplica tema salvo QUE O MANO ENZO FEZ
+// Aplica tema salvo QUE O MANO ENZO FEZ -- Augusto
+// Estou sentindo um baita julgamento vindo de ti AUGUSTO -- Enzo
 document.addEventListener("DOMContentLoaded", () => {
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme) {
@@ -71,5 +72,40 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = `../${hrefsConfig.index}`;
       });
     });
+  }
+  // Visão geral 
+  const redirectLiHome = document.getElementById("home");
+  if (redirectLiHome) {
+    redirectLiHome.addEventListener('click', () => {
+      window.location.href = './home.html';
+    })
+  }
+  // Instituição
+  const redirectLiInstitution = document.getElementById("institution");
+  if (redirectLiInstitution) {
+    redirectLiInstitution.addEventListener('click', () => {
+      window.location.href = './institution.html';
+    })
+  }
+  // Chamados
+  const redirectLiCalls = document.getElementById("calls");
+  if (redirectLiCalls) {
+    redirectLiCalls.addEventListener('click', () => {
+      window.location.href = './calls.html';
+    })
+  }
+  // Gerenciar Contas
+  const redirectLiAccManagment = document.getElementById("acc-managment");
+  if (redirectLiAccManagment) {
+    redirectLiAccManagment.addEventListener('click', () => {
+      window.location.href = './acc_managment.html';
+    })
+  }
+  // Gerenciar BD
+  const redirectLiBDManagment = document.getElementById("bd-managment");
+  if (redirectLiBDManagment) {
+    redirectLiBDManagment.addEventListener('click', () => {
+      window.location.href = './bd_managment.html';
+    })
   }
 });

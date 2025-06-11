@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home | Recontrole</title>
+    <title>Chamados | Recontrole</title>
     <link rel="icon" href="../assets/recontrole_logo_icon.png" />
-    <link rel="stylesheet" href="../css/home.css" />
+    <link rel="stylesheet" href="../css/calls.css" />
     <!-- Chart.js e SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
@@ -18,9 +18,9 @@
       <h2 class="logo"><span style="color: #2f5cf3">Re</span>Controle</h2>
       <nav>
         <ul>
-          <li id="home" class="active">Visão Geral</li>
+          <li id="home">Visão Geral</li>
           <li id="institution">Instituição</li>
-          <li id="calls">Chamados</li>
+          <li id="calls" class="active">Chamados</li>
           <li id="acc-managment">Gerenciar Contas</li>
           <li id="bd-managment">Gerenciar BD</li>
         </ul>
@@ -50,7 +50,7 @@
       </header>
 
       <section class="dashboard">
-        <h1>Visão Geral</h1>
+        <h1>Chamados</h1>
 
         <div class="chamados">
           <div class="chamado-card">
@@ -69,17 +69,10 @@
             <p>Biblioteca - Primeiro Andar</p>
           </div>
         </div>
-
-        <div class="grafico-box">
-          <h2>Chamados Resolvidos (últimos 5 meses)</h2>
-          <canvas id="graficoLinha"></canvas>
-        </div>
       </section>
     </main>
 
-    <!-- Scripts auxiliares -->
     <script>
-      // Dropdown de conta
       function toggleDropdown() {
         const menu = document.getElementById("accountMenu");
         menu.style.display = menu.style.display === "block" ? "none" : "block";
@@ -88,29 +81,6 @@
         if (!document.querySelector(".account-dropdown").contains(e.target)) {
           document.getElementById("accountMenu").style.display = "none";
         }
-      });
-
-      // Gráfico Chart.js após DOM carregar
-      document.addEventListener("DOMContentLoaded", () => {
-        const ctx = document.getElementById("graficoLinha").getContext("2d");
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio"],
-            datasets: [
-              {
-                label: "Chamados Resolvidos",
-                data: [12, 19, 3, 5, 2],
-                fill: true,
-                backgroundColor: "rgba(47, 92, 243, 0.1)",
-                borderColor: "#2f5cf3",
-                tension: 0.4,
-                pointBackgroundColor: "#2f5cf3",
-              },
-            ],
-          },
-          options: { responsive: true },
-        });
       });
     </script>
   </body>

@@ -2,14 +2,14 @@ import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/fire
 import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js';
 //import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, /*signOut*/} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
-import {FEC,EMF, firebaseConfig, hrefsConfig} from "./js_config/Config.js";
+import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
+import {errorSwalResponse} from './js_functions/swal_fire_errors.js';
 
     const index = hrefsConfig.index;
     const home = hrefsConfig.home;
     const e_verif = hrefsConfig.e_verif;
 
     
-
   // Sign up
 
 
@@ -37,82 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sendEmailVerification(user)) {
 
             alert('Para terminar seu cadastro, verifique o seu email' );
-            window.location.href = '../' + index;
+            window.location.href = `../${index}`;
         
             }
         })  
 
 
-        .catch((error) => {
-            switch (error.code) {
-
-              case `${FEC.c_inv_e}`:
-              
-                Swal.fire({
-                    title: 'Erro',
-                    text: EMF.inv_email,
-                    icon: 'error'
-                });
-
-                break;
-
-              case `${FEC.C_miss_p}`:     
-              
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.miss_pass,
-                  icon: 'error'
-                });
-                break;
-              
-              case `${FEC.c_inv_c}`:
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.inv_cred,
-                  icon: 'error'
-                });
-
-                break;
-              
-              case `${FEC.c_user_dis}`:
-                
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.user_dis,
-                  icon: 'error'
-                });
-
-                break;
-                
-              case `${FEC.C_too_r}`:
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.too_req,
-                  icon: 'error'
-                });
-
-                break;
-        
-              case `${FEC.C_miss_e}`: 
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.miss_email,
-                  icon: 'error'
-                });
-
-                break;
-              
-              default: Swal.fire({
-                  title: 'Erro',
-                  text: 'Erro ao entrar, tente novamente',
-                  icon: 'error'
-                });
-              }
-
-        });
+        .catch((error) => errorSwalResponse(error));
     }
     else
     {
@@ -131,444 +62,150 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Login
-
-
 document.addEventListener('DOMContentLoaded', () => {
 
-    initializeApp(firebaseConfig);
-    const auth = getAuth();
+  initializeApp(firebaseConfig);
+  const auth = getAuth();
     
+  const login = document.getElementById('login-button');
+  const check = document.getElementById('checkbox');
+  if (login) {
     
-
-    const login = document.getElementById('login-button');
-    const check = document.getElementById('checkbox');
-    
-    if (login) {
-
-   if (localStorage.getItem('email') && localStorage.getItem('password')){
-
-    const email = localStorage.getItem('email');
-    const password = localStorage.getItem('password');
-
-    signInWithEmailAndPassword(auth, email, password ).then((userCredential) => {
-
-      console.log('user loged: ' + userCredential.user.displayName);
-      window.location.href = './html/' + home;
-
-    }).catch((error) => {
-        switch (error.code) {
-
-          case `${FEC.c_inv_e}`:
-              
-            Swal.fire({
-              title: 'Erro',
-              text: EMF.inv_email,
-              icon: 'error'
-            });
-            break;
-
-          case `${FEC.C_miss_p}`:     
-              
-            Swal.fire({
-              title: 'Erro',
-              text: EMF.miss_pass,
-              icon: 'error'
-            });
-            break;
-              
-          case `${FEC.c_inv_c}`:
-
-            Swal.fire({
-              title: 'Erro',
-              text: EMF.inv_cred,
-              icon: 'error'
-          });
-            break;
-              
-          case `${FEC.c_user_dis}`:
-                
-            Swal.fire({
-              title: 'Erro',
-              text: EMF.user_dis,
-              icon: 'error'
-          });
-            break;
-                
-          case `${FEC.C_too_r}`:
-
-            Swal.fire({
-              title: 'Erro',
-              text: EMF.too_req,
-              icon: 'error'
-          });
-            break;
-        
-          case `${FEC.C_miss_e}`: 
-
-            Swal.fire({
-              title: 'Erro',
-              text: EMF.miss_email,
-              icon: 'error'
-          });
-            break;
-              
-          case `${FEC.C_too_p_r}`:
-                
-            Swal.fire({
-              title: 'Erro',
-              text: EMF.too_p_req,
-              icon: 'error'
-          });
-            break;
-              
-          default: Swal.fire({
-              title: 'Erro',
-              text: 'Erro ao entrar, tente novamente.',
-              icon: 'error'
-          });
-        }
-    });
-
-   }
-
-   check.addEventListener('change', () => {
-    
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    
-    if (check.checked == true && email && password) {      login.addEventListener('click', () => {
-          signInWithEmailAndPassword(auth, email, password)
-          .then((userCredential) => {
-
-            console.log("User loged: " + userCredential.user.displayName);
-            localStorage.setItem('email', email);
-            localStorage.setItem('password', password);
-
-            window.location.href = './html/' + home;
-          })
-          .catch((error) => {
-             switch (error.code) {
-
-              case `${FEC.c_inv_e}`:
-              
-                Swal.fire({
-                    title: 'Erro',
-                    text: EMF.inv_email,
-                    icon: 'error'
-                });
-
-                break;
-
-              case `${FEC.C_miss_p}`:     
-              
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.miss_pass,
-                  icon: 'error'
-                });
-                break;
-              
-              case `${FEC.c_inv_c}`:
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.inv_cred,
-                  icon: 'error'
-                });
-
-                break;
-              
-              case `${FEC.c_user_dis}`:
-                
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.user_dis,
-                  icon: 'error'
-                });
-
-                break;
-                
-              case `${FEC.C_too_r}`:
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.too_req,
-                  icon: 'error'
-                });
-
-                break;
-        
-              case `${FEC.C_miss_e}`: 
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.miss_email,
-                  icon: 'error'
-                });
-
-                break;
-              
-              case `${FEC.C_too_p_r}`:
-                
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.too_p_req,
-                  icon: 'error'
-                });
-                break;
-              
-              default: Swal.fire({
-                  title: 'Erro',
-                  text: 'Erro ao entrar, tente novamente.',
-                  icon: 'error'
-                });
-              }
-          })
-
-      });
+    // Login automático
+    if (localStorage.getItem('email') && localStorage.getItem('password')){
+      const email = localStorage.getItem('email');
+      const password = localStorage.getItem('password');
+      signInWithEmailAndPassword(auth, email, password ).then((userCredential) => {
+        console.log('user loged: ' + userCredential.user.displayName);
+        window.location.href = `./html/${home}`;
+      }).catch((error) => errorSwalResponse(error))
     }
-   });
 
-   if (check.checked == false && localStorage.getItem('email') != document.getElementById('login-email')) {
-    login.addEventListener('click', () => {
-
+    // Login utilizando o botão "lembrar de mim"
+    check.addEventListener('change', () => {
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
+      if (check.checked == true && email && password) {      
+        login.addEventListener('click', () => {
+          signInWithEmailAndPassword(auth, email, password).then((userCredential) => {
+            if (auth.currentUser.isVerified){
+              console.log("User loged: " + userCredential.user.displayName);
+              localStorage.setItem('email', email);
+              localStorage.setItem('password', password);
+              window.location.href = `./html/${home}`;
+            }
+            else
+            {
+              Swal.fire({
+                title: 'E-mail não verificado',
+                text: 'Gostaria de verificar o seu e-mail?',
+                icon: 'warning',
+                showCancelButton: true,
+                showConfirmButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Verificar'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  // Realizar swal fire para pegar o email e enviar a verificação
+                  Swal.fire({
+                    title: 'Enviar verificação',
+                    text: 'Digite seu e-mail para verificá-lo.',
+                    icon: 'info',
+                    input: 'text',
+                    inputAttributes: {
+                      autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: "Enviar",
+                    showLoaderOnConfirm: true,
+                  }).then((verifResult) => {
+                    if (verifResult.isConfirmed) {
+                      if (sendEmailVerification(userCredential.user)) {
+                        Swal.fire({
+                          title: 'E-mail enviado!',
+                          icon: 'success'
+                        })
+                      }
+                    }
+                  })
+                }
+              })
+            }
+          })
+          .catch((error) => errorSwalResponse(error))
+        });
+      }
+    });
 
-      signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-      if (auth.currentUser.emailVerified) {
-        const password_ex = {
-          value: document.getElementById('login-password').value,
-          expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
-        };
-
-        const email_ex = {
-          value: document.getElementById('login-email').value,
-          expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
-      };
-
-   
-
-    ///*
-
-    localStorage.setItem('email', JSON.stringify(email_ex));
-    localStorage.setItem('password', JSON.stringify(password_ex));
-    
-    window.location.href = './html/' + home;
-
-
+    // Login sem utilizar o botão "lembrar de mim"
+    if (check.checked == false && localStorage.getItem('email') != document.getElementById('login-email')) {
+      login.addEventListener('click', () => {
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        signInWithEmailAndPassword(auth, email, password).then(() => {
+          if (auth.currentUser.emailVerified) {
+            const password_ex = {
+              value: document.getElementById('login-password').value,
+              expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
+            };
+            const email_ex = {
+              value: document.getElementById('login-email').value,
+              expiresIn: new Date().getTime() + 2 * 60 * 60 * 1000 // Expira em 2 horas à frente
+            };
+            localStorage.setItem('email', JSON.stringify(email_ex));
+            localStorage.setItem('password', JSON.stringify(password_ex));
+            
+            window.location.href = `./html/${home}`;
+          }
+          else
+          {
+            // Para verificar o email
+          }
+        }).catch((error) => errorSwalResponse(error))
+      })
     }
-    else
-    {
-      // Para verificar o email
-    }
-  })
-  .catch((error) => {
-     switch (error.code) {
-
-              case `${FEC.c_inv_e}`:
-              
-                Swal.fire({
-                    title: 'Erro',
-                    text: EMF.inv_email,
-                    icon: 'error'
-                });
-                break;
-
-              case `${FEC.C_miss_p}`:     
-              
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.miss_pass,
-                  icon: 'error'
-                });
-                break;
-              
-              case `${FEC.c_inv_c}`:
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.inv_cred,
-                  icon: 'error'
-                });
-                break;
-              
-              case `${FEC.c_user_dis}`:
-                
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.user_dis,
-                  icon: 'error'
-                });
-                break;
-                
-              case `${FEC.C_too_r}`:
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.too_req,
-                  icon: 'error'
-                });
-                break;
-        
-              case `${FEC.C_miss_e}`: 
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.miss_email,
-                  icon: 'error'
-                });
-                break;
-
-              case `${FEC.C_too_p_r}`:
-              
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.too_p_req,
-                  icon: 'error'
-              });
-                break;
-              
-              default: Swal.fire({
-                  title: 'Erro',
-                  text: 'Erro ao entrar, tente novamente',
-                  icon: 'error'
-                });
-              }
-
-  });
-
-    })
-   }
-
-   }
-    
-
-  });
+  }
+});
 
 
   
   //Logout e outros
 
   document.addEventListener('DOMContentLoaded', () => {
-
-
-       const button = document.getElementById('logout');
-       const recuperar = document.getElementById("recuperar");
-
-       if(button){
-
+    const button = document.getElementById('logout');
+    const recuperar = document.getElementById("recuperar");
+    if(button){
       button.addEventListener('click', () => {
 
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-      const auth = getAuth();
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth();
 
         auth.signOut().then(() => {
+          localStorage.clear();
+          window.location.href = `../${index}`;
+        });
+      });
+    }
 
-      localStorage.clear();
-      window.location.href = '../' + index;
+    //Recuperação de senha
 
-    });
-  
-    });
-  }
+      if (recuperar) {
+      recuperar.addEventListener('click', () => {
+        const r_email = document.getElementById("rec_email").value;
 
-      //Recuperação de senha
+        initializeApp(firebaseConfig);
+        const auth = getAuth();
 
-       if (recuperar) {
-
-        recuperar.addEventListener('click', () => {
-
-          const r_email = document.getElementById("rec_email").value;
-
-          initializeApp(firebaseConfig);
-          const auth = getAuth();
-
-          sendPasswordResetEmail(auth, r_email)
-          .then(() => alert("Email de Recuperação de senha enviado com sucesso!"),
-                          document.getElementById("rec_email").value = ""
-                          
-          )
-          .catch((Error) => { 
-
-       switch (error.code) {
-
-              case `${FEC.c_inv_e}`:
-              
-                Swal.fire({
-                    title: 'Erro',
-                    text: EMF.inv_email,
-                    icon: 'error'
-                });
-
-                break;
-
-              case `${FEC.C_miss_p}`:     
-              
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.miss_pass,
-                  icon: 'error'
-                });
-                break;
-              
-              case `${FEC.c_inv_c}`:
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.inv_cred,
-                  icon: 'error'
-                });
-
-                break;
-              
-              case `${FEC.c_user_dis}`:
-                
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.user_dis,
-                  icon: 'error'
-                });
-
-                break;
-                
-              case `${FEC.C_too_r}`:
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.too_req,
-                  icon: 'error'
-                });
-
-                break;
-        
-              case `${FEC.C_miss_e}`: 
-
-                Swal.fire({
-                  title: 'Erro',
-                  text: EMF.miss_email,
-                  icon: 'error'
-                });
-
-                break;
-              
-              default: Swal.fire({
-                  title: 'Erro',
-                  text: 'Erro ao entrar, tente novamente',
-                  icon: 'error'
-                });
-              }
-
-          })
-
-        })
-
-  }
-
-
-  
-
-    
+        sendPasswordResetEmail(auth, r_email)
+        .then(() => {
+          Swal.fire({
+            title: 'E-mail enviado!',
+            text: 'Um e-mail de recuperação de senha foi enviado.',
+            icon: 'success'
+          });
+          document.getElementById("rec_email").value = "";
+        }).catch((error) => errorSwalResponse(error))
+      })
+    }
   });

@@ -1,5 +1,5 @@
 // POR ENQUANTO NÃO ESTÁ SENDO USADO, MAS É BOM MANTER O CÓDIGO PARA FUTURAS REFERÊNCIAS
-
+//
 /*const ctx = document.getElementById("graficoLinha").getContext("2d");
 const grafico = new Chart(ctx, {
   type: "line",

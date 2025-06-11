@@ -1,10 +1,9 @@
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
 import { getAuth, sendEmailVerification, signInWithEmailAndPassword} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
+import {errorSwalResponse} from './js_functions/swal_fire_errors.js';
 
     const index = hrefsConfig.index;
-    const home = hrefsConfig.home;
-    const e_verif = hrefsConfig.e_verif;
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -51,9 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.location.href = '../' + index;
 
-    }).catch((error) => {
-        console.log(error.message + "\n" + error.code);
-    });
+    }).catch((error) => errorSwalResponse(error));
 
 
   });
