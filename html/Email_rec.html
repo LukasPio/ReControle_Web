@@ -4,20 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="module" src="../js/services.js"></script>
+    <link rel="stylesheet" href="../css/email_rec.css"></head>
     <title>Recuperação da senha</title>
 </head>
 <body>
-    <center>
-        <fieldset id="r_field">
-            <legend><h2>Recuperação de Senha</h2></legend>
 
-            <SubTitle>Email</SubTitle><br>
-            <input type="email" id="rec_email"><br><br>
 
-            <button id="recuperar">Enviar</button>
+        <div id="r_field">
 
-            <button onclick="window.location.href='../index.html'">Voltar</button>
+            <p class="title">Recuperação de Senha</p>
+        
+            <div class="email-container">
+                <p class="sub-title">Insira seu email</p>
+                <input type="email" id="rec_email" placeholder="exemplo@email.com">
+            </div>
 
-        </fieldset>
+            
+            <div class="button-container">
+                <button id="recuperar">Enviar</button>
+                <button onclick="window.location.href='../index.html'">Voltar</button>
+            </div>
+            
+        </div>
+
+
+
 </body>
 </html>
