@@ -20,13 +20,12 @@ try {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  
   const savedTheme = localStorage.getItem("theme") || "white-mode";
   const savedColor = localStorage.getItem("primaryColor") || "#007bff";
   document.body.classList.add(savedTheme);
   document.documentElement.style.setProperty("--primary-color", savedColor);
-});
 
-document.addEventListener("DOMContentLoaded", () => {
   initializeApp(firebaseConfig);
   const auth = getAuth();
 

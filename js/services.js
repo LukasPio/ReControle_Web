@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const auth = getAuth();
   
         var name = document.getElementById('sign-name').value;
-        var email = document.getElementById('sign-email').value;
+        var email = document.getElementById('sign-email').value; 
         var password = document.getElementById('sign-password').value;
         var C_password = document.getElementById('sign-password-c').value;
     
@@ -36,8 +36,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (sendEmailVerification(user)) {
 
-            alert('Para terminar seu cadastro, verifique o seu email' );
-            window.location.href = `../${index}`;
+            Swal.fire({
+              text: 'Para terminar o cadastro, verifique o seu login.',
+              icon: 'info',
+              showConfirmButton: true,
+              showCloseButton: false,
+              confirmButtonText: 'OK'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = `../${index}`
+              }
+            })
+            
         
             }
         })  

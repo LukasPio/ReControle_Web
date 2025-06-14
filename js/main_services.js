@@ -56,6 +56,14 @@ window.addEventListener("click", (e) => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  const accToggle = document.getElementById('account-toggle');
+  if (accToggle) {
+    accToggle.addEventListener('click', () => {
+      toggleDropdown();
+    })
+  }
+
   // Botão perfil
   const nameBtn = document.getElementById("name");
   if (nameBtn) {

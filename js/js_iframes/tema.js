@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedColor) {
     document.documentElement.style.setProperty("--primary-color", savedColor);
     colorPicker.value = savedColor;
-  }
+  } 
 
   select.addEventListener("change", (event) => {
     const newTheme = event.target.value;

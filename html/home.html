@@ -12,6 +12,7 @@
     <!-- Módulos de serviço e autenticação -->
     <script type="module" src="../js/services.js" defer></script>
     <script type="module" src="../js/main_services.js" defer></script>
+    <script type="module" src="../js/home.js" defer></script>
   </head>
   <body>
     <aside class="sidebar">
@@ -33,7 +34,7 @@
         <div class="actions">
           <img src="../assets/bell-icon.png" alt="Notificações" />
           <div class="account-dropdown">
-            <div class="account-toggle" onclick="toggleDropdown()">
+            <div class="account-toggle" id="account-toggle">
               <span class="account-name" id="accountName"></span>
               <img
                 src="../assets/avatar.png"
@@ -71,47 +72,11 @@
         </div>
 
         <div class="grafico-box">
-          <h2>Chamados Resolvidos (últimos 5 meses)</h2>
+          <h2>Chamados Resolvidos</h2>
           <canvas id="graficoLinha"></canvas>
         </div>
       </section>
     </main>
-
-    <!-- Scripts auxiliares -->
-    <script>
-      // Dropdown de conta
-      function toggleDropdown() {
-        const menu = document.getElementById("accountMenu");
-        menu.style.display = menu.style.display === "block" ? "none" : "block";
-      }
-      window.addEventListener("click", (e) => {
-        if (!document.querySelector(".account-dropdown").contains(e.target)) {
-          document.getElementById("accountMenu").style.display = "none";
-        }
-      });
-
-      // Gráfico Chart.js após DOM carregar
-      document.addEventListener("DOMContentLoaded", () => {
-        const ctx = document.getElementById("graficoLinha").getContext("2d");
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio"],
-            datasets: [
-              {
-                label: "Chamados Resolvidos",
-                data: [12, 19, 3, 5, 2],
-                fill: true,
-                backgroundColor: "rgba(47, 92, 243, 0.1)",
-                borderColor: "#2f5cf3",
-                tension: 0.4,
-                pointBackgroundColor: "#2f5cf3",
-              },
-            ],
-          },
-          options: { responsive: true },
-        });
-      });
-    </script>
+    
   </body>
 </html>

@@ -7,18 +7,6 @@
     <link rel="stylesheet" href="../../css/iframes/iframes.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
     <script type="module" src="../../js/js_iframes/seguranca.js" defer></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const savedTheme = localStorage.getItem("theme") || "white-mode";
-        const savedColor = localStorage.getItem("primaryColor") || "#007bff";
-
-        document.body.classList.add(savedTheme);
-        document.documentElement.style.setProperty(
-          "--primary-color",
-          savedColor
-        );
-      });
-    </script>
   </head>
   <body>
     <div class="iframe-security">
