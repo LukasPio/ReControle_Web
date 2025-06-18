@@ -83,8 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Login automático
     if (localStorage.getItem('email') && localStorage.getItem('password')){
-      const email = localStorage.getItem('email');
-      const password = localStorage.getItem('password');
+      let email, password;
+      try{
+        const email_ex = JSON.parse(localStorage.getItem('email'));
+        const password_ex = JSON.parse(localStorage.getItem('password'));
+        email = email_ex.value;
+        password = password_ex.value;
+      } catch {
+        email = localStorage.getItem('email');
+        password = localStorage.getItem('password');
+      }
+
       signInWithEmailAndPassword(auth, email, password ).then((userCredential) => {
         console.log('user loged: ' + userCredential.user.displayName);
         window.location.href = `./html/${home}`;
@@ -199,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     //Recuperação de senha
-
       if (recuperar) {
       recuperar.addEventListener('click', () => {
         const r_email = document.getElementById("rec_email").value;

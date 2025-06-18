@@ -33,7 +33,7 @@
         <div class="actions">
           <img src="../assets/bell-icon.png" alt="Notificações" />
           <div class="account-dropdown">
-            <div class="account-toggle" onclick="toggleDropdown()">
+            <div class="account-toggle" id="account-toggle">
               <span class="account-name" id="accountName"></span>
               <img
                 src="../assets/avatar.png"
@@ -57,17 +57,5 @@
         </div>
       </section>
     </main>
-
-    <script>
-      function toggleDropdown() {
-        const menu = document.getElementById("accountMenu");
-        menu.style.display = menu.style.display === "block" ? "none" : "block";
-      }
-      window.addEventListener("click", (e) => {
-        if (!document.querySelector(".account-dropdown").contains(e.target)) {
-          document.getElementById("accountMenu").style.display = "none";
-        }
-      });
-    </script>
   </body>
 </html>
