@@ -201,7 +201,6 @@ main {
               border-color .2s;
 }
 
-
 .manage-accounts-list li .account-name {
   font-size: 1rem;
   font-weight: 500;
@@ -214,14 +213,12 @@ main {
   color: #2f5cf3;                      
 }
 
-
 .manage-accounts-list li:hover {
   background-color: #EFF0FF;             
   border-color: #2f5cf3;                
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   cursor: pointer;
 }
-
 
 @media (max-width: 768px) {
   .manage-accounts-list {

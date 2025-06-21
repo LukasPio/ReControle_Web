@@ -96,21 +96,20 @@ export function writeReportsData (
 }
 
 //Função para determinar o que o usuário pode ou não fazer
-export function readUserRank(
-  userID
-) {
-  get(child(ref(getDatabase()), `user/${userID}`)).then((userRef) => {
-    if (userRef.exists()) {
-      const rank = userRef.val().rank;
-      return rank;
-      // Ainda a ser determinado
-      // Pode muito bem ser um localstorage
-      // ou um simples valor codificado pa-
-      // ra verificar o rank. Por enquanto,
-      // será um simples valor.
+export async function readUserRank(userID) {
+  const dbRef = ref(getDatabase());
+  try {
+    const snapshot = await get(child(dbRef, `user/${userID}`));
+
+    if (snapshot.exists()) {
+      return snapshot.val().rank;
+    } else {
+      return "No data available";
     }
-  })
-  .catch((error) => errorSwalResponse(error))
+  } catch (error) {
+    errorSwalResponse(error);
+    return null;
+  }
 }
 
 // Função para ler um cadastro de usuário
@@ -132,6 +131,7 @@ export function readAllUsers () {
   onValue(ref(getDatabase(), 'user'), (usersData) => {
     for (let userID in usersData.val()) {
       const user = document.createElement('li');
+      user.id = userID;
       const userName = document.createElement('span');
       userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`;
       userName.className = 'account-name';
@@ -153,15 +153,22 @@ export function readAllUsers () {
 }
 
 // Função para ler uma ocorrência
-export function readReportsContentDate (
+export async function readReportsContentDate (
 reportID
 ) {
-  get(child(ref(getDatabase()), `reports/${reportID}`)).then((reportRef) => {
-    if (reportRef.exists()) {
-      const reportContent = [reportRef.val().content, reportRef.val().dates, reportRef.val().selected_obj];
-      return JSON.stringify(reportContent);
+  const dbRef = ref(getDatabase());
+  try {
+    const snapshot = await get(child(dbRef, `reports/${reportID}`));
+
+    if (snapshot.exists()) {
+      return snapshot.val().dates.posted_date.posted_day;
+    } else {
+      return "No data available";
     }
-  })
+  } catch (error) {
+    errorSwalResponse(error);
+    return null;
+  }
 }
 
 export function readObjectProperties (
@@ -186,4 +193,24 @@ export function readLaboratoryProperties (
         return JSON.stringify(laboratoryProperty);
       }
     })
+}
+
+export async function countReportsByMonth () {
+  const snapshot = await get(child(ref(getDatabase()), 'reports'));
+  const countByMonth = {};
+
+  if (snapshot.exists()) {
+    for (const repID in snapshot.val()) {
+      const report = snapshot.val()[repID];
+      const data = report?.dates?.posted_date?.posted_day;
+
+      if (data) {
+        const month = data.substring(5, 7);
+
+        countByMonth[month] = (countByMonth[month] || 0) + 1;
+      }
+    }
+  }
+
+  return countByMonth;
 }

@@ -4,7 +4,7 @@ import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/fire
 import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, /*signOut*/} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 import {errorSwalResponse} from './js_functions/swal_fire_errors.js';
-import {writeUserData} from './js_functions/realtime_db.js';
+import {writeUserData, readUserRank} from './js_functions/realtime_db.js';
 
     const index = hrefsConfig.index;
     const home = hrefsConfig.home;
@@ -12,33 +12,28 @@ import {writeUserData} from './js_functions/realtime_db.js';
 
     
   // Sign up
-
-
 document.addEventListener('DOMContentLoaded', () => {
-  
+  const button = document.getElementById('sign-button');
+  if (button){      
+    button.addEventListener('click', () => {        
+      const app = initializeApp(firebaseConfig);
+      getAnalytics(app);
+      const auth = getAuth();
 
-    const button = document.getElementById('sign-button');
-    if (button){      button.addEventListener('click', () => { 
-            
-            const app = initializeApp(firebaseConfig);
-            getAnalytics(app);
-            const auth = getAuth();
-  
-        var name = document.getElementById('sign-name').value;
-        var email = document.getElementById('sign-email').value; 
-        var password = document.getElementById('sign-password').value;
-        var C_password = document.getElementById('sign-password-c').value;
+      var name = document.getElementById('sign-name').value;
+      var email = document.getElementById('sign-email').value; 
+      var password = document.getElementById('sign-password').value;
+      var C_password = document.getElementById('sign-password-c').value;
     
-    if (password == C_password) {
+      if (password == C_password) {
         createUserWithEmailAndPassword(auth, email, password)   .then((userCredential) => {
-            
-            var user = userCredential.user;
-            updateProfile(user, {displayName: name});
+          var user = userCredential.user;
+          updateProfile(user, {displayName: name});
+          writeUserData(user.uid, 1, '', name, email);
 
-            if (sendEmailVerification(user)) {
-
+          if (sendEmailVerification(user)) {
             Swal.fire({
-              text: 'Para terminar o cadastro, verifique o seu login.',
+              text: `Para terminar o cadastro, verifique o seu login.`,
               icon: 'info',
               showConfirmButton: true,
               showCloseButton: false,
@@ -48,40 +43,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = `../${index}`
               }
             })
-            
-        
-            }
-        })  
-
-
-        .catch((error) => errorSwalResponse(error));
-    }
-    else
-    {
-        alert('Digite corretamente a senha de confirmação!');
-    }
-
-    
-  });
-}
-  
-            
-           
+          }
+        }).catch((error) => errorSwalResponse(error));
+      }
+      else
+      {
+          alert('Digite corretamente a senha de confirmação!');
+      }
+    });
+  }    
 });
-
-
-
 
 // Login
 document.addEventListener('DOMContentLoaded', () => {
-
   initializeApp(firebaseConfig);
   const auth = getAuth();
     
   const login = document.getElementById('login-button');
   const check = document.getElementById('checkbox');
+
   if (login) {
-    
     // Login automático
     if (localStorage.getItem('email') && localStorage.getItem('password')){
       let email, password;
@@ -94,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
         email = localStorage.getItem('email');
         password = localStorage.getItem('password');
       }
-
       signInWithEmailAndPassword(auth, email, password ).then((userCredential) => {
         console.log('user loged: ' + userCredential.user.displayName);
         window.location.href = `./html/${home}`;
@@ -187,44 +167,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+//Logout e outros
+document.addEventListener('DOMContentLoaded', () => {
+  const button = document.getElementById('logout');
+  const recuperar = document.getElementById("recuperar");
+  if(button){
+    button.addEventListener('click', () => {
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const auth = getAuth();
 
-  
-  //Logout e outros
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const button = document.getElementById('logout');
-    const recuperar = document.getElementById("recuperar");
-    if(button){
-      button.addEventListener('click', () => {
-
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth();
-
-        auth.signOut().then(() => {
-          localStorage.clear();
-          window.location.href = `../${index}`;
-        });
+      auth.signOut().then(() => {
+        localStorage.clear();
+        window.location.href = `../${index}`;
       });
-    }
+    });
+  }
 
-    //Recuperação de senha
-      if (recuperar) {
-      recuperar.addEventListener('click', () => {
-        const r_email = document.getElementById("rec_email").value;
+  //Recuperação de senha
+    if (recuperar) {
+    recuperar.addEventListener('click', () => {
+      const r_email = document.getElementById("rec_email").value;
 
-        initializeApp(firebaseConfig);
-        const auth = getAuth();
+      initializeApp(firebaseConfig);
+      const auth = getAuth();
 
-        sendPasswordResetEmail(auth, r_email)
-        .then(() => {
-          Swal.fire({
-            title: 'E-mail enviado!',
-            text: 'Um e-mail de recuperação de senha foi enviado.',
-            icon: 'success'
-          });
-          document.getElementById("rec_email").value = "";
-        }).catch((error) => errorSwalResponse(error))
-      })
-    }
-  });
+      sendPasswordResetEmail(auth, r_email).then(() => {
+        Swal.fire({
+          title: 'E-mail enviado!',
+          text: 'Um e-mail de recuperação de senha foi enviado.',
+          icon: 'success'
+        });
+        document.getElementById("rec_email").value = "";
+      }).catch((error) => errorSwalResponse(error))
+    })
+  }
+});

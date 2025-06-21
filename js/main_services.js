@@ -5,6 +5,7 @@ import {
   signOut,
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { firebaseConfig, hrefsConfig } from "./js_config/Config.js";
+import {readUserRank} from './js_functions/realtime_db.js';
 
 // Inicializa Firebase
 toString;
@@ -14,6 +15,14 @@ const auth = getAuth();
 // Aplica tema salvo QUE O MANO ENZO FEZ -- Augusto
 // Estou sentindo um baita julgamento vindo de ti AUGUSTO -- Enzo
 document.addEventListener("DOMContentLoaded", () => {
+  if (localStorage.getItem('rank')) {
+    if (localStorage.getItem('rank') != 3) {
+      document.getElementById('institution').remove();
+      document.getElementById('acc-managment').remove();
+      document.getElementById('bd-managment').remove();
+    }
+  }
+
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme) {
     document.body.className = savedTheme;
@@ -27,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Verifica autenticação e preenche usuário ou redireciona
 onAuthStateChanged(auth, (user) => {
   if (user) {
+    readUserRank(user.uid).then(rank => localStorage.setItem('rank', rank));
     const nameEl = document.getElementById("name");
     const accountEl = document.getElementById("account");
     const accountNameEl = document.getElementById("accountName");
@@ -116,4 +126,5 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = './bd_managment.html';
     })
   }
+
 });
