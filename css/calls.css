@@ -185,3 +185,15 @@ main {
 .account-menu li a:hover {
   background: #f0f0f0;
 }
+
+.btn-create-rep {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: #2f5cf3;
+  border-radius: 15vw;
+  border-color: #89a0ec;
+  bottom: 2rem;
+  right: 2rem;
+}

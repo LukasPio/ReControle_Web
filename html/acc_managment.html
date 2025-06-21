@@ -12,6 +12,7 @@
     <!-- Módulos de serviço e autenticação -->
     <script type="module" src="../js/services.js" defer></script>
     <script type="module" src="../js/main_services.js" defer></script>
+    <script type="module" src="../js/acc_managment.js" defer></script>
   </head>
   <body>
     <aside class="sidebar">
@@ -50,13 +51,13 @@
       </header>
 
       <section class="dashboard">
-        <h1>Gerenciar contas</h1>
-
+        <h1>Gerenciar contas</h1><br>
+        <div>
+          <input type="search" placeholder="Procurar conta"/>
+        </div>
         <div> 
-            <p> Conta 1</p>
-            <p> Conta 2</p>
-            <p> Conta 3</p>
-            <p> Conta 4...</p>
+            <ul id="users-account-list" class="manage-accounts-list">
+            </ul>
         </div>
       </section>
     </main>

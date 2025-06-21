@@ -1,15 +1,19 @@
-import { getDatabase, ref, set, child, get } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+import { getDatabase, ref, set, child, get, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 import {errorSwalResponse} from '../js_functions/swal_fire_errors.js';
 
 // Cadastrar o usuário
 export function writeUserData(
   userID, 
   rank, 
-  imageUrl
+  imageUrl,
+  name,
+  email
 ) {
   set(ref(getDatabase(), `user/${userID}`), {
     rank: rank,
-    user_img_url: imageUrl
+    user_img_url: imageUrl,
+    user_name: name,
+    user_email: email
   })
 }
 
@@ -20,7 +24,10 @@ export function writeLaboratoryData (
   basisObjectIDsArray, 
   classificationOfLabs,
   labURL,
-  labDesc
+  labDesc,
+  createDate,
+  author,
+  status
 ) {
   set(ref(getDatabase(), `laboratory/${labID}`), {
     basis_obj: {
@@ -31,7 +38,10 @@ export function writeLaboratoryData (
     lab_Content: {
       lab_img_url: labURL,
       desc: labDesc
-    }
+    },
+    data: createDate,
+    author: author,
+    status: status
   })
 }
 
@@ -52,7 +62,7 @@ export function writeReportsData (
   imageUrl,
   text,
   title,
-  urgency,
+  //urgency,
   postedDay,
   postedTime,
   solvedDay,
@@ -65,8 +75,8 @@ export function writeReportsData (
     content: {
       img_url: imageUrl,
       text: text,
-      title: title,
-      urgency: urgency
+      title: title/* ,
+      urgency: urgency */
     },
     dates: {
       posted_date: {
@@ -114,6 +124,32 @@ export function readUser (
     }
   })
   .catch((error) => errorSwalResponse(error))
+}
+
+export function readAllUsers () {
+
+  // usersList.className = '';
+  onValue(ref(getDatabase(), 'user'), (usersData) => {
+    for (let userID in usersData.val()) {
+      const user = document.createElement('li');
+      const userName = document.createElement('span');
+      userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`;
+      userName.className = 'account-name';
+
+      const userRank = document.createElement('span');
+      userRank.textContent = `Ranque: ${({ userID, ...usersData.val()[userID]}).rank }`;
+      userRank.className = 'account-value';
+
+      const userEmail = document.createElement('span');
+      userEmail.textContent = `E-mail: ${({ userID, ...usersData.val()[userID]}).user_email}`;
+      userEmail.className = 'account-value';
+
+      user.appendChild(userName);
+      user.appendChild(userRank);
+      user.appendChild(userEmail);
+      document.getElementById('users-account-list').appendChild(user);
+    }
+  });
 }
 
 // Função para ler uma ocorrência

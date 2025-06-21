@@ -4,6 +4,7 @@ import { getAnalytics }   from   'https://www.gstatic.com/firebasejs/11.3.1/fire
 import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithEmailAndPassword, sendPasswordResetEmail, /*signOut*/} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 import {errorSwalResponse} from './js_functions/swal_fire_errors.js';
+import {writeUserData} from './js_functions/realtime_db.js';
 
     const index = hrefsConfig.index;
     const home = hrefsConfig.home;
