@@ -113,21 +113,24 @@ export async function readUserRank(userID) {
 }
 
 // Função para ler um cadastro de usuário
-export function readUser (
+export async function readUser (
   userID
-) {
-  get(child(ref(getDatabase()), `user/${userID}`)).then((userRef) => {
+) {// Alterar **************************
+
+  try{
+    const userRef = await get(child(ref(getDatabase()), `user/${userID}`));
     if (userRef.exists()) {
       const data = [userRef.val().rank, userRef.val().user_img_url];
       return data;
     }
-  })
-  .catch((error) => errorSwalResponse(error))
+  }
+  catch (error) {
+    errorSwalResponse(error); 
+    return null;
+  }
 }
 
 export function readAllUsers () {
-
-  // usersList.className = '';
   onValue(ref(getDatabase(), 'user'), (usersData) => {
     for (let userID in usersData.val()) {
       const user = document.createElement('li');
@@ -137,7 +140,7 @@ export function readAllUsers () {
       userName.className = 'account-name';
 
       const userRank = document.createElement('span');
-      userRank.textContent = `Ranque: ${({ userID, ...usersData.val()[userID]}).rank }`;
+      userRank.textContent = `Nível de acesso: ${({ userID, ...usersData.val()[userID]}).rank }`;
       userRank.className = 'account-value';
 
       const userEmail = document.createElement('span');
@@ -158,10 +161,9 @@ reportID
 ) {
   const dbRef = ref(getDatabase());
   try {
-    const snapshot = await get(child(dbRef, `reports/${reportID}`));
-
-    if (snapshot.exists()) {
-      return snapshot.val().dates.posted_date.posted_day;
+    const reportRef = await get(child(dbRef, `reports/${reportID}`));
+    if (reportRef.exists()) {
+      return reportRef.val().dates?.posted_date?.posted_day;
     } else {
       return "No data available";
     }
@@ -171,37 +173,63 @@ reportID
   }
 }
 
-export function readObjectProperties (
+export async function readObjectProperties (
   objectID,
   objectType,
   objectClass
 ) {
-    get(child(ref(getDatabase()), `object/${objectClass}/${objectType}/${objectID}`)).then((objectRef) => {
-    if (objectRef.exists()) {
-      const objectContent = objectRef.val().desc;
-      return JSON.stringify(objectContent);
+    try {
+      const objectPRef = await get(child(ref(getDatabase()), `object/${objectClass}/${objectType}/${objectID}`));
+
+      if (objectPRef.exists()) {
+        const objectContent = objectPRef.val().desc;
+        return objectContent;
+      }
     }
-  })
+    catch (error) {
+      errorSwalResponse(error);
+      return null;
+    }
 }
 
-export function readLaboratoryProperties (
+export async function readLaboratoryProperties (
   labID
 ) {
-  get(child(ref(getDatabase()), `laboratory/${labID}`)).then((laboratoryRef) => {
-      if (laboratoryRef.exists()) {
-        const laboratoryProperty = [laboratoryRef.val().basis_obj, laboratoryRef.val().classif_labs, laboratoryRef.val().lab_content];
-        return JSON.stringify(laboratoryProperty);
-      }
-    })
+  try {
+    const laboratoryRef = await get(child(ref(getDatabase()), `laboratory/${labID}`));
+    if (laboratoryRef.exists()) {
+      const laboratoryProperty = [laboratoryRef.val().basis_obj, laboratoryRef.val().classif_labs, laboratoryRef.val().lab_content];
+      return laboratoryProperty;
+    }
+  }
+  catch (error) {
+    errorSwalResponse(error);
+    return null;
+  }
+}
+
+export async function readAllReports () {
+  const reference = await get(child(ref(getDatabase()), 'reports'));
+  const reportRef = reference.val();
+  const reportPostedDatas = {};
+  const reportContents = {};
+
+  if (reference.exists()) {
+    for(const repID in reportRef){
+      reportPostedDatas[repID] = reportRef[repID];
+      reportContents[repID] = reportRef[repID].content?.title;
+    }
+  }
+  return reportPostedDatas, reportContents;
 }
 
 export async function countReportsByMonth () {
-  const snapshot = await get(child(ref(getDatabase()), 'reports'));
+  const repBMRef = await get(child(ref(getDatabase()), 'reports'));
   const countByMonth = {};
 
-  if (snapshot.exists()) {
-    for (const repID in snapshot.val()) {
-      const report = snapshot.val()[repID];
+  if (repBMRef.exists()) {
+    for (const repID in repBMRef.val()) {
+      const report = repBMRef.val()[repID];
       const data = report?.dates?.posted_date?.posted_day;
 
       if (data) {
