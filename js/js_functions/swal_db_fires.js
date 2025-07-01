@@ -1,6 +1,6 @@
 import {writeReportsData} from './realtime_db.js';
 
-export function createReportSwal (
+export async function createReportSwal (
     title
 ) {
 
@@ -82,6 +82,8 @@ export function createReportSwal (
                 Swal.fire({
                     title: 'Ocorrência registrada!',
                     icon: 'success'
+                }).then((result) => {
+                    window.location.reload();
                 })
             }
             catch {

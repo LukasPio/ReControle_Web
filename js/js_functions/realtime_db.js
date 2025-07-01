@@ -47,13 +47,21 @@ export function writeLaboratoryData (
 
 //Cadastrar o objeto
 export function writeObjectData (
+  name,
+  gotDay,
+  gotTime,
   description,
   ObjectClass, 
   ObjectType, 
   ObjectID,
 ) {
-  set(ref(getDatabase(), `object/${ObjectClass}/${ObjectType}/${ObjectID}`), {
-    desc: description
+  set(ref(getDatabase(), `object/${ObjectID}/${ObjectType}/${ObjectClass}`), {
+    desc: description,
+    name: name,
+    delivered_date: {
+      del_day: gotDay,
+      del_time: gotTime
+    }
   })
 }
 
@@ -157,7 +165,7 @@ export function readAllUsers () {
 
 // Função para ler uma ocorrência
 export async function readReportsContentDate (
-reportID
+  reportID
 ) {
   const dbRef = ref(getDatabase());
   try {
@@ -173,23 +181,76 @@ reportID
   }
 }
 
+export async function readReportsOneContent (
+  reportID
+) {
+  const dbRef = ref(getDatabase());
+  try {
+    const reportRef = await get(child(dbRef, `reports/${reportID}`));
+    if (reportRef.exists()) {
+      return reportRef.val().content;
+    } else {
+      return "No data available";
+    }
+  } catch (error) {
+    errorSwalResponse(error);
+    return null;
+  }
+}
+
+export async function readReportSelectedObject (
+  reportID
+) {
+  const dbRef = ref(getDatabase());
+  try {
+    const reportRef = await get(child(dbRef, `reports/${reportID}`));
+    if (reportRef.exists()) {
+      return reportRef.val().selected_obj.sel_obj_id;
+    } else {
+      return "No data available";
+    }
+  } catch (error) {
+    errorSwalResponse(error);
+    return null;
+  }
+  
+}
+
 export async function readObjectProperties (
   objectID,
   objectType,
   objectClass
 ) {
     try {
-      const objectPRef = await get(child(ref(getDatabase()), `object/${objectClass}/${objectType}/${objectID}`));
+      const objectPRef = await get(child(ref(getDatabase()), `object/${objectID}/${objectType}/${objectClass}`));
 
       if (objectPRef.exists()) {
-        const objectContent = objectPRef.val().desc;
-        return objectContent;
+        const objectDescription = objectPRef.val().desc;
+        const ObjectGotDate = objectPRef.val().delivered_date;
+        const objectName = objectPRef.val().name;
+        return objectDescription, ObjectGotDate, objectName;
       }
     }
     catch (error) {
       errorSwalResponse(error);
       return null;
     }
+}
+
+
+export async function readObjectClassAndType(
+  ID
+) {
+  const snapshot = await get(child(ref(getDatabase()), `object/${ID}`));
+  const snapValue = snapshot.val();
+  if (snapshot.exists()) {
+    const data = [Object.entries(Object.entries(snapValue)[0][1])[0][0] /* Classe do objeto */, Object.entries(snapValue)[0][0] /* Tipo de objeto */];
+    return data
+  }
+  else
+  {
+    return 'No data avaiable'
+  }
 }
 
 export async function readLaboratoryProperties (
@@ -222,6 +283,8 @@ export async function readAllReports () {
   }
   return reportPostedDatas, reportContents;
 }
+
+
 
 export async function countReportsByMonth () {
   const repBMRef = await get(child(ref(getDatabase()), 'reports'));

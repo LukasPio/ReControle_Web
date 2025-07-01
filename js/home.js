@@ -1,6 +1,15 @@
  import {readAllReports, countReportsByMonth} from './js_functions/realtime_db.js';
 
  document.addEventListener("DOMContentLoaded", () => {
+    Swal.fire({
+        backdrop: ` rgba(0,20,100,0.2) `,
+        text: 'Carregando',
+        color: 'black',
+        timer: 1000,
+        didOpen: () => Swal.showLoading()
+        
+    })
+
     readAllReports().then((respDatas) => {
         const data = Object.entries(respDatas).slice(-3);
         if (data) {
@@ -8,9 +17,9 @@
                 const report = document.createElement('div');
                 report.className = 'chamado-card';
                 report.id = data[i][0];
-
+ 
                 const link = document.createElement('a');
-                link.href = '/html/calls.html';
+                link.href = `/html/calls.html?id=${data[i][0]}`;
                 link.innerHTML = 'Ver mais';
 
                 const repIDElement = document.createElement('p');
