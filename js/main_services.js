@@ -5,24 +5,19 @@ import {
   signOut,
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { firebaseConfig, hrefsConfig } from "./js_config/Config.js";
-import {readUserRank} from './js_functions/realtime_db.js';
+import {readUsers} from './js_functions/realtime_db.js';
+import {swalFireLookForOcurrence} from './js_functions/swal_db_fires.js';
 
 // Inicializa Firebase
 toString;
 initializeApp(firebaseConfig);
 const auth = getAuth();
 
-// Aplica tema salvo QUE O MANO ENZO FEZ -- Augusto
-// Estou sentindo um baita julgamento vindo de ti AUGUSTO -- Enzo
-document.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem('rank')) {
-    if (localStorage.getItem('rank') != 3) {
-      document.getElementById('institution').remove();
-      document.getElementById('acc-managment').remove();
-      document.getElementById('bd-managment').remove();
-    }
-  }
 
+document.addEventListener("DOMContentLoaded", () => {
+
+  // Aplica tema salvo QUE O MANO ENZO FEZ -- Augusto
+  // Estou sentindo um baita julgamento vindo de ti AUGUSTO -- Enzo
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme) {
     document.body.className = savedTheme;
@@ -36,7 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
 // Verifica autenticação e preenche usuário ou redireciona
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    readUserRank(user.uid).then(rank => localStorage.setItem('rank', rank));
+    readUsers(user.uid, 'user-rank').then(rank => localStorage.setItem('rank', rank));
+    localStorage.setItem('userUID', user.uid);
     const nameEl = document.getElementById("name");
     const accountEl = document.getElementById("account");
     const accountNameEl = document.getElementById("accountName");
@@ -66,6 +62,22 @@ window.addEventListener("click", (e) => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  //Verificação do nível de acesso do usuário logado
+  if (localStorage.getItem('rank')) {
+    if (localStorage.getItem('rank') == 3) {
+      document.getElementById('link-side').innerHTML += `
+        <li id="institution">Instituição</li>
+        <li id="acc-managment">Gerenciar contas</li>
+        <li id="bd-managment">Gerenciar BD</li>
+      `
+    }
+  }
+
+  // Entrada do 'Ver mais'
+  if (new URLSearchParams(window.location.search).get('id')) {
+      swalFireLookForOcurrence(new URLSearchParams(window.location.search).get('id'));
+  }
 
   const accToggle = document.getElementById('account-toggle');
   if (accToggle) {
@@ -127,4 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  //Parte de procura geral
+  const searchAcc = document.getElementById('search-anyt');
+    if (searchAcc) {
+        searchAcc.addEventListener('input', (event) => {
+            if (event.target.value){
+              // Falta o concept do Front-End para que se possa continuar aqui
+            }
+             
+        })
+    }
 });

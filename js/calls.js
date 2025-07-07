@@ -1,15 +1,11 @@
 //import {writeReportsData, readReportsContentDate} from '../js/js_functions/realtime_db.js';
 import {createReportSwal} from '../js/js_functions/swal_db_fires.js';
-import {readAllReports} from './js_functions/realtime_db.js';
-import {swalFireLookForOcurrence} from './js_functions/main_functions.js';
+import {readReports} from './js_functions/realtime_db.js';
 var usualChoice;
+
 
   
 document.addEventListener('DOMContentLoaded', () => {
-
-    if (new URLSearchParams(window.location.search).get('id')) {
-        swalFireLookForOcurrence(new URLSearchParams(window.location.search).get('id'));
-    }
 
     Swal.fire({
         backdrop: ` rgba(0,20,100,0.2) `,
@@ -20,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
     })
 
-    readAllReports().then(respDatas => {
+    readReports(null, 'general').then(respDatas => {
         const data = Object.entries(respDatas);
         if (data) {
             for(const ID in data) {
@@ -57,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `
             }
         }
-    })
+    });
 
     const writeReportBtn = document.getElementById('reportButton');
     if (writeReportBtn) {
@@ -87,14 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 usualChoice = Swal.getInput().value;
-                                createReportSwal(usualChoice);
+                                createReportSwal(usualChoice, localStorage.getItem('userUID'));
                             }
                         })
                     }
                     else
                     {
                         usualChoice = Swal.getInput().options[Swal.getInput().selectedIndex].text;
-                        createReportSwal(usualChoice);
+                        createReportSwal(usualChoice, localStorage.getItem('userUID'));
                     }
                 }
             }) 

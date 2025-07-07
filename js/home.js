@@ -1,4 +1,4 @@
- import {readAllReports, countReportsByMonth} from './js_functions/realtime_db.js';
+ import {readReports, countReportsByMonth} from './js_functions/realtime_db.js';
 
  document.addEventListener("DOMContentLoaded", () => {
     Swal.fire({
@@ -10,7 +10,7 @@
         
     })
 
-    readAllReports().then((respDatas) => {
+    readReports(null, 'general').then((respDatas) => {
         const data = Object.entries(respDatas).slice(-3);
         if (data) {
             for (var i = 0; i < 3; i++) {
@@ -19,7 +19,7 @@
                 report.id = data[i][0];
  
                 const link = document.createElement('a');
-                link.href = `/html/calls.html?id=${data[i][0]}`;
+                link.href = `/html/home.html?id=${data[i][0]}`;
                 link.innerHTML = 'Ver mais';
 
                 const repIDElement = document.createElement('p');

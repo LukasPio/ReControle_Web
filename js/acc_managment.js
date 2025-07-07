@@ -1,4 +1,4 @@
-import {readAllUsers, readUserRank, readUser} from './js_functions/realtime_db.js';
+import {readUsers} from './js_functions/realtime_db.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     Swal.fire({
@@ -8,7 +8,18 @@ document.addEventListener('DOMContentLoaded', () => {
         timer: 1000,
         didOpen: () => Swal.showLoading()
         
-    })
+    });
     
-    readAllUsers();
+    readUsers(null, 'acc-manage');
+
+    const searchAcc = document.getElementById('search-acc');
+    if (searchAcc) {
+        searchAcc.addEventListener('input', (event) => {
+            if (event.target.value){
+                
+            }
+             
+        })
+    }
+
 })

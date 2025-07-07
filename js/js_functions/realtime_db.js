@@ -17,7 +17,7 @@ export function writeUserData(
   })
 }
 
-//Cadastrar o laboratório
+// Cadastrar o laboratório
 export function writeLaboratoryData (
   labID, 
   basisObjectClassesArray, 
@@ -45,7 +45,7 @@ export function writeLaboratoryData (
   })
 }
 
-//Cadastrar o objeto
+// Cadastrar o objeto
 export function writeObjectData (
   name,
   gotDay,
@@ -65,12 +65,13 @@ export function writeObjectData (
   })
 }
 
-//Criar a ocorrência
+// Criar a ocorrência
 export function writeReportsData (
   imageUrl,
   text,
   title,
-  //urgency,
+  status,
+  author,
   postedDay,
   postedTime,
   solvedDay,
@@ -83,8 +84,9 @@ export function writeReportsData (
     content: {
       img_url: imageUrl,
       text: text,
-      title: title/* ,
-      urgency: urgency */
+      title: title,
+      status: status,
+      autor: author
     },
     dates: {
       posted_date: {
@@ -103,119 +105,196 @@ export function writeReportsData (
   })
 }
 
-//Função para determinar o que o usuário pode ou não fazer
-export async function readUserRank(userID) {
-  const dbRef = ref(getDatabase());
-  try {
-    const snapshot = await get(child(dbRef, `user/${userID}`));
-
-    if (snapshot.exists()) {
-      return snapshot.val().rank;
-    } else {
-      return "No data available";
-    }
-  } catch (error) {
-    errorSwalResponse(error);
-    return null;
-  }
-}
-
-// Função para ler um cadastro de usuário
-export async function readUser (
-  userID
-) {// Alterar **************************
-
-  try{
-    const userRef = await get(child(ref(getDatabase()), `user/${userID}`));
-    if (userRef.exists()) {
-      const data = [userRef.val().rank, userRef.val().user_img_url];
-      return data;
-    }
-  }
-  catch (error) {
-    errorSwalResponse(error); 
-    return null;
-  }
-}
-
-export function readAllUsers () {
-  onValue(ref(getDatabase(), 'user'), (usersData) => {
-    for (let userID in usersData.val()) {
-      const user = document.createElement('li');
-      user.id = userID;
-      const userName = document.createElement('span');
-      userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`;
-      userName.className = 'account-name';
-
-      const userRank = document.createElement('span');
-      userRank.textContent = `Nível de acesso: ${({ userID, ...usersData.val()[userID]}).rank }`;
-      userRank.className = 'account-value';
-
-      const userEmail = document.createElement('span');
-      userEmail.textContent = `E-mail: ${({ userID, ...usersData.val()[userID]}).user_email}`;
-      userEmail.className = 'account-value';
-
-      user.appendChild(userName);
-      user.appendChild(userRank);
-      user.appendChild(userEmail);
-      document.getElementById('users-account-list').appendChild(user);
-    }
-  });
-}
-
-// Função para ler uma ocorrência
-export async function readReportsContentDate (
-  reportID
+// Função para fazer as leituras dos usuários
+export async function readUsers (
+  userID,
+  contentType
 ) {
   const dbRef = ref(getDatabase());
-  try {
-    const reportRef = await get(child(dbRef, `reports/${reportID}`));
-    if (reportRef.exists()) {
-      return reportRef.val().dates?.posted_date?.posted_day;
-    } else {
-      return "No data available";
+  const userRef = await get(child(dbRef, `user/${userID}`));
+  if (userID) {
+    switch (contentType) {
+
+      // Trará o rank do usuário
+      case 'user-rank':
+        try {
+          if (userRef.exists()) {
+            return userRef.val().rank
+          } else {
+            return "No data available"
+          }
+        } catch (error) {
+          errorSwalResponse(error)
+          return null
+        };
+
+      // Trará tudo do usuário
+      case 'general':
+        try{
+          if (userRef.exists()) {
+            const data = [userRef.val().name,userRef.val().user_email, userRef.val().rank, userRef.val().user_img_url]
+            return data
+          }
+        }
+        catch (error) {
+          errorSwalResponse(error)
+          return null
+        };
+
+      default:
+        return 'Incorrect content type';
     }
-  } catch (error) {
-    errorSwalResponse(error);
-    return null;
+  }
+  else
+  {
+    switch (contentType) {
+
+      //Lerá todos os usuários e os colocará num formato acessível ao acc-managment
+      case 'acc-manage':
+        onValue(ref(getDatabase(), 'user'), (usersData) => {
+          for (let userID in usersData.val()) {
+            const user = document.createElement('li')
+            user.id = userID
+            const userName = document.createElement('span')
+            userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`
+            userName.id = `${({ userID, ...usersData.val()[userID]}).user_name}`
+            userName.className = 'account-name'
+
+            const userRank = document.createElement('span')
+            userRank.textContent = `Nível de acesso: ${({ userID, ...usersData.val()[userID]}).rank }`
+            userRank.className = 'account-value'
+
+            const userEmail = document.createElement('span')
+            userEmail.textContent = `E-mail: ${({ userID, ...usersData.val()[userID]}).user_email}`
+            userEmail.id = `${({ userID, ...usersData.val()[userID]}).user_email}`
+            userEmail.className = 'account-value'
+
+            user.appendChild(userName)
+            user.appendChild(userRank)
+            user.appendChild(userEmail)
+            document.getElementById('users-account-list').appendChild(user)
+          }
+        });
+
+      default:
+        return 'Incorrect content type';
+    }
   }
 }
 
-export async function readReportsOneContent (
-  reportID
+// Função para realizar todas as tarefas de leitura de occorrências
+export async function readReports(
+  reportID,
+  contentType
 ) {
   const dbRef = ref(getDatabase());
-  try {
-    const reportRef = await get(child(dbRef, `reports/${reportID}`));
-    if (reportRef.exists()) {
-      return reportRef.val().content;
-    } else {
-      return "No data available";
+  const reference = await get(child(ref(getDatabase()), 'reports'));
+  const reportRef = reference.val();
+  const reportPostedDatas = {};
+  const reportContents = {};
+  const reportTitles = {};
+  if (reportID) {
+    switch (contentType) {
+      // Trará todas as informações da ocorrência
+      case 'general': 
+        try {
+          const reportRef = await get(child(dbRef, `reports/${reportID}`))
+          if (reportRef.exists()) {
+            return reportRef.val()
+          } else {
+            return "No data available"
+          }
+        } catch (error) {
+          errorSwalResponse(error)
+          return 'null'
+        };
+
+      // Lerá a data de postagem de um chamado
+      case 'data':
+        try {
+          const reportRef = await get(child(dbRef, `reports/${reportID}`))
+          if (reportRef.exists()) {
+            return reportRef.val().dates?.posted_date?.posted_day
+          } else {
+            return "No data available"
+          }
+        } catch (error) {
+          errorSwalResponse(error)
+          return 'null'
+        };
+
+      // Lerá o conteúdo de um chamado
+      case 'text-content': 
+        try {
+          const reportRef = await get(child(dbRef, `reports/${reportID}`))
+          if (reportRef.exists()) {
+            return reportRef.val().content
+          } else {
+            return "No data available"
+          }
+        } catch (error) {
+          errorSwalResponse(error)
+          return null
+        };
+
+      // Lerá o ID do objeto em questão
+      case 'selected-object':
+          try {
+            const reportRef = await get(child(dbRef, `reports/${reportID}`))
+            if (reportRef.exists()) {
+              return reportRef.val().selected_obj.sel_obj_id
+            } else {
+              return "No data available"
+            }
+          } catch (error) {
+            errorSwalResponse(error)
+            return null
+          };
+
+      default: 
+        return 'Incorrect content-type.';
     }
-  } catch (error) {
-    errorSwalResponse(error);
-    return null;
+  }
+  else
+  {
+    switch (contentType) {
+      // trará todos os chamados com o conteúdo e o seu ID
+      case 'general': 
+        if (reference.exists()) {
+          for(const repID in reportRef){
+            reportPostedDatas[repID] = reportRef[repID]
+            reportContents[repID] = reportRef[repID].content?.title
+          }
+        }
+        return reportPostedDatas, reportContents;
+
+      // Trará todas as datas adjuntos aos ID dos chamados
+      case 'data':
+        if (reference.exists()) {
+          for(const repID in reportRef){
+            reportPostedDatas[repID] = reportRef[repID]
+          }
+        }
+        return reportPostedDatas;
+
+      // Trará os títulos e os conteúdos adjuntos aos ID dos respectivos chamados
+      case 'text-content': 
+      if (reference.exists()) {
+          for(const repID in reportRef){
+            reportPostedDatas[repID] = reportRef[repID]
+            reportTitles[repID] = reportRef[repID].content?.title
+            reportContents[repID] = reportRef[repID].content?.text
+          }
+        }
+        return reportPostedDatas, reportTitles, reportContents;
+
+      default: 
+      return 'Incorrect content-type';
+    }
   }
 }
 
-export async function readReportSelectedObject (
-  reportID
-) {
-  const dbRef = ref(getDatabase());
-  try {
-    const reportRef = await get(child(dbRef, `reports/${reportID}`));
-    if (reportRef.exists()) {
-      return reportRef.val().selected_obj.sel_obj_id;
-    } else {
-      return "No data available";
-    }
-  } catch (error) {
-    errorSwalResponse(error);
-    return null;
-  }
-  
-}
-
+// Função para ler o algumas propriedades do objeto selecionado
 export async function readObjectProperties (
   objectID,
   objectType,
@@ -237,7 +316,7 @@ export async function readObjectProperties (
     }
 }
 
-
+// Função para ler a classe e o tipo de um objeto selecionado
 export async function readObjectClassAndType(
   ID
 ) {
@@ -253,6 +332,7 @@ export async function readObjectClassAndType(
   }
 }
 
+// Função para ler algumas propriedades do laboratório (ou sala) em questão
 export async function readLaboratoryProperties (
   labID
 ) {
@@ -269,23 +349,7 @@ export async function readLaboratoryProperties (
   }
 }
 
-export async function readAllReports () {
-  const reference = await get(child(ref(getDatabase()), 'reports'));
-  const reportRef = reference.val();
-  const reportPostedDatas = {};
-  const reportContents = {};
-
-  if (reference.exists()) {
-    for(const repID in reportRef){
-      reportPostedDatas[repID] = reportRef[repID];
-      reportContents[repID] = reportRef[repID].content?.title;
-    }
-  }
-  return reportPostedDatas, reportContents;
-}
-
-
-
+// Função que faz a contagem para o gráfico da página principal
 export async function countReportsByMonth () {
   const repBMRef = await get(child(ref(getDatabase()), 'reports'));
   const countByMonth = {};
@@ -305,3 +369,5 @@ export async function countReportsByMonth () {
 
   return countByMonth;
 }
+
+

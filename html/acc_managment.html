@@ -18,19 +18,16 @@
     <aside class="sidebar">
       <h2 class="logo"><span style="color: #2f5cf3">Re</span>Controle</h2>
       <nav>
-        <ul>
+        <ul id="link-side">
           <li id="home">Visão Geral</li>
-          <li id="institution">Instituição</li>
           <li id="calls">Chamados</li>
-          <li id="acc-managment" class="active">Gerenciar Contas</li>
-          <li id="bd-managment">Gerenciar BD</li>
         </ul>
       </nav>
     </aside>
 
     <main>
       <header class="topbar">
-        <input type="search" placeholder="Search..." />
+        <input type="search" placeholder="Search..." id="search-anyt"  />
         <div class="actions">
           <img src="../assets/bell-icon.png" alt="Notificações" />
           <div class="account-dropdown">
@@ -53,7 +50,7 @@
       <section class="dashboard">
         <h1>Gerenciar contas</h1><br>
         <div>
-          <input type="search" placeholder="Procurar conta"/>
+          <input type="search" placeholder="Procurar conta" id="search-acc"/>
         </div>
         <div> 
             <ul id="users-account-list" class="manage-accounts-list">
