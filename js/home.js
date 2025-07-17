@@ -1,14 +1,8 @@
  import {readReports, countReportsByMonth} from './js_functions/realtime_db.js';
+import { loading } from './js_functions/swal_mixins.js';
 
  document.addEventListener("DOMContentLoaded", () => {
-    Swal.fire({
-        backdrop: ` rgba(0,20,100,0.2) `,
-        text: 'Carregando',
-        color: 'black',
-        timer: 1000,
-        didOpen: () => Swal.showLoading()
-        
-    })
+    loading.fire()
 
     readReports(null, 'general').then((respDatas) => {
         const data = Object.entries(respDatas).slice(-3);

@@ -186,14 +186,25 @@ main {
   background: #f0f0f0;
 }
 
+
 .btn-create-rep {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  color: #2f5cf3;
-  border-radius: 15vw;
-  border-color: #89a0ec;
-  bottom: 2rem;
-  right: 2rem;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #2f5cf3;       /* Azul vibrante padrão do projeto */
+  color: #ffffff;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-create-rep:hover {
+  background-color: #003376;      /* Azul mais escuro no hover */
+  transform: scale(1.05);         /* Leve ampliação */
 }

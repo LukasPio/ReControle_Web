@@ -6,7 +6,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { firebaseConfig, hrefsConfig } from "./js_config/Config.js";
 import {readUsers} from './js_functions/realtime_db.js';
-import {swalFireLookForOcurrence} from './js_functions/swal_db_fires.js';
+import {swalFireLookForOcurrence, swalFireLookForLaboratory} from './js_functions/swal_db_fires.js';
 
 // Inicializa Firebase
 toString;
@@ -74,7 +74,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Entrada do 'Ver mais'
+  // Entrada do 'Ver mais' dos laboratórios
+  if (new URLSearchParams(window.location.search).get('ID')) {
+      swalFireLookForLaboratory(new URLSearchParams(window.location.search).get('ID'));
+  }
+
+  // Entrada do 'Ver mais' das ocorrência
   if (new URLSearchParams(window.location.search).get('id')) {
       swalFireLookForOcurrence(new URLSearchParams(window.location.search).get('id'));
   }
@@ -145,8 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
         searchAcc.addEventListener('input', (event) => {
             if (event.target.value){
               // Falta o concept do Front-End para que se possa continuar aqui
-            }
-             
+            } 
         })
     }
 });

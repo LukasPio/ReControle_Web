@@ -1,14 +1,8 @@
 import {readUsers} from './js_functions/realtime_db.js';
+import { loading } from './js_functions/swal_mixins.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    Swal.fire({
-        backdrop: ` rgba(0,20,100,0.2) `,
-        text: 'Carregando',
-        color: 'black',
-        timer: 1000,
-        didOpen: () => Swal.showLoading()
-        
-    });
+    loading.fire();
     
     readUsers(null, 'acc-manage');
 
@@ -16,10 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchAcc) {
         searchAcc.addEventListener('input', (event) => {
             if (event.target.value){
-                
+                readUsers(null, 'search-for', event.target.value)
             }
-             
+            if (document.getElementById('users-account-list').innerHTML == '' || !event.target.value) {
+                document.getElementById('users-account-list').innerHTML = ''
+                readUsers(null, 'acc-manage');
+            }
         })
     }
+        
 
 })

@@ -1,7 +1,9 @@
 import { getDatabase, ref, set, child, get, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 import {errorSwalResponse} from '../js_functions/swal_fire_errors.js';
 
-// Cadastrar o usuário
+//Cadastro ou edição de dados
+
+// Cadastrar ou editar o usuário
 export function writeUserData(
   userID, 
   rank, 
@@ -17,22 +19,21 @@ export function writeUserData(
   })
 }
 
-// Cadastrar o laboratório
-export function writeLaboratoryData (
-  labID, 
-  basisObjectClassesArray, 
-  basisObjectIDsArray, 
+// Cadastrar ou editar o laboratório
+export async function writeLaboratoryData (
+  labID,
+  basisObjectClassesArray,
   classificationOfLabs,
   labURL,
   labDesc,
   createDate,
   author,
-  status
+  status,
+  floor
 ) {
   set(ref(getDatabase(), `laboratory/${labID}`), {
     basis_obj: {
       b_obj_classes_array: basisObjectClassesArray,
-      b_obj_ids_array: basisObjectIDsArray
     },
     classif_labs: classificationOfLabs,
     lab_Content: {
@@ -41,23 +42,26 @@ export function writeLaboratoryData (
     },
     data: createDate,
     author: author,
-    status: status
+    status: status,
+    lab_floor: floor
   })
 }
 
-// Cadastrar o objeto
+// Cadastrar ou editar o objeto
 export function writeObjectData (
   name,
   gotDay,
   gotTime,
   description,
-  ObjectClass, 
-  ObjectType, 
-  ObjectID,
+  objectClass, 
+  objectType, 
+  objectID,
 ) {
-  set(ref(getDatabase(), `object/${ObjectID}/${ObjectType}/${ObjectClass}`), {
+  set(ref(getDatabase(), `object/${objectID}`), {
     desc: description,
     name: name,
+    obj_class: objectClass,
+    obj_type: objectType,
     delivered_date: {
       del_day: gotDay,
       del_time: gotTime
@@ -65,7 +69,7 @@ export function writeObjectData (
   })
 }
 
-// Criar a ocorrência
+// Cadastrar ou editar a ocorrência
 export function writeReportsData (
   imageUrl,
   text,
@@ -105,10 +109,32 @@ export function writeReportsData (
   })
 }
 
-// Função para fazer as leituras dos usuários
+// Atualizar a ocorrência
+export async function updateReportData (
+  author,
+  reportID,
+  newTitle,
+  newText,
+  newURL,
+  newStatus
+) {
+  set(ref(getDatabase(), `reports/${reportID}/content/`), {
+    autor: author,
+    title: newTitle,
+    text: newText,
+    img_url: newURL,
+    status: newStatus
+  })
+}
+
+//-------------------------------------------------------------------------------
+// Leitura de dados
+
+// Função para realizar todas as tarefas de leitura dos usuários
 export async function readUsers (
   userID,
-  contentType
+  contentType,
+  contentName
 ) {
   const dbRef = ref(getDatabase());
   const userRef = await get(child(dbRef, `user/${userID}`));
@@ -127,12 +153,26 @@ export async function readUsers (
           errorSwalResponse(error)
           return null
         };
+      
+      // Trará o nome do usuário
+      case 'user-name': 
+        try {
+          if (userRef.exists()) {
+            return userRef.val().user_name
+          } else {
+            return "No data available"
+          }
+        } catch (error) {
+          errorSwalResponse(error)
+          return null
+        }
+      ;
 
       // Trará tudo do usuário
       case 'general':
         try{
           if (userRef.exists()) {
-            const data = [userRef.val().name,userRef.val().user_email, userRef.val().rank, userRef.val().user_img_url]
+            const data = [userRef.val().name, userRef.val().user_email, userRef.val().rank, userRef.val().user_img_url]
             return data
           }
         }
@@ -155,6 +195,7 @@ export async function readUsers (
           for (let userID in usersData.val()) {
             const user = document.createElement('li')
             user.id = userID
+            user.className = 'user-acc'
             const userName = document.createElement('span')
             userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`
             userName.id = `${({ userID, ...usersData.val()[userID]}).user_name}`
@@ -174,7 +215,40 @@ export async function readUsers (
             user.appendChild(userEmail)
             document.getElementById('users-account-list').appendChild(user)
           }
-        });
+        })
+      ;break;
+
+      case 'search-for' :
+        document.getElementById('users-account-list').innerHTML = ''
+        onValue(ref(getDatabase(), 'user'), (usersData) => {  
+          for (let userID in usersData.val()) {
+            const originalName = `${({ userID, ...usersData.val()[userID]}).user_name}`
+            if (originalName.startsWith(contentName) == true) {
+              const user = document.createElement('li')
+              user.id = userID
+              const userName = document.createElement('span')
+              userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`
+              userName.id = `${({ userID, ...usersData.val()[userID]}).user_name}`
+              userName.className = 'account-name'
+
+              const userRank = document.createElement('span')
+              userRank.textContent = `Nível de acesso: ${({ userID, ...usersData.val()[userID]}).rank }`
+              userRank.className = 'account-value'
+
+              const userEmail = document.createElement('span')
+              userEmail.textContent = `E-mail: ${({ userID, ...usersData.val()[userID]}).user_email}`
+              userEmail.id = `${({ userID, ...usersData.val()[userID]}).user_email}`
+              userEmail.className = 'account-value'
+
+              user.appendChild(userName)
+              user.appendChild(userRank)
+              user.appendChild(userEmail)
+              document.getElementById('users-account-list').appendChild(user)
+            }
+          }
+        })
+      ;
+      break; 
 
       default:
         return 'Incorrect content type';
@@ -266,7 +340,8 @@ export async function readReports(
             reportContents[repID] = reportRef[repID].content?.title
           }
         }
-        return reportPostedDatas, reportContents;
+        return reportPostedDatas, reportContents
+      ;
 
       // Trará todas as datas adjuntos aos ID dos chamados
       case 'data':
@@ -294,58 +369,166 @@ export async function readReports(
   }
 }
 
-// Função para ler o algumas propriedades do objeto selecionado
-export async function readObjectProperties (
-  objectID,
-  objectType,
-  objectClass
+// Função para realizar todas as tarefas de leitura dos objetos
+export async function readObjects(
+objectID,
+contentType
 ) {
-    try {
-      const objectPRef = await get(child(ref(getDatabase()), `object/${objectID}/${objectType}/${objectClass}`));
+  const dbRef = ref(getDatabase());
+  
+  const reference = await get(child(dbRef, 'object')); 
+  const objectRef = reference.val();
+  const objectClasses = {};
+  const objectTypes = {};
+  
+  const objectPRef = await get(child(dbRef, `object/${objectID}`));
+  const ObjValue = objectPRef.val();
+  if (objectID) {
+    switch (contentType) {
 
-      if (objectPRef.exists()) {
-        const objectDescription = objectPRef.val().desc;
-        const ObjectGotDate = objectPRef.val().delivered_date;
-        const objectName = objectPRef.val().name;
-        return objectDescription, ObjectGotDate, objectName;
-      }
-    }
-    catch (error) {
-      errorSwalResponse(error);
-      return null;
-    }
-}
+      // Trará todas as propriedades do objeto selecionado
+      case 'property': 
+        try {
+          if (objectPRef.exists()) {
+            const objectDescription = objectPRef.val().desc
+            const ObjectGotDate = objectPRef.val().delivered_date
+            const objectName = objectPRef.val().name
+            return objectDescription, ObjectGotDate, objectName
+          }
+        }
+        catch (error) {
+          errorSwalResponse(error)
+          return null
+        }
+      ;
+      break;
 
-// Função para ler a classe e o tipo de um objeto selecionado
-export async function readObjectClassAndType(
-  ID
-) {
-  const snapshot = await get(child(ref(getDatabase()), `object/${ID}`));
-  const snapValue = snapshot.val();
-  if (snapshot.exists()) {
-    const data = [Object.entries(Object.entries(snapValue)[0][1])[0][0] /* Classe do objeto */, Object.entries(snapValue)[0][0] /* Tipo de objeto */];
-    return data
+      // Trará a classe e o tipo do objeto selecionado
+      case 'class-type':
+        if (objectPRef.exists()) {
+          const data = [ObjValue.obj_class, ObjValue.obj_type];
+          return data
+        }
+        else
+        {
+          return 'No data avaiable'
+        }
+      ;
+      break;
+
+      // Trará a classe do objeto selecionado
+      case 'class':
+      ;
+      break;
+        
+      // Trará o tipo do objeto selecionado
+      case 'type':
+      ;
+      break;
+
+      default: 
+        return 'Incorrect content-type.';
+    }
   }
   else
   {
-    return 'No data avaiable'
+    switch (contentType) {
+
+      // Ainda não decidido
+      case 'general': 
+      ;
+      break;
+
+      // Trará todas as classes existentes
+      case 'class':
+        if (reference.exists()) {
+          for(const objectID in objectRef) {
+            objectClasses[objectID] = objectRef[objectID].obj_class;
+            return Object.entries(objectClasses);
+          }
+        }
+      ;
+      break;
+      
+      // Trará todas os tipos existentes
+      case 'type':
+        if (reference.exists()) {
+          for(const objectID in objectRef) {
+            objectTypes[objectID] = objectRef[objectID].obj_type;
+            return Object.entries(objectTypes);
+          }
+        }
+      ;
+      break;
+
+      default: 
+        return 'Incorrect content-type.';
+    }
   }
 }
 
-// Função para ler algumas propriedades do laboratório (ou sala) em questão
-export async function readLaboratoryProperties (
-  labID
+// Função para realizar todas as tarefas de leitura dos laboratórios
+export async function readLaboratories (
+  labID,
+  contentType
 ) {
-  try {
-    const laboratoryRef = await get(child(ref(getDatabase()), `laboratory/${labID}`));
-    if (laboratoryRef.exists()) {
-      const laboratoryProperty = [laboratoryRef.val().basis_obj, laboratoryRef.val().classif_labs, laboratoryRef.val().lab_content];
-      return laboratoryProperty;
+  const dbRef = ref(getDatabase());
+  const reference = await get(child(dbRef, 'laboratory'));
+  const labRef = reference.val();
+  const labClasses = {};
+  const labURLDesc = {};
+  const laboratoryRef = await get(child(ref(getDatabase()), `laboratory/${labID}`));
+  if (labID) {
+    switch (contentType) {
+      case 'general': 
+        try {
+          if (laboratoryRef.exists()) {
+            const laboratoryProperty = laboratoryRef.val();
+            return laboratoryProperty;
+          }
+        }
+        catch (error) {
+          errorSwalResponse(error);
+          return null;
+        };
+      break;
+
+      case 'class': ;
+      break;
     }
   }
-  catch (error) {
-    errorSwalResponse(error);
-    return null;
+  else
+  {
+    switch (contentType) {
+      case 'general': 
+        if (laboratoryRef.exists()) {
+          return laboratoryRef.val()
+        }
+      ;
+      break;
+
+      case 'content': 
+        if (reference.exists()) {
+          for(const labID in labRef) {
+            labURLDesc[labID] = [labRef[labID].lab_Content.lab_img_url, labRef[labID].lab_Content.desc];
+          }
+          return labURLDesc;
+        }
+      ;
+      break;
+
+      case 'class': 
+        if (reference.exists()) {
+          for(const labID in labRef) {
+            if (localStorage.getItem('old-lab') != labRef[labID].classif_labs) {
+              labClasses[labID] = labRef[labID].classif_labs;
+              localStorage.setItem('old-lab', labClasses[labID])
+            }
+          }
+          return Object.entries(labClasses);
+        };
+      break;
+    }
   }
 }
 
@@ -369,5 +552,3 @@ export async function countReportsByMonth () {
 
   return countByMonth;
 }
-
-
