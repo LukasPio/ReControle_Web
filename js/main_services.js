@@ -31,7 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
 // Verifica autenticação e preenche usuário ou redireciona
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    readUsers(user.uid, 'user-rank').then(rank => localStorage.setItem('rank', rank));
+    readUsers(user.uid, 'general').then(resp => {
+      document.getElementById('user-img').src = resp.user_img_url;
+      localStorage.setItem('rank', resp.rank);
+    })
     localStorage.setItem('userUID', user.uid);
     const nameEl = document.getElementById("name");
     const accountEl = document.getElementById("account");
@@ -73,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
       `
     }
   }
+
+  
 
   // Entrada do 'Ver mais' dos laboratórios
   if (new URLSearchParams(window.location.search).get('ID')) {

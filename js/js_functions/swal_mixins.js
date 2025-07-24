@@ -9,20 +9,33 @@ export const reControleSwal = Swal.mixin({
 });
 
 export const successSwal = Swal.mixin({
-    title: 'Ocorrência registrada!',
+    toast: false,
+    title: 'Operação bem sucedida',
     icon: 'success',
-    showConfirmButton: false,
-    position: 'bottom-end',
-    timer: 1000
+    showConfirmButton: true,
+    timer: 2000
 });
 
-//temporário até a atualização pelo errorSwalResponse
-export const errorSwal = Swal.mixin({
-    title: 'Falha ao registrar!',
+export const successToastSwal = successSwal.mixin({
+    toast: true,
     showConfirmButton: false,
     position: 'bottom-end',
+    timer: 2000
+});
+
+export const errorSwal = Swal.mixin({
+    toast: false,
+    title: 'Operação mal sucedida.',
+    showConfirmButton: true,
     icon: 'error',
-    timer: 1000
+    timer: 3000
+});
+
+export const errorToastSwal = errorSwal.mixin({
+    toast: true,
+    showConfirmButton: false,
+    position: 'bottom-end',
+    timer: 3000
 });
 
 export const loading = Swal.mixin({

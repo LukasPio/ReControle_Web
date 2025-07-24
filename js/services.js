@@ -5,11 +5,10 @@ import { getAuth, createUserWithEmailAndPassword, updateProfile, sendEmailVerifi
 import {firebaseConfig, hrefsConfig} from "./js_config/Config.js";
 import {errorSwalResponse} from './js_functions/swal_fire_errors.js';
 import {writeUserData} from './js_functions/realtime_db.js';
+import { errorToastSwal } from './js_functions/swal_mixins.js';
 
     const index = hrefsConfig.index;
     const home = hrefsConfig.home;
-    const e_verif = hrefsConfig.e_verif;
-
     
   // Sign up
 document.addEventListener('DOMContentLoaded', () => {
@@ -48,7 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       else
       {
-          alert('Digite corretamente a senha de confirmação!');
+          errorToastSwal.fire({
+            title: 'Digite corretamente a senha de confirmação'
+          })
       }
     });
   }    
@@ -173,15 +174,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const recuperar = document.getElementById("recuperar");
   if(button){
     button.addEventListener('click', () => {
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
+
+      initializeApp(firebaseConfig);
       const auth = getAuth();
 
       auth.signOut().then(() => {
         localStorage.clear();
         window.location.href = `../${index}`;
-      });
-    });
+      }).catch((error) => errorSwalResponse(error))
+    })
   }
 
   //Recuperação de senha

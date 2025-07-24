@@ -8,21 +8,22 @@ import {
     updateReportData
 
 } from './realtime_db.js';
-import {reControleSwal, successSwal, errorSwal} from './swal_mixins.js';
+import {reControleSwal, successToastSwal, errorToastSwal} from './swal_mixins.js';
 
 export async function createReportSwal (
     title,
     author
 ) {
 
-    var newMainProblem;
-    var newMainTitle;
-    var newSelectedObject;
-    var occuredDate;
-    var occuredTime;
-    var mainProblem;
-    var selectedObject;
-    var selectedLab;
+    var newMainProblem, 
+    newMainTitle, 
+    newSelectedObject, 
+    occuredDate, 
+    occuredTime, 
+    mainProblem, 
+    selectedObject, 
+    selectedLab,
+    file;
 
     switch (title) {
         case 'Exemplos de falhas...': 
@@ -67,7 +68,7 @@ export async function createReportSwal (
                     value="${mainProblem}"
                 > 
             </div>
-            <!--<div class="swal2-html-container">
+            <<div class="swal2-html-container">
                 <label for="selected-file" class="swal2-html-text">Foto do ocorrido</label>
                 <input 
                     type="file" 
@@ -79,7 +80,7 @@ export async function createReportSwal (
                         border-color: #D3D3D3;
                         background-color: #f5f5f5;" 
                     >
-            </div>-->
+            </div>
             <div class="swal2-html-container">
                 <label for="selected-file" class="swal2-html-text">laboratório</label>
                 <input 
@@ -146,10 +147,16 @@ export async function createReportSwal (
             occuredDate = document.getElementById('occur-date').value;
             occuredTime = document.getElementById('occur-time').value;
             selectedLab = document.getElementById('selected-lab').value;
+            if (localStorage.getItem('sel-file') != '' && localStorage.getItem('sel-file') != null) {
+                file = localStorage.getItem('sel-file')
+            }
+            else {
+                file = ''
+            }
             
             try {
                 writeReportsData(
-                    "",
+                    file,
                     newMainProblem,
                     newMainTitle,
                     'red',
@@ -162,23 +169,29 @@ export async function createReportSwal (
                     selectedLab,
                     newSelectedObject
                 );
-                successSwal.fire().then((result) => {
-                    window.location.reload();
-                })
+                successToastSwal.fire().then( localStorage.removeItem('sel-file') )
             }
             catch {
-                errorSwal.fire()
+                errorToastSwal.fire()
             }
         }
     })
+    const selectedFile = document.getElementById('selected-file');
+    if (selectedFile) { 
+        selectedFile.addEventListener('change', (event) => {
+            convertImg(event.target.files[0], function(base64Result) {
+                localStorage.setItem('sel-file', base64Result);
+            })
+        }) 
+    }
 }
 
 export async function updateReportSwal (
     reportID,
     author
 ) {
+    var file;
     readReports(reportID, 'text-content').then(resp => {
-        
         reControleSwal.fire({
             title: 'Editar ocorrência',
             html: `
@@ -249,17 +262,31 @@ export async function updateReportSwal (
             `,
             reverseButtons: true,
             preConfirm: async () => {
+                if (localStorage.getItem('sel-file') != '' && localStorage.getItem('sel-file') != null) {
+                    file = localStorage.getItem('sel-file')
+                }
+                else {
+                    file = ''
+                }
                 updateReportData(
                     author,
                     reportID,
                     document.getElementById('main-p').value,
                     document.getElementById('main-t').value,
-                    "", //Ainda falta decidir como pegar a URL
+                    file,
                     document.getElementById('status').value
-                ).then(() => successSwal.fire())
-                .catch(() => errorSwal.fire())
+                ).then(() => successToastSwal.fire().then(localStorage.removeItem('sel-file')))
+                .catch(() => errorToastSwal.fire())
             }
         })
+        const selectedFile = document.getElementById('file-url');
+        if (selectedFile) { 
+            selectedFile.addEventListener('change', (event) => {
+                convertImg(event.target.files[0], function(base64Result) {
+                    localStorage.setItem('sel-file', base64Result);
+                })
+            }) 
+        }
         switch (resp.status) {
             case 'red':
                 document.getElementById('status').selectedIndex = 0
@@ -275,307 +302,6 @@ export async function updateReportSwal (
             break;
         }
     })
-}
-
-// Não feito
-export async function updateLaboratorySwal(
-    classroomID
-) {
-    
-}
-
-export async function createLaboratorySwal (
-    userUID,
-    userName
-) {
-    var labLastID, //checked
-    basisObjectIDsArray, //checked
-    basisObjectClassesArray, //checked
-    classificationOfLabs, //checked
-    labURL, //Not checked yet
-    labDesc, //checked
-    createDate, //checked
-    author, //checked
-    status, //checked
-    floor, //checked
-    selectData,
-    labClassData;
-    
-    
-    readObjects(null, 'type').then( resp => {
-        author = userUID;
-        selectData = `<option value="none"></option>`;
-        for (var ID = 0; ID < resp.length ;ID++) {
-            selectData += `<option value="${resp[ID][1]}">${resp[ID][1]}</option>`
-        }
-        readLaboratories(null, 'class').then(labClasses => {
-            labClassData = `<option value="none"></option>`;
-            for (var labID = 0; labID < labClasses.length; labID++) {
-                labClassData += `<option value="${labClasses[labID][1]}">${labClasses[labID][1]}</option>`
-            }
-            reControleSwal.fire({
-                title: 'Adicionar laboratório',
-                html: `
-                    <div class="swal2-html-container">
-                        <label 
-                            for="author-name" 
-                            class="swal2-html-text" 
-                            style="color: black;"
-                        >Autor</label>
-                        <p id="author-name">${userName}</p>
-                    </div>
-                    <div class="swal2-html-container">
-                        <label 
-                            for="lab-id" 
-                            class="swal2-html-text" 
-                            style="color:black;"
-                        >Identitficador do laboratório</label>
-                        <input 
-                            type="text" 
-                            class="swal2-input" 
-                            id="lab-id" 
-                            style="
-                                width: 55vw;
-                                transition: all 0.3s ease;
-                                background-color: #f5f5f5;
-                                border-radius:15px;
-                                border-color: #D3D3D3;
-                                background-color: #f5f5f5;
-                            " 
-                        required>
-                    </div>
-                    <div class="swal2-html-container">
-                        <label 
-                            for="input2" 
-                            class="swal2-html-text" 
-                            style="color:black;"
-                        >Informações do laboratório</label>
-                        <input 
-                            type="text" 
-                            class="swal2-input" 
-                            id="desc"
-                            style="
-                                width: 55vw; 
-                                height: 25vh; 
-                                transition: all 0.3s ease;
-                                background-color: #f5f5f5;
-                                border-radius:15px;
-                                border-color: #D3D3D3;
-                                background-color: #f5f5f5;
-                            " 
-                        required>
-                    </div>
-                    <div class="swal2-html-container">
-                        <label 
-                            for="lab-url" 
-                            class="swal2-html-text" 
-                            style="color:black;"
-                        >Adicione uma imagem do local</label>
-                        <input 
-                            type="file" 
-                            accept=".jpg,.png,image/*" 
-                            class="swal2-input" 
-                            id="lab-url" 
-                            style="
-                                width:55vw; 
-                                transition: all 0.3s ease;
-                                background-color: #f5f5f5;
-                                border-radius: 15px;
-                                border-color: #D3D3D3;
-                                background-color: #f5f5f5;
-                            " 
-                        required>
-                    </div>
-                    <div class="swal2-html-container" id="select-container">
-                        <label 
-                            class="swa2-html-text"
-                            style="color:black;"
-                        >Selecione um dos objetos abaixo</label><br>
-                        <select 
-                            class="swal2-select" 
-                            id="select" 
-                            style="
-                                width: 55vw; 
-                                height: 8vh; 
-                                transition: all 0.3s ease;
-                                border-radius:15px;
-                                border-color: #D3D3D3;
-                                background-color: #f5f5f5;
-                            "
-                        >
-                            ${selectData}
-                        </select>
-                    </div>
-                    <div id="sel-container-class" class="swal2-html-container">
-                        <label 
-                            class="swa2-html-text" 
-                            for="lab-class" 
-                            style="color:black;"
-                        >Selecione uma das classes abaixo para o seu laboratório<label><br>
-                        <select 
-                            class="swal2-select" 
-                            id="lab-class" 
-                            style="
-                                width: 55vw; 
-                                height: 8vh; 
-                                border-radius: 15px; 
-                                border-color: #D3D3D3;
-                                transition: all 0.3s ease;
-                                background-color: #f5f5f5;
-                            "   
-                        >
-                            ${labClassData}
-                        </select>
-                        <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
-                        <label 
-                            class="swa2-html-text" 
-                            for="text-class-option" 
-                            style="color:black;"
-                        >Crie uma classe<label><br>
-                        <input 
-                            type="text" 
-                            class="swal2-input" 
-                            id="text-class-option" 
-                            style="
-                                width: 55vw; 
-                                height: 8vh; 
-                                border-radius: 15px; 
-                                border-color: #D3D3D3;
-                                transition: all 0.3s ease;
-                                background-color: #f5f5f5;
-                            "   
-                        >
-                    </div>
-                    <div class="swal2-html-container">
-                        <label 
-                            for="status" 
-                            class="swal2-html-text" 
-                            style="color:black;"
-                        >Selecione o estado do laboratório</label>
-                        <select
-                            class="swal2-select"
-                            id="status"
-                            style="
-                                width: 55vw;
-                                height: 8vh; 
-                                border-radius: 15px; 
-                                border-color: #D3D3D3;
-                                transition: all 0.3s ease;
-                                background-color: #f5f5f5;
-                            "
-                        >
-                            <option value="open">Aberto</option>
-                            <option value="under-maintenance">Em manutenção</option>
-                        </select>
-                    </div>
-                    <div class="swal2-html-container">
-                        <label 
-                            for="floor-number" 
-                            class="swal2-html-text" 
-                            style="color:black;"
-                        >Selecione o andar referente ao laboratório</label>
-                        <input 
-                            type="number" 
-                            max="4" min="0" 
-                            id="floor-number" 
-                            class="swal2-input"
-                            value="0"
-                            style="
-                                width: 55vw;
-                                height: 8vh; 
-                                border-radius: 15px; 
-                                border-color: #D3D3D3;
-                                transition: all 0.3s ease;
-                                background-color: #f5f5f5;
-                            "
-                        >
-                    </div>
-                `, 
-                confirmButtonText: 'Enviar ocorrência',
-                preConfirm: async () => {
-                    labLastID = document.getElementById('lab-id').value;
-                    basisObjectIDsArray = ""; //A criação não pertencerá ainda a este Swal
-
-                    const container = document.getElementById('select-container');
-                    const selects   = container.querySelectorAll('select');
-                    basisObjectClassesArray = {};
-                    selects.forEach((sel, i) => {
-                        if (sel.value != 'none') {
-                        basisObjectClassesArray[`Object-${(i+1)}`] = sel.value
-                        }
-                    });
-
-                    if (document.getElementById('lab-class').selectedIndex != 0 || document.getElementById('text-class-option').value) {   
-                        classificationOfLabs = localStorage.getItem('class')
-                    }
-
-                    labURL = ""; // Falta o seu Event Listener
-                    if (document.getElementById('desc').value) labDesc = document.getElementById('desc').value;
-                    createDate = new Date().toISOString().split('T')[0];
-                    if (document.getElementById('status').value) status = document.getElementById('status').value;
-                    if (document.getElementById('floor-number').value) floor = document.getElementById('floor-number').value;
-
-                    writeLaboratoryData(
-                        labLastID,
-                        basisObjectClassesArray,
-                        classificationOfLabs,
-                        labURL,
-                        labDesc,
-                        createDate,
-                        author,
-                        status,
-                        floor
-                    ).then(() => {
-                        Swal.fire({
-                            title: 'Criação bem sucedida',
-                            icon: 'success'
-                        })
-                        .then(
-                            window.location.reload()
-                        )
-                    })
-                }
-            });
-            const imgFile = document.getElementById('lab-url');
-            const container = document.getElementById('select-container');
-            const otherChoice = document.getElementById('lab-class');
-            const createdChoice = document.getElementById('text-class-option');
-            container.addEventListener('change', function(e) {
-                const target = e.target;
-                if (target.tagName !== 'SELECT') return;
-                const selects = Array.from(container.querySelectorAll('select'));
-                const idx = selects.indexOf(target);
-                if (target.selectedIndex !== 0) {
-                    const isLast = idx === selects.length - 1;
-                    if (isLast) {
-                        const novo = target.cloneNode(true);
-                        novo.selectedIndex = 0;
-                        container.appendChild(novo);
-                    }
-                } else {
-                    const toRemove = selects.slice(idx + 1);
-                    toRemove.forEach(s => s.remove());
-                }
-            });
-            if (imgFile) {
-                imgFile.addEventListener('change', function ()  {
-                    //Vereificações das qualificações da imagem e alguns procedimentos
-                })
-            }
-            if (otherChoice) {
-                otherChoice.addEventListener('change', (event) => {
-                    localStorage.setItem('class', event.target.value);
-                    if (event.target.value != 'none') createdChoice.value = "";
-                })
-            }
-            if (createdChoice) {
-                createdChoice.addEventListener('input', (newClass) => {
-                    if (localStorage.getItem('class') != 'none') otherChoice.selectedIndex = 0;
-                    localStorage.setItem('class', newClass.target.value);
-                })
-            }
-        })
-    });
 }
 
 export async function swalFireLookForOcurrence (
@@ -680,11 +406,516 @@ export async function swalFireLookForOcurrence (
     
 }
 
+export async function createLaboratorySwal (
+    userUID,
+    userName
+) {
+    var labLastID, //checked
+    basisObjectIDsArray, //checked
+    basisObjectClassesArray, //checked
+    classificationOfLabs, //checked
+    labURL, //Not checked yet
+    labDesc, //checked
+    createDate, //checked
+    author, //checked
+    status, //checked
+    floor, //checked
+    selectData,
+    labClassData;
+    
+    
+    readObjects(null, 'type').then( resp => {
+        author = userUID;
+        selectData = `<option value="none"></option>`;
+        for (var ID = 0; ID < resp.length ;ID++) {
+            selectData += `<option value="${resp[ID][1]}">${resp[ID][1]}</option>`
+        }
+        readLaboratories(null, 'class').then(labClasses => {
+            labClassData = `<option value="none"></option>`;
+            for (var labID = 0; labID < labClasses.length; labID++) {
+                labClassData += `<option value="${labClasses[labID][1]}">${labClasses[labID][1]}</option>`
+            }
+            reControleSwal.fire({
+                title: 'Adicionar laboratório',
+                html: `
+                    <div class="swal2-html-container">
+                        <label 
+                            for="author-name" 
+                            class="swal2-html-text" 
+                            style="color: black;"
+                        >Autor</label>
+                        <p id="author-name">${userName}</p>
+                    </div>
+                    <div class="swal2-html-container">
+                        <label 
+                            for="lab-id" 
+                            class="swal2-input-label" 
+                            style="color:black;"
+                        >Identitficador do laboratório</label>
+                        <input 
+                            type="text" 
+                            class="swal2-input" 
+                            id="lab-id" 
+                            style="
+                                width: 55vw;
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            " 
+                        required>
+                    </div>
+                    <div class="swal2-html-container">
+                        <label 
+                            for="input2" 
+                            class="swal2-input-label" 
+                            style="color:black;"
+                        >Informações do laboratório</label>
+                        <input 
+                            type="text" 
+                            class="swal2-input" 
+                            id="desc"
+                            style="
+                                width: 55vw; 
+                                height: 25vh; 
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            " 
+                        required>
+                    </div>
+                    <div class="swal2-html-container">
+                        <label 
+                            for="lab-url" 
+                            class="swal2-input-label" 
+                            style="color:black;"
+                        >Adicione uma imagem do local</label>
+                        <input 
+                            type="file" 
+                            accept=".jpg,.png,image/*" 
+                            class="swal2-input" 
+                            id="lab-url" 
+                            style="
+                                width:55vw; 
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                                border-radius: 15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            " 
+                        required>
+                    </div>
+                    <div class="swal2-html-container" id="select-container">
+                        <label 
+                            class="swa2-input-label"
+                            style="color:black;"
+                        >Selecione um dos objetos abaixo</label><br>
+                        <select 
+                            class="swal2-select" 
+                            id="select" 
+                            style="
+                                width: 55vw; 
+                                height: 8vh; 
+                                transition: all 0.3s ease;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            "
+                        >
+                            ${selectData}
+                        </select>
+                    </div>
+                    <div id="sel-container-class" class="swal2-html-container">
+                        <label 
+                            class="swa2-input-label" 
+                            for="lab-class" 
+                            style="color:black;"
+                        >Selecione uma das classes abaixo para o seu laboratório<label><br>
+                        <select 
+                            class="swal2-select" 
+                            id="lab-class" 
+                            style="
+                                width: 55vw; 
+                                height: 8vh; 
+                                border-radius: 15px; 
+                                border-color: #D3D3D3;
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                            "   
+                        >
+                            ${labClassData}
+                        </select>
+                        <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
+                        <label 
+                            class="swa2-input-label" 
+                            for="text-class-option" 
+                            style="color:black;"
+                        >Crie uma classe<label><br>
+                        <input 
+                            type="text" 
+                            class="swal2-input" 
+                            id="text-class-option" 
+                            style="
+                                width: 55vw; 
+                                height: 8vh; 
+                                border-radius: 15px; 
+                                border-color: #D3D3D3;
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                            "   
+                        >
+                    </div>
+                    <div class="swal2-html-container">
+                        <label 
+                            for="status" 
+                            class="swal2-input-label" 
+                            style="color:black;"
+                        >Selecione o estado do laboratório</label>
+                        <select
+                            class="swal2-select"
+                            id="status"
+                            style="
+                                width: 55vw;
+                                height: 8vh; 
+                                border-radius: 15px; 
+                                border-color: #D3D3D3;
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                            "
+                        >
+                            <option value="open">Aberto</option>
+                            <option value="under-maintenance">Em manutenção</option>
+                        </select>
+                    </div>
+                    <div class="swal2-html-container">
+                        <label 
+                            for="floor-number" 
+                            class="swal2-input-label" 
+                            style="color:black;"
+                        >Selecione o andar referente ao laboratório</label><br>
+                        <input 
+                            type="range" 
+                            max="4" min="0" step="1"
+                            id="floor-number" 
+                            class="swal2-input"
+                            value="0"
+                            style="
+                                height: 8vh; 
+                                border-radius: 15px; 
+                                border-color: #D3D3D3;
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                            "
+                        >
+                        <label class="swal2-input-label" id="range" style="color:black;">0</label>
+                    </div>
+                `, 
+                confirmButtonText: 'Enviar ocorrência',
+                preConfirm: async () => {
+                    labLastID = document.getElementById('lab-id').value;
+                    basisObjectIDsArray = ""; //A criação não pertencerá ainda a este Swal
+
+                    const container = document.getElementById('select-container');
+                    const selects   = container.querySelectorAll('select');
+                    basisObjectClassesArray = {};
+                    selects.forEach((sel, i) => {
+                        if (sel.value != 'none') {
+                        basisObjectClassesArray[`Object-${(i+1)}`] = sel.value
+                        }
+                    });
+
+                    if (document.getElementById('lab-class').selectedIndex != 0 || document.getElementById('text-class-option').value) {   
+                        classificationOfLabs = localStorage.getItem('class')
+                    }
+
+                    if (localStorage.getItem('sel-file') != '' && localStorage.getItem('sel-file') != null) {
+                        labURL = localStorage.getItem('sel-file')
+                    }
+                    else
+                    {
+                        labURL = ''
+                    }
+                    if (document.getElementById('desc').value) labDesc = document.getElementById('desc').value;
+                    createDate = new Date().toISOString().split('T')[0];
+                    if (document.getElementById('status').value) status = document.getElementById('status').value;
+                    if (document.getElementById('floor-number').value) floor = document.getElementById('floor-number').value;
+
+                    writeLaboratoryData(
+                        labLastID,
+                        basisObjectClassesArray,
+                        classificationOfLabs,
+                        labURL,
+                        labDesc,
+                        createDate,
+                        author,
+                        status,
+                        floor
+                    ).then(() => {
+                        successToastSwal.fire().then( localStorage.removeItem('sel-file') )
+                    })
+                }
+            });
+            const imgFile = document.getElementById('lab-url');
+            const container = document.getElementById('select-container');
+            const otherChoice = document.getElementById('lab-class');
+            const createdChoice = document.getElementById('text-class-option');
+            const range = document.getElementById('floor-number');
+            if (range) {
+                range.addEventListener('input', () => {
+                    document.getElementById('range').textContent = range.value;
+                })
+            }
+            
+            container.addEventListener('change', function(e) {
+                const target = e.target;
+                if (target.tagName !== 'SELECT') return;
+                const selects = Array.from(container.querySelectorAll('select'));
+                const idx = selects.indexOf(target);
+                if (target.selectedIndex !== 0) {
+                    const isLast = idx === selects.length - 1;
+                    if (isLast) {
+                        const novo = target.cloneNode(true);
+                        novo.selectedIndex = 0;
+                        container.appendChild(novo);
+                    }
+                } else {
+                    const toRemove = selects.slice(idx + 1);
+                    toRemove.forEach(s => s.remove());
+                }
+            });
+            if (imgFile) {
+                imgFile.addEventListener('change', (event) => {
+                    convertImg(event.target.files[0], function(base64Result) {
+                        localStorage.setItem('sel-file', base64Result);
+                    })
+                })
+            }
+            if (otherChoice) {
+                otherChoice.addEventListener('change', (event) => {
+                    localStorage.setItem('class', event.target.value);
+                    if (event.target.value != 'none') createdChoice.value = "";
+                })
+            }
+            if (createdChoice) {
+                createdChoice.addEventListener('input', (newClass) => {
+                    if (localStorage.getItem('class') != 'none') otherChoice.selectedIndex = 0;
+                    localStorage.setItem('class', newClass.target.value);
+                })
+            }
+        })
+    });
+}
+
+export async function updateLaboratorySwal (
+    classroomID,
+    author
+) {
+    var classes, 
+    selectData,
+    basisObjectClassesArray,
+    file;
+    readLaboratories(classroomID, 'general').then(resp => {
+        var imageURL = resp.lab_Content.lab_img_url;
+
+        if (!imageURL) {imageURL = '../../assets/default_classroom.avif'}
+        readLaboratories(null, 'class').then(response => {
+            classes = `<option value="none"></option>`;
+            for (var labID = 0; labID < response.length; labID++) {
+                classes += `<option value="${response[labID][1]}">${response[labID][1]}</option>`; 
+            }
+            readObjects(null, 'type').then(objects => {
+               
+                reControleSwal.fire({
+                    title: `Editar laboratório`,
+                    imageUrl: imageURL,
+                    html: `
+                        <div class="swal2-html-container">
+                            <label for="desc" class="swal2-input-label">Descrição</label>
+                            <input 
+                                type="text"
+                                style=" 
+                                    width: 60vw;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;
+                                " 
+                                class="swal2-input" 
+                                id="desc" 
+                                value="${resp.lab_Content.desc}"
+                            >
+                        </div>
+                        <div class="swal2-html-container">
+                            <label for="img-url" class="swal2-input-label">Imagem</label><br>
+                            <input 
+                                type="file" 
+                                id="img-url" 
+                                class="swal2-input" 
+                                style=" 
+                                    width: 60vw;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;
+                                " 
+                                value="${imageURL}"
+                            >
+                        </div>
+                        <div class="swal2-html-container" id="floor-div">
+                            <label for="floor" class="swal2-input-label">Andar Selecionado</label><br>
+                            <input 
+                                type="range" 
+                                min="0" max="4" 
+                                step="1"
+                                class="swal2-input" 
+                                id="floor" 
+                                value="${resp.lab_floor}"
+                            >
+                            <label class="swal2-input-label" id="range-l">${resp.lab_floor}</label>
+                        </div>
+                        <div class="swal2-html-container" id="select_container">
+                            <label for="sel-class" class="swal2-input-label">Classe do laboratório</label>
+                            <select 
+                                class="swal2-select" 
+                                id="sel-class" 
+                                style="
+                                    width: 60vw; 
+                                    height: 8vh; 
+                                    transition: all 0.3s ease;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;
+                                "
+                            >
+                                ${classes}
+                            <select>
+                        </div>
+                        <div class="swal2-html-container">
+                            <label for="status" class="swal2-input-label">Estado atual</label>
+                            <select 
+                                class="swal2-select" 
+                                id="status" 
+                                style="
+                                    width: 60vw; 
+                                    height: 8vh; 
+                                    transition: all 0.3s ease;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;
+                                "
+                            >
+                                <option value="open">Aberto</option>
+                                <option value="under-maintenance">Em manutenção</option>
+                            </select>
+                        </div>
+                        <div class="swal2-html-container" id="div-objs">
+                            <label for="select" class="swal2-input-label">Tipos de objetos que estão contidos</label>
+                        </div>
+                    `,
+                    reverseButtons: true, 
+                    preConfirm: async () => {
+                        const container = document.getElementById('div-objs');
+                        const selects   = container.querySelectorAll('select');
+                        basisObjectClassesArray = {};
+                        selects.forEach((sel, i) => {
+                            if (sel.value != 'none') {
+                            basisObjectClassesArray[`Object-${(i+1)}`] = sel.value
+                            }
+                        });
+                        if (localStorage.getItem('sel-file') != '' && localStorage.getItem('sel-file') != null) {
+                            file = localStorage.getItem('sel-file')
+                        }
+                        else
+                        {
+                            file = ''
+                        }
+                        writeLaboratoryData(
+                            classroomID,
+                            basisObjectClassesArray,
+                            document.getElementById('sel-class').value,
+                            file,
+                            document.getElementById('desc').value,
+                            resp.data,
+                            author,
+                            document.getElementById('status').value,
+                            document.getElementById('floor').value
+                        ).then(successToastSwal.fire().then(localStorage.removeItem('sel-file'))).catch(error => errorToastSwal.fire({text: error}));
+                    }
+                });
+
+                for (const object in resp.basis_obj.b_obj_classes_array) {
+                    selectData = `
+                    <select 
+                        class="swal2-select" 
+                        id="select-${object}"
+                        style="
+                            width: 60vw; 
+                            height: 8vh; 
+                            transition: all 0.3s ease;
+                            border-radius:15px;
+                            border-color: #D3D3D3;
+                            background-color: #f5f5f5;
+                        "
+                    >
+                        <option value="none"></option>`;
+                    for (var ID = 0; ID < objects.length ;ID++) {
+                        selectData += `<option value="${objects[ID][1]}">${objects[ID][1]}</option>`
+                    }
+                    selectData += '</select>';
+                    document.getElementById('div-objs').innerHTML += selectData;
+                    
+                }
+                for (const object in resp.basis_obj.b_obj_classes_array) {
+                    const selectElement = document.getElementById(`select-${object}`);
+                    selectElement.selectedIndex = 
+                        Array.from(selectElement.options).findIndex(option => option.value === resp.basis_obj.b_obj_classes_array[object]);
+                }
+            
+                const select = document.getElementById('sel-class');
+                const searchValue = resp.classif_labs;
+                select.selectedIndex = Array.from(select.options).findIndex(option => option.value === searchValue);
+
+                const statusSelect = document.getElementById('status');
+                const searchStatus = resp.status;
+                statusSelect.selectedIndex = Array.from(statusSelect.options).findIndex(option => option.value === searchStatus);
+
+                const floorRange = document.getElementById('floor');
+                if (floorRange) {
+                    floorRange.addEventListener('input', (event) => {
+                        document.getElementById('range-l').textContent = event.target.value;
+                    })
+                
+                }
+                const container = document.getElementById('div-objs');
+                container.addEventListener('change', function(e) {
+                    const target = e.target;
+                    if (target.tagName !== 'SELECT') return;
+                    const selects = Array.from(container.querySelectorAll('select'));
+                    const idx = selects.indexOf(target);
+                    if (target.selectedIndex !== 0) {
+                        const isLast = idx === selects.length - 1;
+                        if (isLast) {
+                            const novo = target.cloneNode(true);
+                            novo.selectedIndex = 0;
+                            container.appendChild(novo);
+                        }
+                    } else {
+                        const toRemove = selects.slice(idx + 1);
+                        toRemove.forEach(s => s.remove());
+                    }
+                });
+            })
+        })
+    })
+}
+
 export async function swalFireLookForLaboratory (
     classroomID
 ) {
     var objList = '';
     readLaboratories(classroomID, 'general').then(resp => {
+        const userUID = resp.author;
         const objData = resp.basis_obj.b_obj_classes_array;
         for (const objID in objData) {
             objList += `<p class="swal2-input" style="
@@ -761,8 +992,48 @@ export async function swalFireLookForLaboratory (
                 </div>
             `,
             preConfirm: async () => {
-                updatelaboratorySwal(classroomID)
+                updateLaboratorySwal(classroomID, userUID)
             }
         })
     })
 }
+
+export async function swalFireLookForUser (
+    userID
+) {
+    readUsers(userID, 'general').then(resp => {
+        var imageURL = resp.user_img_url;
+        if (!imageURL) {imageURL = '../../assets/avatar.png'}
+        reControleSwal.fire({
+            title: resp.user_name,
+            imageWidth: '35vw',
+            imageUrl: imageURL,
+            showCancelButton: false
+        })
+    })
+}
+
+export async function convertImg (
+    file, 
+    callback
+) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = img.width * 0.5;
+            canvas.height = img.height * 0.5;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            const base64 = canvas.toDataURL('image/png', 0.7);
+            callback(base64);
+        };
+    };
+    reader.readAsDataURL(file);
+}
+
+//depois fazer uma verif para o nível de acesso ao update

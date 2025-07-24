@@ -266,3 +266,21 @@ main {
 img {
   max-width: 20vw;
 }
+
+input[type="search"] {
+  width: 30vw;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+}
+
+.search-btn {
+  color: #EFF0FF;
+  background-color: #2f5cf3;
+  padding: 9px 12px;
+  border: 1px solid #ddd;
+  border-radius: 100px;
+}
+.search-btn:hover {
+  background-color: #003376;
+}

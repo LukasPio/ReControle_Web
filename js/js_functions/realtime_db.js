@@ -4,7 +4,7 @@ import {errorSwalResponse} from '../js_functions/swal_fire_errors.js';
 //Cadastro ou edição de dados
 
 // Cadastrar ou editar o usuário
-export function writeUserData(
+export async function writeUserData(
   userID, 
   rank, 
   imageUrl,
@@ -56,6 +56,7 @@ export function writeObjectData (
   objectClass, 
   objectType, 
   objectID,
+  selectedLab
 ) {
   set(ref(getDatabase(), `object/${objectID}`), {
     desc: description,
@@ -65,7 +66,8 @@ export function writeObjectData (
     delivered_date: {
       del_day: gotDay,
       del_time: gotTime
-    }
+    },
+    lab_id: selectedLab
   })
 }
 
@@ -172,8 +174,7 @@ export async function readUsers (
       case 'general':
         try{
           if (userRef.exists()) {
-            const data = [userRef.val().name, userRef.val().user_email, userRef.val().rank, userRef.val().user_img_url]
-            return data
+            return userRef.val()
           }
         }
         catch (error) {
@@ -223,7 +224,7 @@ export async function readUsers (
         onValue(ref(getDatabase(), 'user'), (usersData) => {  
           for (let userID in usersData.val()) {
             const originalName = `${({ userID, ...usersData.val()[userID]}).user_name}`
-            if (originalName.startsWith(contentName) == true) {
+            if (originalName.startsWith(contentName) == true || originalName.endsWith(contentName)) {
               const user = document.createElement('li')
               user.id = userID
               const userName = document.createElement('span')
@@ -259,7 +260,8 @@ export async function readUsers (
 // Função para realizar todas as tarefas de leitura de occorrências
 export async function readReports(
   reportID,
-  contentType
+  contentType,
+  contentName
 ) {
   const dbRef = ref(getDatabase());
   const reference = await get(child(ref(getDatabase()), 'reports'));
@@ -335,13 +337,74 @@ export async function readReports(
       // trará todos os chamados com o conteúdo e o seu ID
       case 'general': 
         if (reference.exists()) {
+          document.getElementById('chamados').innerHTML = '';
           for(const repID in reportRef){
             reportPostedDatas[repID] = reportRef[repID]
             reportContents[repID] = reportRef[repID].content?.title
+                const report = document.createElement('div');
+                report.className = 'chamado-card';
+                report.id = repID;
+ 
+                const link = document.createElement('a');
+                link.href = `/html/calls.html?id=${repID}`;
+                link.innerHTML = 'Ver mais';
+
+                const repIDElement = document.createElement('p');
+                repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportRef[repID].content?.title}`;
+
+                const localAndData = document.createElement('p');
+                localAndData.innerHTML = `${reportRef[repID].selected_obj.sel_lab_id} - ${reportRef[repID].dates.posted_date.posted_day}`;
+
+                report.appendChild(repIDElement);
+                report.appendChild(link);
+                report.appendChild(localAndData);
+                document.getElementById('chamados').appendChild(report);
           }
         }
-        return reportPostedDatas, reportContents
       ;
+
+      // trará todos os chamados com o conteúdo e o seu ID para os três primeiros (a ser alterado)
+      case 'general-home' :
+        if (reference.exists()) {
+          for(const repID in reportRef){
+            reportPostedDatas[repID] = reportRef[repID]
+            //reportContents[repID] = reportRef[repID].content?.title
+          }
+          return reportPostedDatas//, reportContents
+        }
+      ;
+      break;
+
+      case 'search-for': 
+        if (reference.exists()) {
+          document.getElementById('chamados').textContent = '';
+          for(const repID in reportRef){
+            if (repID.startsWith(contentName)) {
+              reportPostedDatas[repID] = reportRef[repID]
+              reportContents[repID] = reportRef[repID].content?.title
+              const report = document.createElement('div');
+              report.className = 'chamado-card';
+              report.id = repID;
+  
+              const link = document.createElement('a');
+              link.href = `/html/calls.html?id=${repID}`;
+              link.innerHTML = 'Ver mais';
+
+              const repIDElement = document.createElement('p');
+              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportRef[repID].content?.title}`;
+
+              const localAndData = document.createElement('p');
+              localAndData.innerHTML = `${reportRef[repID].selected_obj.sel_lab_id} - ${reportRef[repID].dates.posted_date.posted_day}`;
+
+              report.appendChild(repIDElement);
+              report.appendChild(link);
+              report.appendChild(localAndData);
+              document.getElementById('chamados').appendChild(report);
+            }
+          }
+        }
+      ;
+      break;
 
       // Trará todas as datas adjuntos aos ID dos chamados
       case 'data':
@@ -470,7 +533,8 @@ contentType
 // Função para realizar todas as tarefas de leitura dos laboratórios
 export async function readLaboratories (
   labID,
-  contentType
+  contentType,
+  contentName
 ) {
   const dbRef = ref(getDatabase());
   const reference = await get(child(dbRef, 'laboratory'));
@@ -495,6 +559,9 @@ export async function readLaboratories (
 
       case 'class': ;
       break;
+
+      default: 
+        return 'Incorrect content-type.';
     }
   }
   else
@@ -509,10 +576,74 @@ export async function readLaboratories (
 
       case 'content': 
         if (reference.exists()) {
+          document.getElementById('labs').innerHTML = '';
           for(const labID in labRef) {
             labURLDesc[labID] = [labRef[labID].lab_Content.lab_img_url, labRef[labID].lab_Content.desc];
+            
+            const laboratory = document.createElement('div');
+              laboratory.className = 'lab-card';
+              laboratory.id = labID;
+
+              const labIDElement = document.createElement('p');
+              labIDElement.innerHTML = `<strong>${labID}</strong><br><br>`;
+                    
+              const seeMoreElement = document.createElement('a');
+              seeMoreElement.href = `/html/institution.html?ID=${labID}`;
+              seeMoreElement.innerHTML = 'Ver mais<br>';
+
+              const img = document.createElement('p');
+              img.innerHTML = `<img src="${labURLDesc[labID][0]}" style="width: 50vw; height: 30vh;"><br>`;
+              if (!labURLDesc[labID][0]) {
+                img.innerHTML = `<img src="../assets/default_classroom.avif" style="width: 50vw; height: 30vh;"><br>`;
+              }
+
+              const desc = document.createElement('p');
+              desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`;
+
+              laboratory.appendChild(labIDElement);
+              laboratory.appendChild(img);
+              laboratory.appendChild(seeMoreElement);
+              laboratory.appendChild(desc);
+              document.getElementById('labs').appendChild(laboratory);
           }
-          return labURLDesc;
+        }
+      ;
+      break;
+
+      case 'search-for' :
+        if (reference.exists()) {
+          document.getElementById('labs').innerHTML = '';
+          for(const labID in labRef) {
+            if ((labID.startsWith(contentName) || labID.endsWith(contentName))) { 
+              labURLDesc[labID] = [labRef[labID].lab_Content.lab_img_url, labRef[labID].lab_Content.desc]
+
+              const laboratory = document.createElement('div')
+              laboratory.className = 'lab-card'
+              laboratory.id = labID
+
+              const labIDElement = document.createElement('p')
+              labIDElement.innerHTML = `<strong>${labID}</strong><br><br>`
+                    
+              const seeMoreElement = document.createElement('a')
+              seeMoreElement.href = `/html/institution.html?ID=${labID}`
+              seeMoreElement.innerHTML = 'Ver mais<br>'
+
+              const img = document.createElement('p')
+              img.innerHTML = `<img src="${labURLDesc[labID][0]}"><br>`
+              if (!labURLDesc[labID][0]) {
+                  img.innerHTML = `<img src="../assets/default_classroom.avif"><br>`
+              }
+
+              const desc = document.createElement('p')
+              desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`
+
+              laboratory.appendChild(labIDElement)
+              laboratory.appendChild(img)
+              laboratory.appendChild(seeMoreElement)
+              laboratory.appendChild(desc)
+              document.getElementById('labs').appendChild(laboratory)
+            }
+          }
         }
       ;
       break;
@@ -528,6 +659,9 @@ export async function readLaboratories (
           return Object.entries(labClasses);
         };
       break;
+        
+      default: 
+        return 'Incorrect content-type.';
     }
   }
 }

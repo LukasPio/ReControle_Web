@@ -1,74 +1,29 @@
 import {EMF, FEC} from '../js_config/Config.js';
+import {errorToastSwal} from './swal_mixins.js'
 
 export function errorSwalResponse(error) {
   switch (error.code) {
 
-    case `${FEC.c_inv_e}`:
-      Swal.fire({                  
-        title: 'Erro',           
-        text: EMF.inv_email,                
-        icon: 'error'              
-      });
-
+    case `${FEC.c_inv_e}`:    errorToastSwal.fire({title:  EMF.inv_email});
     break;
 
-    case `${FEC.C_miss_p}`:     
-                
-      Swal.fire({
-        title: 'Erro',
-        text: EMF.miss_pass,
-        icon: 'error'
-      });
+    case `${FEC.C_miss_p}`:   errorToastSwal.fire({title: EMF.miss_pass});
     break;
                 
-    case `${FEC.c_inv_c}`:
-
-      Swal.fire({
-        title: 'Erro',
-        text: EMF.inv_cred,
-        icon: 'error'
-      });
-
+    case `${FEC.c_inv_c}`:    errorToastSwal.fire({title: EMF.inv_cred});
     break;
                 
-    case `${FEC.c_user_dis}`:
+    case `${FEC.c_user_dis}`: errorToastSwal.fire({title: EMF.user_dis});
+    break;
                   
-      Swal.fire({
-        title: 'Erro',
-        text: EMF.user_dis,
-        icon: 'error'
-      });
-
-      break;
-                  
-      case `${FEC.C_too_r}`:
-
-        Swal.fire({
-          title: 'Erro',
-          text: EMF.too_req,
-          icon: 'error'
-        });
-
-      break;
+    case `${FEC.C_too_r}`:    errorToastSwal.fire({title: EMF.too_req});
+    break;
           
-      case `${FEC.C_miss_e}`: 
-
-        Swal.fire({
-          title: 'Erro',
-          text: EMF.miss_email,
-          icon: 'error'
-        });
-
-      break;
+    case `${FEC.C_miss_e}`:   errorToastSwal.fire({title: EMF.miss_email});
+    break;
                 
-      default: 
-      
-        Swal.fire({    
-          title: 'Erro',
-          text: 'Erro ao entrar, tente novamente',
-          icon: 'error'
-        });
-      }
+    default:                  errorToastSwal.fire({title: 'Erro ao entrar, tente novamente'});
+  }
 
 }
 
