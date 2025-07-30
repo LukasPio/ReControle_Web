@@ -484,10 +484,10 @@ contentType
       ;
       break;
         
-      // Trará o tipo do objeto selecionado
-      case 'type':
+      // Trará o ID do laboratório do objeto selecionado
+      case 'lab-id':
+        return ObjValue.lab_id
       ;
-      break;
 
       default: 
         return 'Incorrect content-type.';
@@ -499,8 +499,8 @@ contentType
 
       // Ainda não decidido
       case 'general': 
+        return objectRef
       ;
-      break;
 
       // Trará todas as classes existentes
       case 'class':
@@ -519,6 +519,41 @@ contentType
           for(const objectID in objectRef) {
             objectTypes[objectID] = objectRef[objectID].obj_type;
             return Object.entries(objectTypes);
+          }
+        }
+      ;
+      break;
+
+      // Trará todas os IDs existentes
+      case 'id': 
+        if (reference.exists()){
+          for (const ID in objectRef) {
+            objectTypes[ID] = ID
+          }
+          return Object.values(objectTypes)
+        }
+      ;
+      break;
+
+      // Fará a lista no "gerenciar BD"
+      case 'content': 
+        if (reference.exists()) {
+          document.getElementById('objs').innerHTML = '';
+          for(const ID in objectRef) {
+            const object = document.createElement('div');
+            object.className = 'chamado-card';
+            object.id = ID;
+ 
+            const link = document.createElement('a');
+            link.href = `/html/calls.html?objid=${ID}`;
+            link.innerHTML = 'Ver mais';
+
+            const objIDElement = document.createElement('p');
+            objIDElement.innerHTML = `<strong>${ID}</strong><br> ${objectRef[ID].name}`;
+
+            object.appendChild(objIDElement);
+            object.appendChild(link);
+            document.getElementById('objs').appendChild(object);
           }
         }
       ;

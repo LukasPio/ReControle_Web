@@ -21,13 +21,11 @@ export async function createReportSwal (
     occuredDate, 
     occuredTime, 
     mainProblem, 
-    selectedObject, 
-    selectedLab,
-    file;
+    file,
+    selectData;
 
     switch (title) {
         case 'Exemplos de falhas...': 
-            selectedObject = 'Este objeto aqui';
             mainProblem = 'Este problema aqui';
         ;
         break;
@@ -35,146 +33,141 @@ export async function createReportSwal (
             mainProblem = title;
         ;
     }
-    reControleSwal.fire({
-        title: 'Só mais uns passos...',
-        html: `
-            <div class="swal2-html-container">
-                <label for="main-title" class="swal2-html-text">Título do ocorrido</label>
-                <input 
-                    type="text" 
-                    class="swal2-input" 
-                    id="main-title" 
-                    style="
-                        width: 55vw;
-                        border-radius:15px;
-                        border-color: #D3D3D3;
-                        background-color: #f5f5f5;
-                    "
-                    value="${title}" 
-                required> 
-            </div>
-            <div class="swal2-html-container">
-                <label for="main-problem" class="swal2-html-text">Problema a relatar</label>
-                <input 
-                    type="text" 
-                    class="swal2-input" 
-                    id="main-problem"
-                    style="
-                        width: 55vw;
-                        border-radius:15px;
-                        border-color: #D3D3D3;
-                        background-color: #f5f5f5;
-                    "  
-                    value="${mainProblem}"
-                > 
-            </div>
-            <<div class="swal2-html-container">
-                <label for="selected-file" class="swal2-html-text">Foto do ocorrido</label>
-                <input 
-                    type="file" 
-                    class="swal2-input" 
-                    id="selected-file"
-                    style="    
-                        width: 55vw;
-                        border-radius:15px;
-                        border-color: #D3D3D3;
-                        background-color: #f5f5f5;" 
-                    >
-            </div>
-            <div class="swal2-html-container">
-                <label for="selected-file" class="swal2-html-text">laboratório</label>
-                <input 
-                    type="text" 
-                    class="swal2-input"
-                    id="selected-lab" 
-                    style="
-                        width: 55vw;
-                        border-radius:15px;
-                        border-color: #D3D3D3;
-                        background-color: #f5f5f5;
-                    " 
-                >
-            </div>
-            <div class="swal2-html-container">
-                <label for="selected-obj" class="swal2-html-text">Objeto selectionado</label>
-                <input 
-                    type="text" 
-                    class="swal2-input"
-                    id="selected-obj" 
-                    style="
-                        width: 55vw;
-                        border-radius:15px;
-                        border-color: #D3D3D3;
-                        background-color: #f5f5f5;
-                    "  
-                    value="${selectedObject}" 
-                required> 
-            </div>
-            <div class="swal2-html-container" >
-                <label for="selected-obj" class="swal2-html-text">Dia da validação da ocorrência</label><br>
-                <input 
-                    type="date" 
-                    class="swal2-input" 
-                    id="occur-date"
-                    style="     
-                        width: 25vw;
-                        border-radius:15px;
-                        border-color: #D3D3D3;
-                        background-color: #f5f5f5;
-                    "  
-                    value="${new Date().toISOString().split('T')[0]}"
-                > 
-                <input 
-                    type="time" 
-                    class="swal2-input" 
-                    id="occur-time"
-                    style="
-                        width: 25vw;
-                        border-radius:15px;
-                        border-color: #D3D3D3;
-                        background-color: #f5f5f5;
-                    "  
-                    value="${new Date().toTimeString().slice(0, 5)}"
-                >
-            </div>
-        `,
-        confirmButtonText: 'Enviar ocorrência',
-        confirmButtonColor: '#2f5cf3',
-        preConfirm: async () => {
-            newMainTitle = document.getElementById('main-title').value;
-            newMainProblem = document.getElementById('main-problem').value;
-            newSelectedObject = document.getElementById('selected-obj').value;
-            occuredDate = document.getElementById('occur-date').value;
-            occuredTime = document.getElementById('occur-time').value;
-            selectedLab = document.getElementById('selected-lab').value;
-            if (localStorage.getItem('sel-file') != '' && localStorage.getItem('sel-file') != null) {
-                file = localStorage.getItem('sel-file')
-            }
-            else {
-                file = ''
-            }
-            
-            try {
-                writeReportsData(
-                    file,
-                    newMainProblem,
-                    newMainTitle,
-                    'red',
-                    author,
-                    occuredDate,
-                    occuredTime,
-                    "",
-                    "",
-                    `${selectedLab}-${occuredDate}-${occuredTime}`,
-                    selectedLab,
-                    newSelectedObject
-                );
-                successToastSwal.fire().then( localStorage.removeItem('sel-file') )
-            }
-            catch {
-                errorToastSwal.fire()
-            }
+
+    readObjects(null, 'general').then(resp => {
+        selectData = '<option value="none"></option>';
+        for (const ID in resp) {
+            selectData += `<option value="${ID}"> ${ID} </option>`
         }
+
+        reControleSwal.fire({
+            title: 'Só mais uns passos...',
+            html: `
+                <div class="swal2-html-container">
+                    <label for="main-title" class="swal2-html-text">Título do ocorrido</label>
+                    <input 
+                        type="text" 
+                        class="swal2-input" 
+                        id="main-title" 
+                        style="
+                            width: 55vw;
+                            border-radius:15px;
+                            border-color: #D3D3D3;
+                            background-color: #f5f5f5;
+                        "
+                        value="${title}" 
+                    required> 
+                </div>
+                <div class="swal2-html-container">
+                    <label for="main-problem" class="swal2-html-text">Problema a relatar</label>
+                    <input 
+                        type="text" 
+                        class="swal2-input" 
+                        id="main-problem"
+                        style="
+                            width: 55vw;
+                            border-radius:15px;
+                            border-color: #D3D3D3;
+                            background-color: #f5f5f5;
+                        "  
+                        value="${mainProblem}"
+                    > 
+                </div>
+                <div class="swal2-html-container">
+                    <label for="selected-file" class="swal2-html-text">Foto do ocorrido</label>
+                    <input 
+                        type="file" 
+                        class="swal2-input" 
+                        id="selected-file"
+                        style="    
+                            width: 55vw;
+                            border-radius:15px;
+                            border-color: #D3D3D3;
+                            background-color: #f5f5f5;" 
+                        >
+                </div>
+                <div class="swal2-html-container">
+                    <label for="selected-obj" class="swal2-html-text">Objeto selectionado</label>
+                    <select 
+                        class="swal2-input"
+                        id="selected-obj" 
+                        style="
+                            width: 55vw;
+                            border-radius:15px;
+                            border-color: #D3D3D3;
+                            background-color: #f5f5f5;
+                        " 
+                    >
+                        ${selectData}
+                    </select>
+                </div>
+                <div class="swal2-html-container" >
+                    <label for="selected-obj" class="swal2-html-text">Dia da validação da ocorrência</label><br>
+                    <input 
+                        type="date" 
+                        class="swal2-input" 
+                        id="occur-date"
+                        style="     
+                            width: 25vw;
+                            border-radius:15px;
+                            border-color: #D3D3D3;
+                            background-color: #f5f5f5;
+                        "  
+                        value="${new Date().toISOString().split('T')[0]}"
+                    > 
+                    <input 
+                        type="time" 
+                        class="swal2-input" 
+                        id="occur-time"
+                        style="
+                            width: 25vw;
+                            border-radius:15px;
+                            border-color: #D3D3D3;
+                            background-color: #f5f5f5;
+                        "  
+                        value="${new Date().toTimeString().slice(0, 5)}"
+                    >
+                </div>
+            `,
+            confirmButtonText: 'Enviar ocorrência',
+            confirmButtonColor: '#2f5cf3',
+            preConfirm: async () => {
+                newMainTitle = document.getElementById('main-title').value;
+                newMainProblem = document.getElementById('main-problem').value;
+                newSelectedObject = document.getElementById('selected-obj').value;
+                occuredDate = document.getElementById('occur-date').value;
+                occuredTime = document.getElementById('occur-time').value;
+                if (localStorage.getItem('sel-file') != '' && localStorage.getItem('sel-file') != null) {
+                    file = localStorage.getItem('sel-file')
+                }
+                else {
+                    file = ''
+                }
+
+                readObjects(newSelectedObject, 'lab-id').then(resp => {
+                    try {
+                        writeReportsData(
+                            file,
+                            newMainProblem,
+                            newMainTitle,
+                            'red',
+                            author,
+                            occuredDate,
+                            occuredTime,
+                            "",
+                            "",
+                            `${resp}-${occuredDate}-${occuredTime}`,
+                            resp,
+                            newSelectedObject
+                        );
+                        successToastSwal.fire().then( localStorage.removeItem('sel-file') )
+                    }
+                    catch {
+                        errorToastSwal.fire()
+                    }
+                    })                
+            }
+        })
     })
     const selectedFile = document.getElementById('selected-file');
     if (selectedFile) { 
@@ -317,7 +310,8 @@ export async function swalFireLookForOcurrence (
             }
             readReports(reportID, 'selected-object').then((resp) => {
                 readObjects(resp, 'class-type').then(classType => {
-                    reControleSwal.fire({
+                    const swalLook =
+                    reControleSwal.mixin({
                         title: `${data[4][1]}`,
                         imageUrl: `${imageURL}`,
                         cancelButtonText: 'Ok',
@@ -395,10 +389,16 @@ export async function swalFireLookForOcurrence (
                                 </center>
                             </div>
                         `,
-                        preConfirm: async () => {
-                            updateReportSwal(reportID, userUID)
-                        }
+                        preConfirm: async () => updateReportSwal(reportID, userUID)
                     })
+                    if (localStorage.getItem('rank') == 3) {
+                        swalLook.fire()
+                    }
+                    else {
+                        swalLook.fire({
+                            showConfirmButton: false
+                        })
+                    }
                 });
             })
         })
@@ -930,7 +930,7 @@ export async function swalFireLookForLaboratory (
         const status = resp.status === 'open' ? 'Aberto' : 'Em manutenção';
         var imageURL = resp.lab_Content.lab_img_url;
         if (!imageURL) {imageURL = '../../assets/default_classroom.avif'}
-        reControleSwal.fire({
+        const swalLook = reControleSwal.mixin({
             title: `${classroomID}`,
             imageUrl: `${imageURL}`,
             confirmButtonText: 'Alterar',
@@ -994,7 +994,15 @@ export async function swalFireLookForLaboratory (
             preConfirm: async () => {
                 updateLaboratorySwal(classroomID, userUID)
             }
-        })
+        });
+        if (localStorage.getItem('rank') == 3) {
+            swalLook.fire()
+        }
+        else {
+            swalLook.fire({
+                showConfirmButton: false
+            })
+        }
     })
 }
 

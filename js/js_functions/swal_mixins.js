@@ -42,6 +42,6 @@ export const loading = Swal.mixin({
     backdrop: ` rgba(0,20,100,0.2) `,
     text: 'Carregando',
     color: 'black',
-    timer: 1000,
+    timer: 1500,
     didOpen: () => Swal.showLoading()
 });

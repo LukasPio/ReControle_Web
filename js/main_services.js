@@ -32,7 +32,9 @@ document.addEventListener("DOMContentLoaded", () => {
 onAuthStateChanged(auth, (user) => {
   if (user) {
     readUsers(user.uid, 'general').then(resp => {
-      document.getElementById('user-img').src = resp.user_img_url;
+      if (resp.user_img_url) {
+        document.getElementById('user-img').src = resp.user_img_url
+      }
       localStorage.setItem('rank', resp.rank);
     })
     localStorage.setItem('userUID', user.uid);
