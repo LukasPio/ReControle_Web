@@ -216,3 +216,7 @@ input[type="search"] {
   border: 1px solid #ddd;
   border-radius: 20px;
 }
+.image-report {
+  border-radius: 15px;
+  max-width: 15vw;
+}

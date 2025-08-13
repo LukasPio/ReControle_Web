@@ -83,8 +83,9 @@ export async function createReportSwal (
                             width: 55vw;
                             border-radius:15px;
                             border-color: #D3D3D3;
-                            background-color: #f5f5f5;" 
-                        >
+                            background-color: #f5f5f5;
+                        " 
+                    >
                 </div>
                 <div class="swal2-html-container">
                     <label for="selected-obj" class="swal2-html-text">Objeto selectionado</label>
@@ -156,7 +157,7 @@ export async function createReportSwal (
                             occuredTime,
                             "",
                             "",
-                            `${resp}-${occuredDate}-${occuredTime}`,
+                            //`${resp}-${occuredDate}-${occuredTime}`,
                             resp,
                             newSelectedObject
                         );
@@ -165,10 +166,9 @@ export async function createReportSwal (
                     catch {
                         errorToastSwal.fire()
                     }
-                    })                
+                })                
             }
         })
-    })
     const selectedFile = document.getElementById('selected-file');
     if (selectedFile) { 
         selectedFile.addEventListener('change', (event) => {
@@ -177,6 +177,8 @@ export async function createReportSwal (
             })
         }) 
     }
+    })
+    
 }
 
 export async function updateReportSwal (
@@ -300,110 +302,150 @@ export async function updateReportSwal (
 export async function swalFireLookForOcurrence (
     reportID
 ) {
-    readReports(reportID, 'text-content').then(response => {
-        readReports(reportID, 'general').then(resp => {
-            const userUID = resp.content.autor;
-            const data = Object.entries(response);
-            var imageURL = data[1][1];
-            if (!imageURL) {
-                imageURL = '../../assets/default_occur.jpg'
-            }
-            readReports(reportID, 'selected-object').then((resp) => {
-                readObjects(resp, 'class-type').then(classType => {
-                    const swalLook =
-                    reControleSwal.mixin({
-                        title: `${data[4][1]}`,
-                        imageUrl: `${imageURL}`,
-                        cancelButtonText: 'Ok',
-                        confirmButtonText: 'Alterar',
-                        html: `
-                            <div class='swal2-html-container' id='swal2-html-container'>
-                                <label for='object-description' style='font-weight:bold;'> Descrição </label>
-                                <center>
-                                    <p id='object-description' style=' 
-                                            height: 20vh;
-                                            width:55vw;
-                                            border:1px solid black;
-                                            border-radius:15px;
-                                            border-color: #D3D3D3;
-                                            background-color: #f5f5f5;'
-                                    >
-                                        ${data[3][1]}
-                                    </p>
-                                </center>
-                            </div>
-                            <div class='swal2-html-container' id='swal2-html-container'>
-                                <label for='object-class' style='font-weight:bold;'> Classe do objeto </label>
-                                <center>
-                                    <p id='object-class' style='
-                                            width:55vw;
-                                            border:1px solid black;
-                                            border-radius:15px;
-                                            border-color: #D3D3D3;
-                                            background-color: #f5f5f5;'
-                                    >
-                                        ${classType[0]}
-                                    </p>
-                                </center>
-                            </div>
-                            <div class='swal2-html-container' id='swal2-html-container'>
-                                <label for='object-type' style='font-weight:bold;'> Tipo do objeto </label>
-                                <center>
-                                    <p id='object-type' style='
-                                            width:55vw;
-                                            border:1px solid black;
-                                            border-radius:15px;
-                                            border-color: #D3D3D3;
-                                            background-color: #f5f5f5;'
-                                    >
-                                        ${classType[1]}
-                                    </p>
-                                </center>
-                            </div>
-                            <div class='swal2-html-container' id='swal2-html-container'>
-                                <label for='selected-local' style='font-weight:bold;'> Sala selecionada </label>
-                                <center>
-                                    <p id='selected-local' style='
-                                            width:55vw;
-                                            border:1px solid black;
-                                            border-radius:15px;
-                                            border-color: #D3D3D3;
-                                            background-color: #f5f5f5;'
-                                    >
-                                        ${reportID.slice(0, -17)}
-                                    </p>
-                                </center>
-                            </div>
-                            <div class='swal2-html-container' id='swal2-html-container'>
-                                <label for='date-time' style='font-weight:bold;'> Data e Hora </label>
-                                <center>
-                                    <p id='date-time' style='
-                                            width:55vw;
-                                            border:1px solid black;
-                                            border-radius:15px;
-                                            border-color: #D3D3D3;
-                                            background-color: #f5f5f5;'
-                                    >
-                                        Dia ${reportID.slice(-8, -6)} do mês ${reportID.slice(-11, -9)} de ${reportID.slice(-16, -12)} , às ${reportID.slice(-5, -3)} horas e ${reportID.slice(-2)} minutos
-                                    </p>
-                                </center>
-                            </div>
-                        `,
-                        preConfirm: async () => updateReportSwal(reportID, userUID)
-                    })
-                    if (localStorage.getItem('rank') == 3) {
-                        swalLook.fire()
-                    }
-                    else {
-                        swalLook.fire({
-                            showConfirmButton: false
-                        })
-                    }
+
+    readReports(reportID, 'general').then(resp => {
+        const userUID = resp.content.autor;
+        var imageElement = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : resp.content.img_url;
+        var image = `${resp.content.img_url}`;
+        if (!image.startsWith('data:image/png;base64,') ) {
+            imageElement = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
+        }
+        var text = '', title = '';
+        
+            if (resp.selected_obj) {
+                readObjects(resp.selected_obj.sel_obj_id, 'class-type').then(classType => {
+                    text = `
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='object-description' style='font-weight:bold;'> Descrição </label>
+                            <center>
+                                <p id='object-description' style=' 
+                                        height: 20vh;
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${resp.content?.text}
+                                </p>
+                            </center>
+                        </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='object-class' style='font-weight:bold;'> Classe do objeto </label>
+                            <center>
+                                <p id='object-class' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                ${classType[0]}
+                                </p>
+                            </center>
+                        </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='object-type' style='font-weight:bold;'> Tipo do objeto </label>
+                            <center>
+                                <p id='object-type' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${classType[1]}
+                                </p>
+                            </center>
+                        </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='selected-local' style='font-weight:bold;'> Sala selecionada </label>
+                            <center>
+                                <p id='selected-local' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${resp.selected_obj.sel_lab_id}
+                                </p>
+                            </center>
+                        </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='date-time' style='font-weight:bold;'> Data e Hora </label>
+                            <center>
+                                <p id='date-time' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    Data: ${resp.dates.posted_date.posted_day} - Hora: ${resp.dates.posted_date.posted_time}
+                                </p>
+                            </center>
+                        </div>
+                    `;
+                    title = `${resp.content?.title}`;
                 });
+            }
+            else
+            {
+                text = `
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='local' style='font-weight:bold;'> Local </label>
+                        <center>
+                            <p id='local' style=' 
+                                    height: 20vh;
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${resp.content?.local}
+                            </p>
+                        </center>
+                    </div>
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='report-desc' style='font-weight:bold;'> Descrição </label>
+                        <center>
+                            <p id='report-desc' style=' 
+                                    height: 20vh;
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${resp.content?.text}
+                            </p>
+                        </center>
+                    </div>
+                `;
+                title = 'Ocorrência';
+            }
+            const swalLook =
+            reControleSwal.mixin({
+                title: title,
+                imageUrl: `${imageElement}`,
+                cancelButtonText: 'Ok',
+                confirmButtonText: 'Alterar',
+                html: text,
+                preConfirm: async () => updateReportSwal(reportID, userUID)
             })
-        })
-    })
-    
+            console.log(swalLook.html)
+            if (localStorage.getItem('rank') == 3) {
+                swalLook.fire()
+            }
+            else {
+                swalLook.fire({
+                    showConfirmButton: false
+                })
+            }
+        
+    })    
 }
 
 export async function createLaboratorySwal (
@@ -1043,5 +1085,3 @@ export async function convertImg (
     };
     reader.readAsDataURL(file);
 }
-
-//depois fazer uma verif para o nível de acesso ao update

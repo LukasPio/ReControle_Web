@@ -284,3 +284,16 @@ input[type="search"] {
 .search-btn:hover {
   background-color: #003376;
 }
+
+.progress {
+  border: 2px solid #fcdd42;
+  border-radius: 15px;
+  padding: 1%;
+  margin-left: 7%;
+}
+
+.pending {
+  border: 2px solid #f14646;
+  border-radius: 15px;
+  padding: 1%;
+}

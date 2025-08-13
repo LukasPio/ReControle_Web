@@ -1,4 +1,4 @@
-import { getDatabase, ref, set, child, get, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+import { getDatabase, ref, push, set, child, get, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 import {errorSwalResponse} from '../js_functions/swal_fire_errors.js';
 
 //Cadastro ou edição de dados
@@ -82,11 +82,11 @@ export function writeReportsData (
   postedTime,
   solvedDay,
   solvedTime,
-  reportID,
+  //reportID,
   selectedLaboratoryID,
   selectedObjectID,
 ) {
-  set(ref(getDatabase(), `reports/${reportID}`), {
+  set(push(ref(getDatabase(), `reports/`)), { //${reportID}
     content: {
       img_url: imageUrl,
       text: text,
@@ -339,34 +339,147 @@ export async function readReports(
         if (reference.exists()) {
           document.getElementById('chamados').innerHTML = '';
           for(const repID in reportRef){
-            reportPostedDatas[repID] = reportRef[repID]
-            reportContents[repID] = reportRef[repID].content?.title
-                const report = document.createElement('div');
-                report.className = 'chamado-card';
-                report.id = repID;
- 
-                const link = document.createElement('a');
-                link.href = `/html/calls.html?id=${repID}`;
-                link.innerHTML = 'Ver mais';
+              
+            const report = document.createElement('div');
+            report.className = 'chamado-card';
+            report.id = repID;
+  
+            const link = document.createElement('a');
+            link.href = `/html/calls.html?id=${repID}`;
+            link.innerHTML = 'Ver mais';
 
-                const repIDElement = document.createElement('p');
-                repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportRef[repID].content?.title}`;
+            const imageDiv = document.createElement('div');
+            const center = document.createElement('center');
+            const imageElement = document.createElement('img');
+            imageElement.className = 'image-report';
 
-                const localAndData = document.createElement('p');
-                localAndData.innerHTML = `${reportRef[repID].selected_obj.sel_lab_id} - ${reportRef[repID].dates.posted_date.posted_day}`;
+            const statusAuthorDiv = document.createElement('div');
+            statusAuthorDiv.style = 'padding-top: 3px;';
+            const statusElement = document.createElement('p');
+            
+            switch (reportRef[repID].content.status) {
+              case 'red': 
+                statusElement.innerHTML = 'Pendente';
+                statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
+              break;
 
-                report.appendChild(repIDElement);
-                report.appendChild(link);
-                report.appendChild(localAndData);
-                document.getElementById('chamados').appendChild(report);
+              case 'yellow': 
+                statusElement.innerHTML = 'Em andamento';
+                statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
+              break;
+
+              case 'green': 
+                statusElement.innerHTML = 'Concluído';
+                statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
+              break;
+            }
+            
+            const userElement = document.createElement('p');
+            userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
+            readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp );
+
+            if (reportRef[repID].content.img_url != undefined) {
+              imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : reportRef[repID].content.img_url;
+              var image = `${reportRef[repID].content.img_url}`;
+              if (!image.startsWith('data:image/png;base64,') ) {
+                imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
+              }
+            } 
+
+            //imageElement.height = imageElement.height > imageElement.width ? (imageElement.height) : (imageElement.height)*0.2;
+/*            if (localStorage.getItem(`height-${repID}`) !== null) {
+              imageElement.height = localStorage.getItem(`height-${repID}`);
+              imageElement.width = localStorage.getItem(`width-${repID}`);
+            }
+            if (imageElement.height > 300) {
+              imageElement.height = (imageElement.height)*0.215;
+              localStorage.setItem(`height-${repID}`, imageElement.height);
+              localStorage.setItem(`width-${repID}`, imageElement.width);
+            }
+            */
+            
+            
+            if (reportRef[repID].dates) {
+              if (reportRef[repID].content?.title) {
+                reportContents[repID] = reportRef[repID].content?.title
+              }
+              else
+              {
+                reportContents[repID] = 'Sem Título para exibir'
+              }
+
+              const repIDElement = document.createElement('p');
+              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
+
+              const localAndData = document.createElement('p');
+              localAndData.innerHTML = `
+                ${reportRef[repID].selected_obj?.sel_lab_id}
+                <p style="
+                    height: 2px;
+                    background: linear-gradient(to right, #ccc);
+                    margin: 15px 0;
+                  "></p>
+              `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
+              
+              report.appendChild(repIDElement);
+              report.appendChild(link);
+              report.appendChild(localAndData);
+              imageDiv.appendChild(imageElement);
+              center.appendChild(imageDiv);
+              center.appendChild(statusElement);
+              center.appendChild(userElement);
+              statusAuthorDiv.appendChild(center);
+              report.appendChild(statusAuthorDiv);
+              document.getElementById('chamados').appendChild(report);
+
+              
+            }
+            else
+            {
+               if (reportRef[repID].content?.text) {
+                reportContents[repID] = reportRef[repID].content?.text
+              }
+              else
+              {
+                reportContents[repID] = 'Sem Título para exibir'
+              }
+
+              const repIDElement = document.createElement('p');
+              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
+
+              const localAndData = document.createElement('p');
+              if (reportRef[repID].content?.local)
+              localAndData.innerHTML = `
+                ${reportRef[repID].content?.local}
+                <p style="
+                  height: 2px;
+                  background: #ccc;
+                  margin: 15px 0;
+                "></p>
+              `,
+
+              report.appendChild(repIDElement),
+              report.appendChild(link),
+              report.appendChild(localAndData),
+              imageDiv.appendChild(imageElement),
+              center.appendChild(imageDiv),
+              center.appendChild(statusElement),
+              center.appendChild(userElement),
+              statusAuthorDiv.appendChild(center),
+              report.appendChild(statusAuthorDiv),
+              document.getElementById('chamados').appendChild(report);
+            }
           }
         }
       ;
+      break;
 
+      // Aterar para assim que tiver a data de criação
       // trará todos os chamados com o conteúdo e o seu ID para os três primeiros (a ser alterado)
       case 'general-home' :
         if (reference.exists()) {
           for(const repID in reportRef){
+            if (reportRef[repID].dates)
             reportPostedDatas[repID] = reportRef[repID]
             //reportContents[repID] = reportRef[repID].content?.title
           }
@@ -477,7 +590,6 @@ contentType
           return 'No data avaiable'
         }
       ;
-      break;
 
       // Trará a classe do objeto selecionado
       case 'class':
@@ -616,30 +728,76 @@ export async function readLaboratories (
             labURLDesc[labID] = [labRef[labID].lab_Content.lab_img_url, labRef[labID].lab_Content.desc];
             
             const laboratory = document.createElement('div');
-              laboratory.className = 'lab-card';
-              laboratory.id = labID;
+            laboratory.className = 'lab-card';
+            laboratory.id = labID;
 
-              const labIDElement = document.createElement('p');
-              labIDElement.innerHTML = `<strong>${labID}</strong><br><br>`;
+            //ID
+            const labIDElement = document.createElement('p');
+            labIDElement.innerHTML = `<strong>${labID}</strong><br><br>`;
                     
-              const seeMoreElement = document.createElement('a');
-              seeMoreElement.href = `/html/institution.html?ID=${labID}`;
-              seeMoreElement.innerHTML = 'Ver mais<br>';
+            //Elemento de visualização da sala em questão
+            const seeMoreElement = document.createElement('a');
+            seeMoreElement.href = `/html/institution.html?ID=${labID}`;
+            seeMoreElement.innerHTML = 'Ver mais<br>';
 
-              const img = document.createElement('p');
-              img.innerHTML = `<img src="${labURLDesc[labID][0]}" style="width: 50vw; height: 30vh;"><br>`;
-              if (!labURLDesc[labID][0]) {
-                img.innerHTML = `<img src="../assets/default_classroom.avif" style="width: 50vw; height: 30vh;"><br>`;
+            //Imagem do laboratório
+            const img = document.createElement('p');
+            img.innerHTML = `<img src="${labURLDesc[labID][0]}" style="width: 50vw; height: 30vh;"><br>`;
+            if (!labURLDesc[labID][0]) {
+              img.innerHTML = `<img src="../assets/default_classroom.avif" style="width: 50vw; height: 30vh;"><br>`;
+            }
+
+            //Descrição
+            const desc = document.createElement('p');
+            desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`;
+
+            //Verificação da existência de ocorrências relacionadas ao laboratório referente.
+            readReports(null, 'data').then(resp => {
+              var int1 = 0, int2 = 0;
+              for (const ID in resp) {
+                if (resp[ID].selected_obj?.sel_lab_id == labID){  
+                  if (resp[ID].content.status == 'red') {
+                    int1++;
+                  }
+                  else if (resp[ID].content.status == 'yellow') {
+                    int2++;
+                  }      
+                }
               }
 
-              const desc = document.createElement('p');
-              desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`;
+              if (int1 != 0 || int2 != 0){
+                const transition = document.createElement('p');
+                transition.innerHTML = `
+                  <p style="
+                      height: 2px;
+                      background: linear-gradient(to right, #ccc);
+                      margin: 15px 0;
+                    "></p>
+                `;
+                const pendingProgressElement = document.createElement('div');
+                const text = document.createElement('b');
+                text.innerHTML = 'Ocorrências<br><br>';
+                const pendingElement = document.createElement('label');
+                pendingElement.className = 'pending';
+                const progressElement = document.createElement('label');
+                progressElement.className = 'progress';
 
-              laboratory.appendChild(labIDElement);
-              laboratory.appendChild(img);
-              laboratory.appendChild(seeMoreElement);
-              laboratory.appendChild(desc);
-              document.getElementById('labs').appendChild(laboratory);
+                progressElement.textContent = `Em andamento: ${int2}`;
+                pendingElement.textContent = `Pendente: ${int1}`;
+
+                pendingProgressElement.appendChild(pendingElement);
+                pendingProgressElement.appendChild(progressElement);
+                laboratory.appendChild(transition);
+                laboratory.appendChild(text);
+                laboratory.appendChild(pendingProgressElement);
+              }
+            })
+            laboratory.appendChild(labIDElement);
+            laboratory.appendChild(img);
+            laboratory.appendChild(seeMoreElement);
+            laboratory.appendChild(desc);
+              
+            document.getElementById('labs').appendChild(laboratory);
           }
         }
       ;
