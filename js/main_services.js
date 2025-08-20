@@ -73,10 +73,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem('rank') == 3) {
       document.getElementById('link-side').innerHTML += `
         <li id="institution">Instituição</li>
-        <li id="acc-managment">Gerenciar contas</li>
-        <li id="bd-managment">Gerenciar BD</li>
+        <li id="acc-management">Gerenciar contas</li>
       `
     }
+  }
+
+  const link = (window.location.pathname).slice(6);
+  switch (link) {
+    case 'acc_managment.html': document.getElementById('acc-management').className = 'active'; break;
+    case 'institution.html': document.getElementById('institution').className = 'active'; break;
   }
 
   
@@ -137,17 +142,10 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
   // Gerenciar Contas
-  const redirectLiAccManagment = document.getElementById("acc-managment");
+  const redirectLiAccManagment = document.getElementById("acc-management");
   if (redirectLiAccManagment) {
     redirectLiAccManagment.addEventListener('click', () => {
-      window.location.href = './acc_managment.html';
-    })
-  }
-  // Gerenciar BD
-  const redirectLiBDManagment = document.getElementById("bd-managment");
-  if (redirectLiBDManagment) {
-    redirectLiBDManagment.addEventListener('click', () => {
-      window.location.href = './bd_managment.html';
+      window.location.href = './acc_management.html';
     })
   }
 

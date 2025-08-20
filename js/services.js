@@ -12,11 +12,11 @@ import { errorToastSwal } from './js_functions/swal_mixins.js';
     
   // Sign up
 document.addEventListener('DOMContentLoaded', () => {
-  const button = document.getElementById('sign-button');
-  if (button){      
-    button.addEventListener('click', () => {        
-      const app = initializeApp(firebaseConfig);
-      getAnalytics(app);
+  
+  const signButton = document.getElementById('sign-button');
+  if (signButton){      
+    signButton.addEventListener('click', () => {        
+      initializeApp(firebaseConfig);
       const auth = getAuth();
 
       var name = document.getElementById('sign-name').value;
@@ -32,13 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (sendEmailVerification(user)) {
             Swal.fire({
-              text: `Para terminar o cadastro, verifique o seu login.`,
+              text: "Para terminar o cadastro, verifique o seu login.",
               icon: 'info',
               showConfirmButton: true,
               showCloseButton: false,
-              confirmButtonText: 'OK'
-            }).then((result) => {
-              if (result.isConfirmed) {
+              confirmButtonText: 'OK',
+              preConfirm: async () => {
                 window.location.href = `../${index}`
               }
             })
@@ -47,11 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       else
       {
-          errorToastSwal.fire({
-            title: 'Digite corretamente a senha de confirmação'
-          })
+          errorToastSwal.fire({ title: 'Digite corretamente a senha de confirmação' })
       }
-    });
+    })
   }    
 });
 

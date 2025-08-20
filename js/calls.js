@@ -64,10 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             confirmButtonText: 'Avançar',
                             showCancelButton: true,
                             cancelButtonText: 'Cancelar',
-                            reverseButtons: true
-                            //antes do function createReportSwal
-                        }).then((result) => {
-                            if (result.isConfirmed) {
+                            reverseButtons: true,
+                            preConfirm: async () => {
                                 usualChoice = Swal.getInput().value;
                                 createReportSwal(usualChoice, localStorage.getItem('userUID'));
                             }

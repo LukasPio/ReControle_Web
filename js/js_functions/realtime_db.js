@@ -22,7 +22,6 @@ export async function writeUserData(
 // Cadastrar ou editar o laboratório
 export async function writeLaboratoryData (
   labID,
-  basisObjectClassesArray,
   classificationOfLabs,
   labURL,
   labDesc,
@@ -32,11 +31,8 @@ export async function writeLaboratoryData (
   floor
 ) {
   set(ref(getDatabase(), `laboratory/${labID}`), {
-    basis_obj: {
-      b_obj_classes_array: basisObjectClassesArray,
-    },
     classif_labs: classificationOfLabs,
-    lab_Content: {
+    content: {
       lab_img_url: labURL,
       desc: labDesc
     },
@@ -48,7 +44,7 @@ export async function writeLaboratoryData (
 }
 
 // Cadastrar ou editar o objeto
-export function writeObjectData (
+export async function writeObjectData (
   name,
   gotDay,
   gotTime,
@@ -112,7 +108,7 @@ export function writeReportsData (
 }
 
 // Atualizar a ocorrência
-export async function updateReportData (
+export async function updateWebReportData (
   author,
   reportID,
   newTitle,
@@ -126,6 +122,23 @@ export async function updateReportData (
     text: newText,
     img_url: newURL,
     status: newStatus
+  })
+}
+
+export async function updateMobileReportData (
+  reportID,
+  text,
+  imageUrl,
+  local,
+  status,
+  author
+) {
+  set(ref(getDatabase(), `reports/${reportID}/content/`), {
+    img_url: imageUrl,
+    text: text,
+    local: local,
+    status: status,
+    autor: author
   })
 }
 
@@ -384,20 +397,7 @@ export async function readReports(
               if (!image.startsWith('data:image/png;base64,') ) {
                 imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
               }
-            } 
-
-            //imageElement.height = imageElement.height > imageElement.width ? (imageElement.height) : (imageElement.height)*0.2;
-/*            if (localStorage.getItem(`height-${repID}`) !== null) {
-              imageElement.height = localStorage.getItem(`height-${repID}`);
-              imageElement.width = localStorage.getItem(`width-${repID}`);
             }
-            if (imageElement.height > 300) {
-              imageElement.height = (imageElement.height)*0.215;
-              localStorage.setItem(`height-${repID}`, imageElement.height);
-              localStorage.setItem(`width-${repID}`, imageElement.width);
-            }
-            */
-            
             
             if (reportRef[repID].dates) {
               if (reportRef[repID].content?.title) {
@@ -630,8 +630,9 @@ contentType
         if (reference.exists()) {
           for(const objectID in objectRef) {
             objectTypes[objectID] = objectRef[objectID].obj_type;
-            return Object.entries(objectTypes);
+            
           }
+          return objectTypes
         }
       ;
       break;
@@ -653,7 +654,7 @@ contentType
           document.getElementById('objs').innerHTML = '';
           for(const ID in objectRef) {
             const object = document.createElement('div');
-            object.className = 'chamado-card';
+            object.className = 'object-card';
             object.id = ID;
  
             const link = document.createElement('a');
@@ -661,7 +662,7 @@ contentType
             link.innerHTML = 'Ver mais';
 
             const objIDElement = document.createElement('p');
-            objIDElement.innerHTML = `<strong>${ID}</strong><br> ${objectRef[ID].name}`;
+            objIDElement.innerHTML = `<strong>${objectRef[ID].name}</strong><br> <p style="margin: 15px;"> ${objectRef[ID].desc} <br><br> ${objectRef[ID].lab_id} </p>`;
 
             object.appendChild(objIDElement);
             object.appendChild(link);
@@ -715,8 +716,8 @@ export async function readLaboratories (
   {
     switch (contentType) {
       case 'general': 
-        if (laboratoryRef.exists()) {
-          return laboratoryRef.val()
+        if (reference.exists()) {
+          return labRef
         }
       ;
       break;
@@ -725,7 +726,7 @@ export async function readLaboratories (
         if (reference.exists()) {
           document.getElementById('labs').innerHTML = '';
           for(const labID in labRef) {
-            labURLDesc[labID] = [labRef[labID].lab_Content.lab_img_url, labRef[labID].lab_Content.desc];
+            labURLDesc[labID] = [labRef[labID].content.lab_img_url, labRef[labID].content.desc];
             
             const laboratory = document.createElement('div');
             laboratory.className = 'lab-card';
@@ -843,13 +844,14 @@ export async function readLaboratories (
 
       case 'class': 
         if (reference.exists()) {
+          localStorage.setItem('old-lab', '0')
           for(const labID in labRef) {
             if (localStorage.getItem('old-lab') != labRef[labID].classif_labs) {
               labClasses[labID] = labRef[labID].classif_labs;
               localStorage.setItem('old-lab', labClasses[labID])
             }
           }
-          return Object.entries(labClasses);
+          return labClasses;
         };
       break;
         
@@ -857,6 +859,21 @@ export async function readLaboratories (
         return 'Incorrect content-type.';
     }
   }
+}
+
+export function verifyObject (
+  objectId
+) {
+  const dbRef = ref(getDatabase());
+  const objectPRef = (dbRef, `object/${objectId}`)
+  if (objectPRef) {
+    return true
+  }
+  else 
+  {
+    return false
+  }
+ 
 }
 
 // Função que faz a contagem para o gráfico da página principal

@@ -1,18 +1,19 @@
-import {createLaboratorySwal} from './js_functions/swal_db_fires.js';
+import {createLaboratorySwal, createObjectSwal} from './js_functions/swal_db_fires.js';
 import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
 import { getAuth, onAuthStateChanged} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import {firebaseConfig} from "./js_config/Config.js";
-import {readLaboratories} from './js_functions/realtime_db.js';
+import {readLaboratories, readObjects} from './js_functions/realtime_db.js';
 import { loading } from './js_functions/swal_mixins.js';
 
 initializeApp(firebaseConfig);
 const auth = getAuth();
 
 document.addEventListener('DOMContentLoaded', () => {
-    
-    loading.fire();
+
+    loading.fire({timer: 1850});
 
     readLaboratories(null, 'content');
+    readObjects(null, 'content');
 
     const searchAcc = document.getElementById('search-acc');
     if (searchAcc) {
@@ -34,6 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (addLab) {
             addLab.addEventListener('click', () => {
                 createLaboratorySwal(user.uid, userName);
+            })
+        }
+        const addObj = document.getElementById('obj-add-btn');
+        if (addObj) {
+            addObj.addEventListener('click', () => {
+                createObjectSwal();
             })
         }
     })

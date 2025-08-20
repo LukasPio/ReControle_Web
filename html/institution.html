@@ -12,7 +12,7 @@
     <!-- Módulos de serviço e autenticação -->
     <script type="module" src="../js/services.js" defer></script>
     <script type="module" src="../js/main_services.js" defer></script> 
-    <script type="module" src="../js/institution.js" defer></script> 
+    <script type="module" src="../js/institution.js" defer></script>
   </head>
   <body>
     <aside class="sidebar">
@@ -51,15 +51,33 @@
       <section class="dashboard">
         <h1>Instituição</h1><br>
         <div>
-          <input type="search" placeholder="Procurar laboratório por ID" id="search-acc"/><br><br>
+          <input type="search" placeholder="Procurar laboratório ou objeto por ID" id="search-acc"/><br><br>
         </div>
-        <div class="lab-add-div"> 
-          <button id="lab-add-btn" class="btn-create-rep">Adicionar laboratório</button>
+        <div class="fab-container">
+          <input type="checkbox" id="fab-toggle" class="fab-toggle" />
+
+          <label for="fab-toggle" class="btn-create-rep fab-main">
+            <svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+          </label>
+
+          <div class="fab-options2">
+            <button class="btn-create-rep" id="lab-add-btn">Adicionar Laboratório</button>
+          </div>
+          <div class="fab-options1">
+            <button class="btn-create-rep" id="obj-add-btn">Adicionar Objeto</button>
+          </div>
         </div>
+        <h3>Laboratórios</h3>
+        <ul  align="right" ><a href="./labaratory.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg></a></ul>
         <div class="labs" id="labs">
-          
         </div>
+        <h3>Objetos</h3>
+        <ul  align="right" ><a href="./object.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg></a></ul>
+        <div id="objs" class="labs">
+        </div>
+        
       </section>
     </main>
+    
   </body>
 </html>
