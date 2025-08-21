@@ -333,14 +333,23 @@ export async function updateReportSwal (
         }
         reControleSwal.fire({
             title: 'Editar ocorrência',
+            imageUrl: resp.img_url,
             html: text,
             reverseButtons: true,
             preConfirm: async () => {
-                if (localStorage.getItem('sel-file').startsWith('data') || localStorage.getItem('sel-file').startsWith('/9j/')) {
-                    file = localStorage.getItem('sel-file')
+                if (localStorage.getItem('sel-file') !== null) {
+                    if (localStorage.getItem('sel-file').startsWith('data') || localStorage.getItem('sel-file').startsWith('/9j/')) {
+                        file = localStorage.getItem('sel-file')
+                    }
+                    else {
+                        file = ''
+                    }
                 }
-                else {
-                    file = ''
+                else
+                {
+                    if (resp.img_url != '') {
+                        file = resp.img_url
+                    }
                 }
                 if (resp.title) {
                     updateWebReportData(
@@ -733,8 +742,14 @@ export async function createLaboratorySwal (
                     classificationOfLabs = localStorage.getItem('class')
                 }
 
-                if (localStorage.getItem('sel-file').startsWith('data') || localStorage.getItem('sel-file').startsWith('/9j/')) {
-                    labURL = localStorage.getItem('sel-file')
+                if (localStorage.getItem('sel-file') !== null) {
+                    if (localStorage.getItem('sel-file').startsWith('data') || localStorage.getItem('sel-file').startsWith('/9j/')) {
+                        labURL = localStorage.getItem('sel-file')
+                    }
+                    else
+                    {
+                        labURL = ''
+                    }
                 }
                 else
                 {

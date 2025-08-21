@@ -358,7 +358,7 @@ export async function readReports(
             report.id = repID;
   
             const link = document.createElement('a');
-            link.href = `/html/calls.html?id=${repID}`;
+            link.href = `/html/calls.html?/#/${repID}`;
             link.innerHTML = 'Ver mais';
 
             const imageDiv = document.createElement('div');
@@ -481,7 +481,6 @@ export async function readReports(
           for(const repID in reportRef){
             if (reportRef[repID].dates)
             reportPostedDatas[repID] = reportRef[repID]
-            //reportContents[repID] = reportRef[repID].content?.title
           }
           return reportPostedDatas//, reportContents
         }
@@ -493,26 +492,122 @@ export async function readReports(
           document.getElementById('chamados').textContent = '';
           for(const repID in reportRef){
             if (repID.startsWith(contentName)) {
-              reportPostedDatas[repID] = reportRef[repID]
-              reportContents[repID] = reportRef[repID].content?.title
               const report = document.createElement('div');
-              report.className = 'chamado-card';
-              report.id = repID;
+            report.className = 'chamado-card';
+            report.id = repID;
   
-              const link = document.createElement('a');
-              link.href = `/html/calls.html?id=${repID}`;
-              link.innerHTML = 'Ver mais';
+            const link = document.createElement('a');
+            link.href = `/html/calls.html?id=${repID}`;
+            link.innerHTML = 'Ver mais';
+
+            const imageDiv = document.createElement('div');
+            const center = document.createElement('center');
+            const imageElement = document.createElement('img');
+            imageElement.className = 'image-report';
+
+            const statusAuthorDiv = document.createElement('div');
+            statusAuthorDiv.style = 'padding-top: 3px;';
+            const statusElement = document.createElement('p');
+            
+            switch (reportRef[repID].content.status) {
+              case 'red': 
+                statusElement.innerHTML = 'Pendente';
+                statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
+              break;
+
+              case 'yellow': 
+                statusElement.innerHTML = 'Em andamento';
+                statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
+              break;
+
+              case 'green': 
+                statusElement.innerHTML = 'Concluído';
+                statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
+              break;
+            }
+            
+            const userElement = document.createElement('p');
+            userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
+            readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp );
+
+            if (reportRef[repID].content.img_url != undefined) {
+              imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : reportRef[repID].content.img_url;
+              var image = `${reportRef[repID].content.img_url}`;
+              if (!image.startsWith('data:image/png;base64,') ) {
+                imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
+              }
+            }
+            
+            if (reportRef[repID].dates) {
+              if (reportRef[repID].content?.title) {
+                reportContents[repID] = reportRef[repID].content?.title
+              }
+              else
+              {
+                reportContents[repID] = 'Sem Título para exibir'
+              }
 
               const repIDElement = document.createElement('p');
-              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportRef[repID].content?.title}`;
+              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
 
               const localAndData = document.createElement('p');
-              localAndData.innerHTML = `${reportRef[repID].selected_obj.sel_lab_id} - ${reportRef[repID].dates.posted_date.posted_day}`;
-
+              localAndData.innerHTML = `
+                ${reportRef[repID].selected_obj?.sel_lab_id}
+                <p style="
+                    height: 2px;
+                    background: linear-gradient(to right, #ccc);
+                    margin: 15px 0;
+                  "></p>
+              `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
+              
               report.appendChild(repIDElement);
               report.appendChild(link);
               report.appendChild(localAndData);
+              imageDiv.appendChild(imageElement);
+              center.appendChild(imageDiv);
+              center.appendChild(statusElement);
+              center.appendChild(userElement);
+              statusAuthorDiv.appendChild(center);
+              report.appendChild(statusAuthorDiv);
               document.getElementById('chamados').appendChild(report);
+
+              
+            }
+            else
+            {
+               if (reportRef[repID].content?.text) {
+                reportContents[repID] = reportRef[repID].content?.text
+              }
+              else
+              {
+                reportContents[repID] = 'Sem Título para exibir'
+              }
+
+              const repIDElement = document.createElement('p');
+              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
+
+              const localAndData = document.createElement('p');
+              if (reportRef[repID].content?.local)
+              localAndData.innerHTML = `
+                ${reportRef[repID].content?.local}
+                <p style="
+                  height: 2px;
+                  background: #ccc;
+                  margin: 15px 0;
+                "></p>
+              `,
+
+              report.appendChild(repIDElement),
+              report.appendChild(link),
+              report.appendChild(localAndData),
+              imageDiv.appendChild(imageElement),
+              center.appendChild(imageDiv),
+              center.appendChild(statusElement),
+              center.appendChild(userElement),
+              statusAuthorDiv.appendChild(center),
+              report.appendChild(statusAuthorDiv),
+              document.getElementById('chamados').appendChild(report);
+            }
             }
           }
         }
