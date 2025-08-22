@@ -6,15 +6,42 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { firebaseConfig, hrefsConfig } from "./js_config/Config.js";
 import {readUsers} from './js_functions/realtime_db.js';
-import {swalFireLookForOcurrence, swalFireLookForLaboratory} from './js_functions/swal_db_fires.js';
+import {swalFireLookForLaboratory, swalFireLookForObject, swalFireLookForOcurrence} from './js_functions/swal_db_fires.js';
 
 // Inicializa Firebase
 toString;
 initializeApp(firebaseConfig);
 const auth = getAuth();
 
-
 document.addEventListener("DOMContentLoaded", () => {
+
+  const containerR = document.getElementById('chamados');
+  if (containerR) {
+    containerR.addEventListener('click', function (e) {
+      if (e.target.tagName == 'A') {
+        swalFireLookForOcurrence(e.target.id)
+      }
+    })
+  }
+
+  const containerL = document.getElementById('labs');
+  if (containerL) {
+    containerL.addEventListener('click', function (e) {
+      if (e.target.tagName == 'A') {
+        swalFireLookForLaboratory(e.target.id)
+      }
+    })
+  }
+
+  const containerO = document.getElementById('objs');
+  if (containerO) {
+    containerO.addEventListener('click', function (e) {
+      if (e.target.tagName == 'A') {
+        swalFireLookForObject(e.target.id)
+      }
+    })
+  }
+
 
   // Aplica tema salvo QUE O MANO ENZO FEZ -- Augusto
   // Estou sentindo um baita julgamento vindo de ti AUGUSTO -- Enzo
@@ -53,6 +80,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+
 // Dropdown e logout
 function toggleDropdown() {
   const menu = document.getElementById("accountMenu");
@@ -82,18 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
   switch (link) {
     case 'acc_managment.html': document.getElementById('acc-management').className = 'active'; break;
     case 'institution.html': document.getElementById('institution').className = 'active'; break;
-  }
-
-  
-
-  // Entrada do 'Ver mais' dos laboratórios
-  if (new URLSearchParams(window.location.search).get('ID')) {
-      swalFireLookForLaboratory(new URLSearchParams(window.location.search).get('ID'));
-  }
-
-  // Entrada do 'Ver mais' das ocorrência
-  if (new URLSearchParams(window.location.search).get('id')) {
-      swalFireLookForOcurrence(new URLSearchParams(window.location.search).get('id'));
   }
 
   const accToggle = document.getElementById('account-toggle');

@@ -27,8 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
             report.id = item.id;
                   
             const link = document.createElement('a');
-            link.href = `/html/calls.html?id=${item.id}`;
-            link.innerHTML = 'Ver mais';
+            link.id = item.id;
+            link.innerHTML = `Ver mais`;
+            link.style = 'cursor: pointer;';
                 
             const imageDiv = document.createElement('div');
             const center = document.createElement('center');

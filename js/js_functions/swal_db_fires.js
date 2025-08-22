@@ -997,57 +997,72 @@ export async function swalFireLookForLaboratory (
         var imageURL = resp.content.lab_img_url;
         if (!imageURL) {imageURL = '../../assets/default_classroom.avif'}
         const swalLook = reControleSwal.mixin({
-            title: `${classroomID}`,
+            title: classroomID,
             imageUrl: `${imageURL}`,
             confirmButtonText: 'Alterar',
             cancelButtonText: 'Ok',
             html: `
                 <div class="swal2-html-container">
-                    <label for="" class="swal2-html-text" style="font-weight:bold;">Classificação do laboratório</label><br><br>
+                    <label for="class" class="swal2-html-text" style="font-weight:bold;">Classificação do laboratório</label><br><br>
                     <center>
-                        <p class="swal2-input" style="
-                            border:1px solid black;
-                            border-radius:15px;
-                            width:55vw;
-                            border-color: #D3D3D3;
-                            background-color: #f5f5f5;
-                        ">${resp.classif_labs}</p>
+                        <p 
+                            id="class"
+                            class="swal2-input" 
+                            style="
+                                border:1px solid black;
+                                border-radius:15px;
+                                width:55vw;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            "
+                        >${resp.classif_labs}</p>
                     </center>
                 </div>
                 <div class="swal2-html-container">
-                    <label for="" class="swal2-html-text" style="font-weight:bold;">Autor</label><br><br>
+                    <label for="aut" class="swal2-html-text" style="font-weight:bold;">Autor</label><br><br>
                     <center>
-                        <p class="swal2-input" style="
-                            border:1px solid black;
-                            border-radius:15px;
-                            width:55vw;
-                            border-color: #D3D3D3;
-                            background-color: #f5f5f5;
-                        ">${localStorage.getItem('user-name')}</p>
+                        <p 
+                            id="aut"
+                            class="swal2-input" 
+                            style="
+                                border:1px solid black;
+                                border-radius:15px;
+                                width:55vw;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            "
+                        >${localStorage.getItem('user-name')}</p>
                     </center>
                 </div>
                 <div class="swal2-html-container">
-                    <label for="" class="swal2-html-text" style="font-weight:bold;">Estado</label><br><br>
+                    <label for="status" class="swal2-html-text" style="font-weight:bold;">Estado</label><br><br>
                     <center>
-                        <p class="swal2-input" style="
-                            border:1px solid black;
-                            border-radius:15px;
-                            width:55vw;
-                            border-color: #D3D3D3;
-                            background-color: #f5f5f5;
-                        ">${status}</p>
+                        <p 
+                            id="status"
+                            class="swal2-input" 
+                            style="
+                                border:1px solid black;
+                                border-radius:15px;
+                                width:55vw;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            ">${status}</p>
                     </center>
                 </div>
                 <div class="swal2-html-container">
-                    <label for="" class="swal2-html-text" style="font-weight:bold;">Descrição</label><br><br>
+                    <label for="desc" class="swal2-html-text" style="font-weight:bold;">Descrição</label><br><br>
                     <center>
-                        <p class="swal2-input" style="
-                            border:1px solid black;
-                            border-radius:15px;
-                            width:55vw;
-                            border-color: #D3D3D3;
-                            background-color: #f5f5f5;
-                        ">${resp.content.desc}</p>
+                        <p 
+                            id="desc" 
+                            class="swal2-input" 
+                            style="
+                                border:1px solid black;
+                                border-radius:15px;
+                                width:55vw;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            "
+                        >${resp.content.desc}</p>
                     </center>
                 </div>
             `,
@@ -1085,12 +1100,11 @@ export async function createObjectSwal () {
 
     var objName,
     objType,
+    inputValue,
     objClass,
     labData = '<option value="none"></option>',
     objClassData = '<option value="none"></option>',
     objTypeData = '<option value="none"></option>';
-
-    
 
     readLaboratories(null, 'general').then(resp => {
         for(const Id in resp) {
@@ -1313,14 +1327,18 @@ export async function createObjectSwal () {
                 }
                 else
                 {
+                    inputValue = Swal.getInput().value;
                     readObjects(null, 'general').then(result => {
                         //Aqui
-                        switch (Swal.getInput().value) {
-                            case 'computer': 
+                        switch (inputValue) {
+                            case 'computer':  
+                            for (const ID in result) {
                                 
-                                localStorage.setItem('obj-name', 'Computador-');
-                                objName = 'Computador';//Arrumar jeito de gerar contagem => pegar readObj para pegar o valor último número e add+1
-                                objType = '';
+                            }
+                                localStorage.setItem('obj-name', 'Computador-2');
+                                localStorage.setItem('obj-class', 'Eletrônico');
+                                localStorage.setItem('desc', 'Computador com Windows 10, 8GB de RAM e 128GB de armazenamento.');
+                                //Arrumar jeito de gerar contagem => pegar readObj para pegar o valor último número e add+1
                             ;
                             break;
                             case 'chair': ;
@@ -1382,12 +1400,28 @@ export async function createObjectSwal () {
                                         transition: all 0.3s ease;
                                         background-color: #f5f5f5;
                                         "   
-                                    >
+                                ></select>
+                            </div>
+                            <div class="swal2-html-container">
+                                <label for="desc" class="swal2-html-text">Digite a descrição do objeto</label>
+                                <input
+                                    class="swal2-input" 
+                                    id="desc" 
+                                    style="
+                                        width: 55vw; 
+                                        height: 8vh; 
+                                        border-radius: 15px; 
+                                        border-color: #D3D3D3;
+                                        transition: all 0.3s ease;
+                                        background-color: #f5f5f5;
+                                        "   
+                                >
                             </div>
                         `,
                         preConfirm: async () => {
-                           /* var objClass = document.getElementById('obj-class').selectedIndex !== 0 || document.getElementById('text-class-option').value ? localStorage.getItem('class'): '' ;
-                            var objType = document.getElementById('obj-type').selectedIndex !== 0 || document.getElementById('text-type-option').value ? localStorage.getItem('type') : '';
+                            objClass = localStorage.getItem('obj-class');
+                            objName = localStorage.getItem('obj-name');
+                            /*
                             writeObjectData(
                                 document.getElementById('obj-name').value,
                                 new Date().toISOString().split('T')[0],
@@ -1400,11 +1434,97 @@ export async function createObjectSwal () {
                             ).then(() => {successToastSwal.fire()});*/
                         }
                     });
+                    if (localStorage.getItem('desc') !== '') {
+                        document.getElementById('desc').value = localStorage.getItem('desc'); 
+                        document.getElementById('desc').placeholder = localStorage.getItem('desc');
+                    }
                 }
             }
         })
     })
 }
+
+export async function swalFireLookForObject (
+    objectId
+) {
+    readObjects(objectId, 'general').then(resp => {
+        reControleSwal.fire({
+            title: resp.name,
+            html: `
+                <div class="swal2-html-container">
+                    <label for="desc" class="swal2-html-text" style="font-weight:bold;">Descrição</label><br><br>
+                    <center>
+                        <p 
+                            id="desc"
+                            class="swal2-input" 
+                            style="
+                                border:1px solid black;
+                                border-radius:15px;
+                                width:55vw;
+                                height: 20vh;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            "
+                        >${resp.desc}</p>
+                    </center>
+                </div>
+                <div class="swal2-html-container">
+                    <label for="lab" class="swal2-html-text" style="font-weight:bold;">Laboratório</label><br><br>
+                    <center>
+                        <p 
+                            id="lab"
+                            class="swal2-input" 
+                            style="
+                                border:1px solid black;
+                                border-radius:15px;
+                                width:55vw;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            "
+                        >${resp.lab_id}</p>
+                    </center>
+                </div>
+                <div class="swal2-html-container">
+                    <label for="class" class="swal2-html-text" style="font-weight:bold;">Classe do objeto</label><br><br>
+                    <center>
+                        <p 
+                            id="class"
+                            class="swal2-input" 
+                            style="
+                                border:1px solid black;
+                                border-radius:15px;
+                                width:55vw;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            "
+                        >${resp.obj_class}</p>
+                    </center>
+                </div>
+                <div class="swal2-html-container">
+                    <label for="type" class="swal2-html-text" style="font-weight:bold;">Tipo do objeto</label><br><br>
+                    <center>
+                        <p 
+                            id="type"
+                            class="swal2-input" 
+                            style="
+                                border:1px solid black;
+                                border-radius:15px;
+                                width:55vw;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            "
+                        >${resp.obj_type}</p>
+                    </center>
+                </div>
+            `,
+            confirmButtonText: 'Alterar',
+            cancelButtonText: 'Ok',
+            //preConfirm: async () => {}
+        })
+    })
+}
+
+//searchFor => all, obj, user, lab, rep
 
 export async function convertImg (
     file, 

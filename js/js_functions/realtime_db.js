@@ -358,8 +358,9 @@ export async function readReports(
             report.id = repID;
   
             const link = document.createElement('a');
-            link.href = `/html/calls.html?/#/${repID}`;
-            link.innerHTML = 'Ver mais';
+            link.id = repID;
+            link.innerHTML = `Ver mais`;
+            link.style = 'cursor: pointer;';
 
             const imageDiv = document.createElement('div');
             const center = document.createElement('center');
@@ -497,8 +498,9 @@ export async function readReports(
             report.id = repID;
   
             const link = document.createElement('a');
-            link.href = `/html/calls.html?id=${repID}`;
-            link.innerHTML = 'Ver mais';
+            link.id = repID;
+            link.innerHTML = `Ver mais`;
+            link.style = 'cursor: pointer;';
 
             const imageDiv = document.createElement('div');
             const center = document.createElement('center');
@@ -657,6 +659,11 @@ contentType
   if (objectID) {
     switch (contentType) {
 
+      //Retorna tudo de um objeto
+      case 'general': 
+        return ObjValue
+      ;
+
       // Trará todas as propriedades do objeto selecionado
       case 'property': 
         try {
@@ -704,7 +711,7 @@ contentType
   {
     switch (contentType) {
 
-      // Ainda não decidido
+      // tudo
       case 'general': 
         return objectRef
       ;
@@ -753,8 +760,9 @@ contentType
             object.id = ID;
  
             const link = document.createElement('a');
-            link.href = `/html/calls.html?objid=${ID}`;
-            link.innerHTML = 'Ver mais';
+            link.id = ID;
+            link.innerHTML = `Ver mais`;
+            link.style = 'cursor: pointer;';
 
             const objIDElement = document.createElement('p');
             objIDElement.innerHTML = `<strong>${objectRef[ID].name}</strong><br> <p style="margin: 15px;"> ${objectRef[ID].desc} <br><br> ${objectRef[ID].lab_id} </p>`;
@@ -833,8 +841,9 @@ export async function readLaboratories (
                     
             //Elemento de visualização da sala em questão
             const seeMoreElement = document.createElement('a');
-            seeMoreElement.href = `/html/institution.html?ID=${labID}`;
-            seeMoreElement.innerHTML = 'Ver mais<br>';
+            seeMoreElement.id = labID;
+            seeMoreElement.innerHTML = `Ver mais`;
+            seeMoreElement.style = 'cursor: pointer;';
 
             //Imagem do laboratório
             const img = document.createElement('p');
@@ -914,8 +923,9 @@ export async function readLaboratories (
               labIDElement.innerHTML = `<strong>${labID}</strong><br><br>`
                     
               const seeMoreElement = document.createElement('a')
-              seeMoreElement.href = `/html/institution.html?ID=${labID}`
-              seeMoreElement.innerHTML = 'Ver mais<br>'
+              seeMoreElement.id = labID
+              seeMoreElement.innerHTML = `Ver mais`
+              seeMoreElement.style = 'cursor: pointer;'
 
               const img = document.createElement('p')
               img.innerHTML = `<img src="${labURLDesc[labID][0]}"><br>`
