@@ -12,6 +12,7 @@ import {
 
 } from './realtime_db.js';
 import {reControleSwal, successToastSwal, errorToastSwal} from './swal_mixins.js';
+import { getDatabase, ref, child, get, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 
 export async function createReportSwal (
     title,
@@ -189,7 +190,7 @@ export async function createReportSwal (
     
 }
 
-export async function updateReportSwal (
+async function updateReportSwal (
     reportID,
     author
 ) {
@@ -810,7 +811,7 @@ export async function createLaboratorySwal (
     })
 }
 
-export async function updateLaboratorySwal (
+async function updateLaboratorySwal (
     classroomID,
     author
 ) {
@@ -1100,6 +1101,7 @@ export async function createObjectSwal () {
 
     var objName,
     objType,
+    desc,
     inputValue,
     objClass,
     labData = '<option value="none"></option>',
@@ -1328,120 +1330,167 @@ export async function createObjectSwal () {
                 else
                 {
                     inputValue = Swal.getInput().value;
-                    readObjects(null, 'general').then(result => {
-                        //Aqui
-                        switch (inputValue) {
-                            case 'computer':  
-                            for (const ID in result) {
-                                
+                    if (verifyObject()){
+                        readObjects(null, 'general').then(result => {
+                            for (const Id in result) {
+                                if (result[Id].obj_type != localStorage.getItem('old-type')) {
+                                    objTypeData += `<option value="${result[Id].obj_type}" >${result[Id].obj_type}</option>`
+                                    localStorage.setItem('old-type', result[Id].obj_type)
+                                }
+                            }       
+                            localStorage.removeItem('old-class');
+                            localStorage.removeItem('old-type') ;          
+                        
+                            //Adicionar itens
+                            switch (inputValue) {
+                                case 'computer':      
+                                    objClass = 'Eletrônico';
+                                    desc = 'Computador com Windows 10, 8GB de RAM e 128GB de armazenamento.';
+                                ;
+                                break;
+                                case 'chair': 
+                                    objClass = 'Móvel';
+                                    desc = 'Cadeira de metal e plástico com quatro pernas e um apoio para caderno.';
+                                ;
+                                break;
                             }
-                                localStorage.setItem('obj-name', 'Computador-2');
-                                localStorage.setItem('obj-class', 'Eletrônico');
-                                localStorage.setItem('desc', 'Computador com Windows 10, 8GB de RAM e 128GB de armazenamento.');
-                                //Arrumar jeito de gerar contagem => pegar readObj para pegar o valor último número e add+1
-                            ;
-                            break;
-                            case 'chair': ;
-                            break;
-                        }
-                    })
-                    reControleSwal.fire({
-                        title: 'Criar objeto',
-                        html: `
-                            <div id="sel-container-type" class="swal2-html-container">
-                                <label 
-                                    class="swa2-input-label" 
-                                    for="obj-type" 
-                                    style="color:black;"
-                                >Selecione um tipo abaixo para o objeto<label><br>
-                                <select 
-                                    class="swal2-select" 
-                                    id="obj-type" 
-                                    style="
-                                        width: 55vw; 
-                                        height: 8vh; 
-                                        border-radius: 15px; 
-                                        border-color: #D3D3D3;
-                                        transition: all 0.3s ease;
-                                        background-color: #f5f5f5;
-                                    "   
-                                >                                    
-                                </select>
-                                <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
-                                <label 
-                                    class="swa2-input-label" 
-                                    for="text-type-option" 
-                                    style="color:black;"
-                                >Crie um tipo<label><br>
-                                <input 
-                                    type="text" 
-                                    class="swal2-input" 
-                                    id="text-type-option" 
-                                    style="
-                                        width: 55vw; 
-                                        height: 8vh; 
-                                        border-radius: 15px; 
-                                        border-color: #D3D3D3;
-                                        transition: all 0.3s ease;
-                                        background-color: #f5f5f5;
-                                    "   
-                                >
-                            </div>
-                            <div class="swal2-html-container">
-                                <label for="lab" class="swal2-html-text">Selectione um laboratório</label>
-                                <select 
-                                    class="swal2-select" 
-                                    id="lab" 
-                                    style="
-                                        width: 55vw; 
-                                        height: 8vh; 
-                                        border-radius: 15px; 
-                                        border-color: #D3D3D3;
-                                        transition: all 0.3s ease;
-                                        background-color: #f5f5f5;
-                                        "   
-                                ></select>
-                            </div>
-                            <div class="swal2-html-container">
-                                <label for="desc" class="swal2-html-text">Digite a descrição do objeto</label>
-                                <input
-                                    class="swal2-input" 
-                                    id="desc" 
-                                    style="
-                                        width: 55vw; 
-                                        height: 8vh; 
-                                        border-radius: 15px; 
-                                        border-color: #D3D3D3;
-                                        transition: all 0.3s ease;
-                                        background-color: #f5f5f5;
-                                        "   
-                                >
-                            </div>
-                        `,
-                        preConfirm: async () => {
-                            objClass = localStorage.getItem('obj-class');
-                            objName = localStorage.getItem('obj-name');
-                            /*
-                            writeObjectData(
-                                document.getElementById('obj-name').value,
-                                new Date().toISOString().split('T')[0],
-                                new Date().toTimeString().slice(0, 5),
-                                document.getElementById('desc').value,
-                                objClass,
-                                objType,
-                                `-${document.getElementById('lab').value}`,
-                                document.getElementById('lab').value
-                            ).then(() => {successToastSwal.fire()});*/
-                        }
-                    });
-                    if (localStorage.getItem('desc') !== '') {
-                        document.getElementById('desc').value = localStorage.getItem('desc'); 
-                        document.getElementById('desc').placeholder = localStorage.getItem('desc');
+                            reControleSwal.fire({
+                                title: 'Criar objeto',
+                                html: `
+                                    <div id="sel-container-type" class="swal2-html-container">
+                                        <label 
+                                            class="swa2-input-label" 
+                                            for="obj-type" 
+                                            style="color:black;"
+                                        >Selecione um tipo abaixo para o objeto<label><br>
+                                        <select 
+                                            class="swal2-select" 
+                                            id="obj-type" 
+                                            style="
+                                                width: 55vw; 
+                                                height: 8vh; 
+                                                border-radius: 15px; 
+                                                border-color: #D3D3D3;
+                                                transition: all 0.3s ease;
+                                                background-color: #f5f5f5;
+                                            "   
+                                        >  
+                                            ${objTypeData}                                  
+                                        </select>
+                                        <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
+                                        <label 
+                                            class="swa2-input-label" 
+                                            for="text-type-option" 
+                                            style="color:black;"
+                                        >Crie um tipo<label><br>
+                                        <input 
+                                            type="text" 
+                                            class="swal2-input" 
+                                            id="text-type-option" 
+                                            style="
+                                                width: 55vw; 
+                                                height: 8vh; 
+                                                border-radius: 15px; 
+                                                border-color: #D3D3D3;
+                                                transition: all 0.3s ease;
+                                                background-color: #f5f5f5;
+                                            "   
+                                        >
+                                    </div>
+                                    <div class="swal2-html-container">
+                                        <label for="lab" class="swal2-html-text">Selectione um laboratório</label>
+                                        <select 
+                                            class="swal2-select" 
+                                            id="lab" 
+                                            style="
+                                                width: 55vw; 
+                                                height: 8vh; 
+                                                border-radius: 15px; 
+                                                border-color: #D3D3D3;
+                                                transition: all 0.3s ease;
+                                                background-color: #f5f5f5;
+                                                "   
+                                        >${labData}</select>
+                                    </div>
+                                    <div class="swal2-html-container">
+                                        <label for="desc" class="swal2-html-text">Digite a descrição do objeto</label>
+                                        <input
+                                            class="swal2-input" 
+                                            id="desc" 
+                                            style="
+                                                width: 55vw; 
+                                                height: 8vh; 
+                                                border-radius: 15px; 
+                                                border-color: #D3D3D3;
+                                                transition: all 0.3s ease;
+                                                background-color: #f5f5f5;
+                                                "   
+                                            value="${desc}"
+                                            placeholder="${desc}"
+                                        >
+                                    </div>
+                                `,
+                                preConfirm: async () => {
+                                    var i = 1;
+                                    //Adicionar itens
+                                    switch (inputValue) {
+                                        case 'computer':
+                                            for (const Id in result) {
+                                                const name = `${result[Id].name}`;
+                                                if (name.startsWith('Computador') && document.getElementById('lab').value == result[Id].lab_id) {i++}
+                                            }
+                                            objName = `Computador ${i}`;
+                                            i = 1;
+                                        break;
+                                        case 'chair':
+                                            for (const Id in result) {
+                                                const name = `${result[Id].name}`;
+                                                if (name.startsWith('Cadeira') && document.getElementById('lab').value == result[Id].lab_id) {i++}
+                                            }
+                                            objName = `Cadeira ${i}`;
+                                            i = 1;
+                                        break;
+                                    }
+                                    writeObjectData(
+                                        objName,
+                                        new Date().toISOString().split('T')[0],
+                                        new Date().toTimeString().slice(0, 5),
+                                        document.getElementById('desc').value,
+                                        objClass,
+                                        localStorage.getItem('type'),
+                                        `${objName}-${document.getElementById('lab').value}`,
+                                        document.getElementById('lab').value
+                                    ).then(() => {successToastSwal.fire()});
+                                }
+                            });
+                            const otherTypeChoice = document.getElementById('obj-type');
+                            const createdTypeChoice = document.getElementById('text-type-option');
+
+                            if (otherTypeChoice) {
+                                otherTypeChoice.addEventListener('change', (event) => {
+                                    localStorage.setItem('type', event.target.value);
+                                    if (event.target.value != 'none') createdTypeChoice.value = "";
+                                })
+                            }
+                            if (createdTypeChoice) {
+                                createdTypeChoice.addEventListener('input', (newType) => {
+                                    if (localStorage.getItem('type') != 'none') otherTypeChoice.selectedIndex = 0;
+                                    localStorage.setItem('type', newType.target.value);
+                                })
+                            }
+                        })
                     }
                 }
             }
         })
     })
+}
+
+//Ainda não criada
+async function updateObjectSwal(
+    objectId
+) {
+    
 }
 
 export async function swalFireLookForObject (
@@ -1519,12 +1568,275 @@ export async function swalFireLookForObject (
             `,
             confirmButtonText: 'Alterar',
             cancelButtonText: 'Ok',
-            //preConfirm: async () => {}
+            preConfirm: async () => {
+                updateObjectSwal(objectId)
+            }
         })
     })
 }
 
-//searchFor => all, obj, user, lab, rep
+//Ainda não criada
+export async function searchFor (
+    content,
+    tag
+) {
+    const dbRef = ref(getDatabase());
+    
+    switch (tag) {
+        
+        case 'full': 
+        ;
+        break;
+
+        case 'lab':
+            const referenceLab = await get(child(dbRef, 'laboratory'));
+            const labRef = referenceLab.val();
+            const labURLDesc = {};
+
+            if (referenceLab.exists()) {
+                document.getElementById('labs').innerHTML = '';
+                for(const labID in labRef) {
+                    if ((labID.startsWith(content) || labID.endsWith(content))) { 
+                        labURLDesc[labID] = [labRef[labID].content.lab_img_url, labRef[labID].content.desc]
+
+                        const laboratory = document.createElement('div')
+                        laboratory.className = 'lab-card'
+                        laboratory.id = labID
+
+                        const labIDElement = document.createElement('p')
+                        labIDElement.innerHTML = `<strong>${labID}</strong><br><br>`
+                                
+                        const seeMoreElement = document.createElement('a')
+                        seeMoreElement.id = labID
+                        seeMoreElement.innerHTML = `Ver mais`
+                        seeMoreElement.style = 'cursor: pointer;'
+
+                        const img = document.createElement('p')
+                        img.innerHTML = `<img src="${labURLDesc[labID][0]}"><br>`
+                        if (!labURLDesc[labID][0]) {
+                            img.innerHTML = `<img src="../assets/default_classroom.avif"><br>`
+                        }
+
+                        const desc = document.createElement('p')
+                        desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`
+
+                        laboratory.appendChild(labIDElement)
+                        laboratory.appendChild(img)
+                        laboratory.appendChild(seeMoreElement)
+                        laboratory.appendChild(desc)
+                        document.getElementById('labs').appendChild(laboratory)
+                    }
+                }
+            }
+        ;
+        break;
+
+        case 'obj': 
+            const referenceObj = await get(child(dbRef, 'object'));
+            const objectRef = referenceObj.val();
+
+            if (referenceObj.exists()) {
+                document.getElementById('objs').innerHTML = '';
+                for(const Id in objectRef) {
+                    if ((objectRef[Id].name.startsWith(content) || objectRef[Id].name.endsWith(content))) { 
+                        
+                        const object = document.createElement('div');
+                        object.className = 'object-card';
+                        object.id = Id;console.log(objectRef[Id].name, content)
+            
+                        const link = document.createElement('a');
+                        link.id = Id;
+                        link.innerHTML = `Ver mais`;
+                        link.style = 'cursor: pointer;';
+
+                        const objIDElement = document.createElement('p');
+                        objIDElement.innerHTML = `<strong>${objectRef[Id].name}</strong><br> <p style="margin: 15px;"> ${objectRef[Id].desc} <br><br> ${objectRef[Id].lab_id} </p>`;
+
+                        object.appendChild(objIDElement);
+                        object.appendChild(link);
+                        document.getElementById('objs').appendChild(object);
+                    }
+                }
+            }
+        ;
+        break;
+
+        case 'user': 
+            document.getElementById('users-account-list').innerHTML = ''
+            onValue(ref(getDatabase(), 'user'), (usersData) => {  
+                const resp = usersData.val();
+                for (const userID in resp) {
+                    const originalName = resp[userID].user_name
+                    if (originalName.startsWith(content) == true || originalName.endsWith(content)) {
+                        const user = document.createElement('li')
+                        user.id = userID
+                        const userName = document.createElement('span')
+                        userName.textContent = `Nome: ${resp[userID].user_name}`
+                        userName.id = `${resp[userID].user_name}`
+                        userName.className = 'account-name'
+
+                        const userRank = document.createElement('span')
+                        userRank.textContent = `Nível de acesso: ${resp[userID].rank }`
+                        userRank.className = 'account-value'
+
+                        const userEmail = document.createElement('span')
+                        userEmail.textContent = `E-mail: ${resp[userID].user_email}`
+                        userEmail.id = `${resp[userID].user_email}`
+                        userEmail.className = 'account-value'
+
+                        user.appendChild(userName)
+                        user.appendChild(userRank)
+                        user.appendChild(userEmail)
+                        document.getElementById('users-account-list').appendChild(user)
+                    }
+                    else
+                    {
+                        document.getElementById('users-account-list').innerHTML = 'Nenhum usuário encontrado.'
+                    }
+                }
+            })
+        ;
+        break
+
+        case 'report': 
+            const reference = await get(child(dbRef, 'reports'));
+            const reportRef = reference.val();
+            const reportContents = {};
+            if (reference.exists()) {
+                document.getElementById('chamados').textContent = '';
+                for(const repID in reportRef){
+                    if (repID.startsWith(content)) {
+                        const report = document.createElement('div');
+                        report.className = 'chamado-card';
+                        report.id = repID;
+                
+                        const link = document.createElement('a');
+                        link.id = repID;
+                        link.innerHTML = `Ver mais`;
+                        link.style = 'cursor: pointer;';
+            
+                        const imageDiv = document.createElement('div');
+                        const center = document.createElement('center');
+                        const imageElement = document.createElement('img');
+                        imageElement.className = 'image-report';
+            
+                        const statusAuthorDiv = document.createElement('div');
+                        statusAuthorDiv.style = 'padding-top: 3px;';
+                        const statusElement = document.createElement('p');
+                            
+                        switch (reportRef[repID].content.status) {
+                            case 'red': 
+                                statusElement.innerHTML = 'Pendente';
+                                statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
+                                report.style = 'border-color: red; border: 2px solid red;';
+                            break;
+                    
+                            case 'yellow': 
+                                statusElement.innerHTML = 'Em andamento';
+                                statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
+                                report.style = 'border-color: yellow; border: 2px solid yellow;';
+                            break;
+                    
+                            case 'green': 
+                                statusElement.innerHTML = 'Concluído';
+                                statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
+                                report.style = 'border-color: green; border: 2px solid green;';
+                            break;
+                        }
+                            
+                        const userElement = document.createElement('p');
+                        userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
+                        readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp );
+                    
+                        if (reportRef[repID].content.img_url != undefined) {
+                            imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : reportRef[repID].content.img_url;
+                            var image = `${reportRef[repID].content.img_url}`;
+                            if (!image.startsWith('data:image/png;base64,') ) {
+                                imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
+                            }
+                        }
+                                
+                        if (reportRef[repID].dates) {
+                            if (reportRef[repID].content?.title) {
+                                reportContents[repID] = reportRef[repID].content?.title
+                            }
+                            else
+                            {
+                                reportContents[repID] = 'Sem Título para exibir'
+                            }
+                
+                            const repIDElement = document.createElement('p');
+                            repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
+                    
+                            const localAndData = document.createElement('p');
+                            localAndData.innerHTML = `
+                                ${reportRef[repID].selected_obj?.sel_lab_id}
+                                <p style="
+                                    height: 2px;
+                                    background: linear-gradient(to right, #ccc);
+                                    margin: 15px 0;
+                                "></p>
+                            `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
+                                
+                            report.appendChild(repIDElement);
+                            report.appendChild(link);
+                            report.appendChild(localAndData);
+                            imageDiv.appendChild(imageElement);
+                            center.appendChild(imageDiv);
+                            center.appendChild(statusElement);
+                            center.appendChild(userElement);
+                            statusAuthorDiv.appendChild(center);
+                            report.appendChild(statusAuthorDiv);
+                            document.getElementById('chamados').appendChild(report);
+                                            
+                        }
+                        else
+                        {
+                            if (reportRef[repID].content?.text) {
+                                reportContents[repID] = reportRef[repID].content?.text
+                            }
+                            else
+                            {
+                                reportContents[repID] = 'Sem Título para exibir'
+                            }
+                
+                            const repIDElement = document.createElement('p');
+                            repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
+                    
+                            const localAndData = document.createElement('p');
+                            if (reportRef[repID].content?.local)
+                                localAndData.innerHTML = `
+                                    ${reportRef[repID].content?.local}
+                                    <p 
+                                        style="
+                                            height: 2px;
+                                            background: #ccc;
+                                            margin: 15px 0;
+                                    "></p>
+                                `,
+                
+                                report.appendChild(repIDElement),
+                                report.appendChild(link),
+                                report.appendChild(localAndData),
+                                imageDiv.appendChild(imageElement),
+                                center.appendChild(imageDiv),
+                                center.appendChild(statusElement),
+                                center.appendChild(userElement),
+                                statusAuthorDiv.appendChild(center),
+                                report.appendChild(statusAuthorDiv),
+                                document.getElementById('chamados').appendChild(report);
+                        }
+                    }
+                    else
+                    {
+                        document.getElementById('chamados').textContent = 'Nenhum chamado encontrado.';
+                    }
+                }
+            }
+        ;
+        break;
+    }
+ }
 
 export async function convertImg (
     file, 

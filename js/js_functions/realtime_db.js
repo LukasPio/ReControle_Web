@@ -231,8 +231,6 @@ export async function readUsers (
           }
         })
       ;break;
-
-      case 'search-for' :
         document.getElementById('users-account-list').innerHTML = ''
         onValue(ref(getDatabase(), 'user'), (usersData) => {  
           for (let userID in usersData.val()) {
@@ -479,143 +477,146 @@ export async function readReports(
       // trará todos os chamados com o conteúdo e o seu ID para os três primeiros (a ser alterado)
       case 'general-home' :
         if (reference.exists()) {
+
+          const datas = {};
+          const horas = {};
+
           for(const repID in reportRef){
             if (reportRef[repID].dates)
-            reportPostedDatas[repID] = reportRef[repID]
+            datas[repID] = reportRef[repID].dates.posted_date.posted_day;
+            horas[repID] = reportRef[repID].dates.posted_date.posted_time;
           }
-          return reportPostedDatas//, reportContents
-        }
-      ;
-      break;
+          
+          const recentes = Object.entries(datas)
+          .map(([id, valor]) => {
+              const datetime = new Date(`${datas[id]}T${horas[id]}`);
+              return { id, ...valor, datetime };
+          }).filter(item => item && item.datetime instanceof Date && !isNaN(item.datetime)).sort((a, b) => b.datetime - a.datetime).slice(0, 3);
 
-      case 'search-for': 
-        if (reference.exists()) {
-          document.getElementById('chamados').textContent = '';
-          for(const repID in reportRef){
-            if (repID.startsWith(contentName)) {
+          recentes.forEach((item) => {    
+              const resp = reportRef[item.id];
+              var reportContents = '';
               const report = document.createElement('div');
-            report.className = 'chamado-card';
-            report.id = repID;
-  
-            const link = document.createElement('a');
-            link.id = repID;
-            link.innerHTML = `Ver mais`;
-            link.style = 'cursor: pointer;';
-
-            const imageDiv = document.createElement('div');
-            const center = document.createElement('center');
-            const imageElement = document.createElement('img');
-            imageElement.className = 'image-report';
-
-            const statusAuthorDiv = document.createElement('div');
-            statusAuthorDiv.style = 'padding-top: 3px;';
-            const statusElement = document.createElement('p');
-            
-            switch (reportRef[repID].content.status) {
-              case 'red': 
-                statusElement.innerHTML = 'Pendente';
-                statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
-              break;
-
-              case 'yellow': 
-                statusElement.innerHTML = 'Em andamento';
-                statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
-              break;
-
-              case 'green': 
-                statusElement.innerHTML = 'Concluído';
-                statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
-              break;
-            }
-            
-            const userElement = document.createElement('p');
-            userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
-            readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp );
-
-            if (reportRef[repID].content.img_url != undefined) {
-              imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : reportRef[repID].content.img_url;
-              var image = `${reportRef[repID].content.img_url}`;
-              if (!image.startsWith('data:image/png;base64,') ) {
-                imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
+              report.className = 'chamado-card';
+              report.id = item.id;
+                    
+              const link = document.createElement('a');
+              link.id = item.id;
+              link.innerHTML = `Ver mais`;
+              link.style = 'cursor: pointer;';
+                  
+              const imageDiv = document.createElement('div');
+              const center = document.createElement('center');
+              const imageElement = document.createElement('img');
+              imageElement.className = 'image-report';
+                  
+              const statusAuthorDiv = document.createElement('div');
+              statusAuthorDiv.style = 'padding-top: 3px;';
+              const statusElement = document.createElement('p');
+                              
+              switch (resp.content.status) {
+                  case 'red': 
+                      statusElement.innerHTML = 'Pendente';
+                      statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
+                  break;
+              
+                  case 'yellow': 
+                      statusElement.innerHTML = 'Em andamento';
+                      statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
+                  break;
+              
+                  case 'green': 
+                      statusElement.innerHTML = 'Concluído';
+                      statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
+                  break;
               }
-            }
-            
-            if (reportRef[repID].dates) {
-              if (reportRef[repID].content?.title) {
-                reportContents[repID] = reportRef[repID].content?.title
+                              
+              const userElement = document.createElement('p');
+              userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
+              readUsers(resp.content.autor, 'user-name').then(respT => userElement.textContent = respT );
+                  
+              if (resp.content.img_url != undefined) {
+                  imageElement.src = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : resp.content.img_url;
+                  var image = `${resp.content.img_url}`;
+                  if (!image.startsWith('data:image/png;base64,') ) {
+                      imageElement.src = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
+                  }
+              }
+                              
+              if (resp.dates) {
+                  if (resp.content?.title) {
+                      reportContents = resp.content?.title
+                  }
+                  else
+                  {
+                      reportContents = 'Sem Título para exibir'
+                  }
+              
+                  const repIDElement = document.createElement('p');
+                  repIDElement.innerHTML = `<strong>${item.id}</strong><br> ${reportContents}`;                
+                      
+                  const localAndData = document.createElement('p');
+                  localAndData.innerHTML = `
+                      ${resp.selected_obj?.sel_lab_id}
+                      <p style="
+                          height: 2px;
+                          background: linear-gradient(to right, #ccc);
+                          margin: 15px 0;
+                      "></p>
+                  `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
+                                
+                  report.appendChild(repIDElement);
+                  report.appendChild(link);
+                  report.appendChild(localAndData);
+                  imageDiv.appendChild(imageElement);
+                  center.appendChild(imageDiv);
+                  center.appendChild(statusElement);
+                  center.appendChild(userElement);
+                  statusAuthorDiv.appendChild(center);
+                  report.appendChild(statusAuthorDiv);
+                  document.getElementById('chamados').appendChild(report);                
+                            
               }
               else
               {
-                reportContents[repID] = 'Sem Título para exibir'
-              }
-
-              const repIDElement = document.createElement('p');
-              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
-
-              const localAndData = document.createElement('p');
-              localAndData.innerHTML = `
-                ${reportRef[repID].selected_obj?.sel_lab_id}
-                <p style="
-                    height: 2px;
-                    background: linear-gradient(to right, #ccc);
-                    margin: 15px 0;
-                  "></p>
-              `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
+                if (resp.content?.text) {
+                    reportContents = resp.content?.text
+                }
+                else
+                {
+                    reportContents = 'Sem Título para exibir'
+                }
+                  
+                const repIDElement = document.createElement('p');
+                repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents}`;
               
-              report.appendChild(repIDElement);
-              report.appendChild(link);
-              report.appendChild(localAndData);
-              imageDiv.appendChild(imageElement);
-              center.appendChild(imageDiv);
-              center.appendChild(statusElement);
-              center.appendChild(userElement);
-              statusAuthorDiv.appendChild(center);
-              report.appendChild(statusAuthorDiv);
-              document.getElementById('chamados').appendChild(report);
-
-              
+                const localAndData = document.createElement('p');
+                if (resp.content?.local)
+                  localAndData.innerHTML = `
+                    ${resp.content?.local}
+                    <p 
+                      style="
+                        height: 2px;
+                        background: #ccc;
+                        margin: 15px 0;
+                    "></p>
+                  `,
+                  report.appendChild(repIDElement),
+                  report.appendChild(link),
+                  report.appendChild(localAndData),
+                  imageDiv.appendChild(imageElement),
+                  center.appendChild(imageDiv),
+                  center.appendChild(statusElement),
+                  center.appendChild(userElement),
+                  statusAuthorDiv.appendChild(center),
+                  report.appendChild(statusAuthorDiv),
+                  document.getElementById('chamados').appendChild(report);
             }
-            else
-            {
-               if (reportRef[repID].content?.text) {
-                reportContents[repID] = reportRef[repID].content?.text
-              }
-              else
-              {
-                reportContents[repID] = 'Sem Título para exibir'
-              }
-
-              const repIDElement = document.createElement('p');
-              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
-
-              const localAndData = document.createElement('p');
-              if (reportRef[repID].content?.local)
-              localAndData.innerHTML = `
-                ${reportRef[repID].content?.local}
-                <p style="
-                  height: 2px;
-                  background: #ccc;
-                  margin: 15px 0;
-                "></p>
-              `,
-
-              report.appendChild(repIDElement),
-              report.appendChild(link),
-              report.appendChild(localAndData),
-              imageDiv.appendChild(imageElement),
-              center.appendChild(imageDiv),
-              center.appendChild(statusElement),
-              center.appendChild(userElement),
-              statusAuthorDiv.appendChild(center),
-              report.appendChild(statusAuthorDiv),
-              document.getElementById('chamados').appendChild(report);
-            }
-            }
-          }
+          })
         }
       ;
       break;
-
+       
       // Trará todas as datas adjuntos aos ID dos chamados
       case 'data':
         if (reference.exists()) {
@@ -715,7 +716,7 @@ contentType
       case 'general': 
         return objectRef
       ;
-
+      
       // Trará todas as classes existentes
       case 'class':
         if (reference.exists()) {
@@ -784,8 +785,7 @@ contentType
 // Função para realizar todas as tarefas de leitura dos laboratórios
 export async function readLaboratories (
   labID,
-  contentType,
-  contentName
+  contentType
 ) {
   const dbRef = ref(getDatabase());
   const reference = await get(child(dbRef, 'laboratory'));
@@ -908,45 +908,6 @@ export async function readLaboratories (
       ;
       break;
 
-      case 'search-for' :
-        if (reference.exists()) {
-          document.getElementById('labs').innerHTML = '';
-          for(const labID in labRef) {
-            if ((labID.startsWith(contentName) || labID.endsWith(contentName))) { 
-              labURLDesc[labID] = [labRef[labID].lab_Content.lab_img_url, labRef[labID].lab_Content.desc]
-
-              const laboratory = document.createElement('div')
-              laboratory.className = 'lab-card'
-              laboratory.id = labID
-
-              const labIDElement = document.createElement('p')
-              labIDElement.innerHTML = `<strong>${labID}</strong><br><br>`
-                    
-              const seeMoreElement = document.createElement('a')
-              seeMoreElement.id = labID
-              seeMoreElement.innerHTML = `Ver mais`
-              seeMoreElement.style = 'cursor: pointer;'
-
-              const img = document.createElement('p')
-              img.innerHTML = `<img src="${labURLDesc[labID][0]}"><br>`
-              if (!labURLDesc[labID][0]) {
-                  img.innerHTML = `<img src="../assets/default_classroom.avif"><br>`
-              }
-
-              const desc = document.createElement('p')
-              desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`
-
-              laboratory.appendChild(labIDElement)
-              laboratory.appendChild(img)
-              laboratory.appendChild(seeMoreElement)
-              laboratory.appendChild(desc)
-              document.getElementById('labs').appendChild(laboratory)
-            }
-          }
-        }
-      ;
-      break;
-
       case 'class': 
         if (reference.exists()) {
           localStorage.setItem('old-lab', '0')
@@ -1000,4 +961,4 @@ export async function countReportsByMonth () {
   }
 
   return countByMonth;
-}
+} 

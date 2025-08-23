@@ -1,5 +1,5 @@
 //import {writeReportsData, readReportsContentDate} from '../js/js_functions/realtime_db.js';
-import {createReportSwal} from '../js/js_functions/swal_db_fires.js';
+import {createReportSwal, searchFor} from '../js/js_functions/swal_db_fires.js';
 import {readReports} from './js_functions/realtime_db.js';
 import {loading} from './js_functions/swal_mixins.js';
 
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         searchAcc.addEventListener('input', (event) => {
             if (event.target.value){
                 document.getElementById('chamados').innerHTML = null;
-                readReports(null, 'search-for', event.target.value)
+                searchFor(event.target.value, 'report')
             }
             else
             if (document.getElementById('chamados').innerHTML == '' || !event.target.value) {

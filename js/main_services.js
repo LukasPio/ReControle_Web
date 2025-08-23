@@ -108,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const link = (window.location.pathname).slice(6);
   switch (link) {
-    case 'acc_managment.html': document.getElementById('acc-management').className = 'active'; break;
+    case 'acc_management.html': document.getElementById('acc-management').className = 'active'; break;
     case 'institution.html': document.getElementById('institution').className = 'active'; break;
   }
 

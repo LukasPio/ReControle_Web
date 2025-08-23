@@ -1,5 +1,5 @@
 import {readUsers} from './js_functions/realtime_db.js';
-import { swalFireLookForUser } from './js_functions/swal_db_fires.js';
+import { searchFor, swalFireLookForUser } from './js_functions/swal_db_fires.js';
 import { loading } from './js_functions/swal_mixins.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,8 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchAcc = document.getElementById('search-acc');
     if (searchAcc) {
         searchAcc.addEventListener('input', (event) => {
+            
             if (event.target.value){
-                readUsers(null, 'search-for', event.target.value)
+                searchFor(event.target.value, 'user');
             }
             if (document.getElementById('users-account-list').innerHTML == '' || !event.target.value) {
                 document.getElementById('users-account-list').innerHTML = ''

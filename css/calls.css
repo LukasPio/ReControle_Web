@@ -113,7 +113,16 @@ main {
   background: #fff;
   padding: 20px;
   border-radius: 12px;
+  border: 0px solid #D3D3D3;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.red {
+  border: 2px solid red;
+}
+
+.yellow {
+  border: 2px solid yellow;
 }
 
 .chamado-card a {
