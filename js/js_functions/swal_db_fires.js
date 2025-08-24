@@ -941,33 +941,6 @@ async function updateLaboratorySwal (
                     }
                 }) 
             }  
-            for (const object in resp.b_obj_types_array) {
-                    selectData = `
-                    <select 
-                        class="swal2-select" 
-                        id="select-${object}"
-                        style="
-                            width: 60vw; 
-                            height: 8vh; 
-                            transition: all 0.3s ease;
-                            border-radius:15px;
-                            border-color: #D3D3D3;
-                            background-color: #f5f5f5;
-                        "
-                    >
-                        <option value="none"></option>`;
-                    for (const ID in objects) {
-                        selectData += `<option value="${objects[ID]}">${objects[ID]}</option>`
-                    }
-                    selectData += '</select>';
-                    document.getElementById('div-objs').innerHTML += selectData;
-                    document.getElementById(`select-${object}`).selectedValue = objects[object];
-            }
-            for (const object in resp.b_obj_types_array) {
-                    const selectElement = document.getElementById(`select-${object}`);
-                    selectElement.selectedIndex = 
-                        Array.from(selectElement.options).findIndex(option => option.value === resp.b_obj_types_array[object]);
-            }
             
             const select = document.getElementById('sel-class');
             const searchValue = resp.classif_labs;
@@ -1486,11 +1459,134 @@ export async function createObjectSwal () {
     })
 }
 
-//Ainda não criada
 async function updateObjectSwal(
     objectId
 ) {
-    
+    readObjects(null, 'general').then(resp => {
+        var typeData = '<option value="none"></option>';
+        for (const Id in resp) {
+            if (localStorage.getItem('old-value') != resp[Id].obj_type)
+                typeData += `<option value="${resp[Id].obj_type}">${resp[Id].obj_type}</option>`;
+                localStorage.setItem('old-value', resp[Id].obj_type)
+        }
+        localStorage.removeItem('old-value')
+        readLaboratories(null, 'count').then(labs => {
+            reControleSwal.fire({
+                title: 'Editar objeto',
+                html: `
+                    <div class="swal2-html-container" id="name-div">
+                        <label for="desc" class="swal2-html-text">Descrição do objeto</label>
+                        <input 
+                            type="text" 
+                            class="swal2-input" 
+                            id="desc" 
+                            style="
+                                width: 55vw;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;
+                            "
+                            value="${resp[objectId].desc}"
+                        required>
+                    </div>
+                    <div class="swal2-html-container" id="name-div">
+                        <label 
+                            class="swa2-input-label" 
+                            for="labs-swal" 
+                            style="color:black;"
+                        >Selectione o laboratório</label><br><br>
+                        <select 
+                            type="text" 
+                            class="swal2-select" 
+                            id="labs-swal" 
+                            style="
+                                width: 55vw; 
+                                height: 8vh; 
+                                border-radius: 15px; 
+                                border-color: #D3D3D3;
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                            "
+                        required>
+                            ${labs}
+                        </select> 
+                    </div>
+                    <div id="sel-container-type" class="swal2-html-container">
+                        <label 
+                            class="swa2-input-label" 
+                            for="obj-type" 
+                            style="color:black;"
+                        >Selecione um tipo abaixo para o objeto<label><br>
+                        <select 
+                            class="swal2-select" 
+                            id="obj-type" 
+                            style="
+                                width: 55vw; 
+                                height: 8vh; 
+                                border-radius: 15px; 
+                                border-color: #D3D3D3;
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                            "   
+                        >    
+                            ${typeData}                                
+                        </select>
+                        <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
+                        <label 
+                            class="swa2-input-label" 
+                            for="text-type-option" 
+                            style="color:black;"
+                        >Crie um tipo<label><br>
+                        <input 
+                            type="text" 
+                            class="swal2-input" 
+                            id="text-type-option" 
+                            style="
+                                width: 55vw; 
+                                height: 8vh; 
+                                border-radius: 15px; 
+                                border-color: #D3D3D3;
+                                transition: all 0.3s ease;
+                                background-color: #f5f5f5;
+                            "   
+                        >
+                    </div>
+                `,
+                preConfirm: async () => {
+                    var objType = document.getElementById('obj-type').selectedIndex !== 0 || document.getElementById('text-type-option').value ? localStorage.getItem('type') : '';
+                    writeObjectData(
+                        resp[objectId].name,
+                        resp[objectId].delivered_date.del_day,
+                        resp[objectId].delivered_date.del_time,
+                        document.getElementById('desc').value,
+                        resp[objectId].obj_class,
+                        objType,
+                        objectId,
+                        document.getElementById('labs-swal').value
+                    ).then(() => {successToastSwal.fire()});
+                }
+            });
+            const otherTypeChoice = document.getElementById('obj-type');
+            const createdTypeChoice = document.getElementById('text-type-option');
+
+            document.getElementById('labs-swal').selectedIndex = Array.from(document.getElementById('labs-swal').options).findIndex(option => option.value === resp[objectId].lab_id);
+            otherTypeChoice.selectedIndex = Array.from(otherTypeChoice.options).findIndex(option => option.value === resp[objectId].obj_type);
+
+            if (otherTypeChoice) {
+                otherTypeChoice.addEventListener('change', (event) => {
+                    localStorage.setItem('type', event.target.value);
+                    if (event.target.value != 'none') createdTypeChoice.value = "";
+                })
+            }
+            if (createdTypeChoice) {
+                createdTypeChoice.addEventListener('input', (newType) => {
+                    if (localStorage.getItem('type') != 'none') otherTypeChoice.selectedIndex = 0;
+                    localStorage.setItem('type', newType.target.value);
+                })
+            }
+        })
+        
+    })
 }
 
 export async function swalFireLookForObject (
@@ -1575,7 +1671,6 @@ export async function swalFireLookForObject (
     })
 }
 
-//Ainda não criada
 export async function searchFor (
     content,
     tag
@@ -1636,12 +1731,27 @@ export async function searchFor (
             const objectRef = referenceObj.val();
 
             if (referenceObj.exists()) {
-                document.getElementById('objs').innerHTML = '';
+                document.getElementById('eletronics').textContent = '';
+                document.getElementById('furniture').textContent = '';
+                document.getElementById('other').textContent = '';
                 for(const Id in objectRef) {
                     if ((objectRef[Id].name.startsWith(content) || objectRef[Id].name.endsWith(content))) { 
                         
                         const object = document.createElement('div');
                         object.className = 'object-card';
+                        readReports(null, 'data').then(resp => {
+                            for (const ID in resp) {
+                                if (resp[ID].selected_obj.sel_obj_id == Id) {
+                                    switch (resp[ID].content.status) {
+                                        case 'red': object.className = 'object-card red';
+                                        break;
+
+                                        case 'yellow': object.className = 'object-card yellow';
+                                        break;
+                                    }
+                                }
+                            }
+                        });
                         object.id = Id;console.log(objectRef[Id].name, content)
             
                         const link = document.createElement('a');
@@ -1654,7 +1764,18 @@ export async function searchFor (
 
                         object.appendChild(objIDElement);
                         object.appendChild(link);
-                        document.getElementById('objs').appendChild(object);
+                        if (objectRef[Id].obj_class == 'Eletrônico') {
+                            document.getElementById('eletronics').appendChild(object);
+                            document.getElementById('remove-h2-1').textContent = 'Eletrônicos';
+                        }
+                        else if (objectRef[Id].obj_class == 'Móvel') {
+                            document.getElementById('furniture').appendChild(object);
+                            document.getElementById('remove-h2-2').textContent = 'Móveis';
+                        }
+                        else {
+                            document.getElementById('other').appendChild(object);
+                            document.getElementById('remove-h2-3').textContent = 'Diversos';
+                        }
                     }
                 }
             }

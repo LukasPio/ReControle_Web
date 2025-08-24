@@ -1,6 +1,22 @@
 import { getDatabase, ref, push, set, child, get, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 import {errorSwalResponse} from '../js_functions/swal_fire_errors.js';
 
+/* **IMPORTANTE**
+
+        *
+       ***
+      *****
+     *******
+    *********
+            *
+            *           ==>         Real
+            * 
+            * 
+           😮
+
+  Pó que faz falar Real...
+*/
+
 //Cadastro ou edição de dados
 
 // Cadastrar ou editar o usuário
@@ -107,7 +123,7 @@ export function writeReportsData (
   })
 }
 
-// Atualizar a ocorrência
+// Atualizar a ocorrência da Web
 export async function updateWebReportData (
   author,
   reportID,
@@ -125,6 +141,7 @@ export async function updateWebReportData (
   })
 }
 
+// Atualizar a ocorrência do Mobile
 export async function updateMobileReportData (
   reportID,
   text,
@@ -754,11 +771,26 @@ contentType
       // Fará a lista no "gerenciar BD"
       case 'content': 
         if (reference.exists()) {
-          document.getElementById('objs').innerHTML = '';
+          document.getElementById('other').innerHTML = '';
+          document.getElementById('eletronics').innerHTML = '';
+          document.getElementById('furniture').innerHTML = '';
           for(const ID in objectRef) {
             const object = document.createElement('div');
             object.className = 'object-card';
-            object.id = ID;
+            readReports(null, 'data').then(resp => {
+                for (const Id in resp) {
+                    if (resp[Id].selected_obj.sel_obj_id == ID) {
+                        switch (resp[Id].content.status) {
+                            case 'red': object.className = 'object-card red';
+                            break;
+
+                            case 'yellow': object.className = 'object-card yellow';
+                            break;
+                        }
+                    }
+                }
+            });
+            object.id = ID; 
  
             const link = document.createElement('a');
             link.id = ID;
@@ -770,7 +802,18 @@ contentType
 
             object.appendChild(objIDElement);
             object.appendChild(link);
-            document.getElementById('objs').appendChild(object);
+            if (objectRef[ID].obj_class == 'Eletrônico') {
+              document.getElementById('eletronics').appendChild(object);
+              document.getElementById('remove-h2-1').textContent = 'Eletrônicos';
+            }
+            else if (objectRef[ID].obj_class == 'Móvel') {
+              document.getElementById('furniture').appendChild(object);
+              document.getElementById('remove-h2-2').textContent = 'Móveis';
+            }
+            else {
+              document.getElementById('other').appendChild(object);
+              document.getElementById('remove-h2-3').textContent = 'Diversos';
+            }
           }
         }
       ;
@@ -921,12 +964,21 @@ export async function readLaboratories (
         };
       break;
         
+      case 'count': 
+        var labData = '<option value="none"></option>';
+        for(const Id in labRef) {
+          labData += `<option value="${Id}">${Id}</option>`
+        }
+        return labData
+      ;
+
       default: 
         return 'Incorrect content-type.';
     }
   }
 }
 
+// Função para vireficar a existência de qualquer objeto que seja.
 export function verifyObject (
   objectId
 ) {

@@ -133,20 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    const searchAcc = document.getElementById('search-acc');
-    if (searchAcc) {
-        searchAcc.addEventListener('input', (event) => {
-            if (event.target.value){
-                document.getElementById('labs').innerHTML = null;
-                readLaboratories(null, 'search-for', event.target.value)
-            }
-            else
-            if (document.getElementById('labs').innerHTML == '' || !event.target.value) {
-                readLaboratories(null, 'content');
-            }
-        })
-    }
-
     onAuthStateChanged(auth, (user) => {
         const userName = user.displayName;
         const addLab = document.getElementById('lab-add-btn');

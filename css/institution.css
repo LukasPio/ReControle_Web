@@ -118,16 +118,18 @@ main {
   background: #fff;
   padding: 20px;
   border-radius: 12px;
-  border: 0px solid #D3D3D3;
+  border: 0px solid #ffffff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .red {
   border: 2px solid red;
+  transition: border-color 0.3s ease, transform 0.2s ease;
 }
 
 .yellow {
   border: 2px solid yellow;
+  transition: border-color 0.3s ease, transform 0.2s ease;
 }
 
 .lab-card a, .object-card a {
