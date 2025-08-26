@@ -1079,382 +1079,378 @@ export async function createObjectSwal () {
     objClass,
     labData = '<option value="none"></option>',
     objClassData = '<option value="none"></option>',
-    objTypeData = '<option value="none"></option>';
+    objTypeData = '<option value="none"></option>',
+    objUsualType = '<option value="none"></option>';
 
     readLaboratories(null, 'general').then(resp => {
         for(const Id in resp) {
             labData += `<option value="${Id}">${Id}</option>`;
         }
-        reControleSwal.fire({
-            title: 'Objeto',
-            text: 'Escolha uma predefinição de objeto:',
-            width: '30vw',
-            input: 'select',
-            inputAttributes: {
-                style: `
-                    border-radius:15px;
-                    border-color: #D3D3D3;
-                    background-color: #f5f5f5;
-                    transition: all 0.3s ease;
-                `
-            },
-            inputOptions: {
-                Eletrônico: {
-                    computer: 'Computador' 
-                },
-                Móveis:{
-                    chair : 'Cadeira'
-                },
-                otherChoice : 'Adicionar objeto'
-            },
-            preConfirm: async () => {
-                if (Swal.getInput().value == 'otherChoice') {
-
-                    reControleSwal.fire({
-                        title: 'Criar objeto',
-                        html: `
-                            <div class="swal2-html-container" id="name-div">
-                                <label for="obj-name" class="swal2-html-text">Identificação do objeto</label>
-                                <input 
-                                    type="text" 
-                                    class="swal2-input" 
-                                    id="obj-name" 
-                                    style="
-                                        width: 55vw;
-                                        border-radius:15px;
-                                        border-color: #D3D3D3;
-                                        background-color: #f5f5f5;
-                                    "
-                                required> 
-                            </div>
-                            <div class="swal2-html-container">
-                                <label for="desc" class="swal2-html-text">Descrição do objeto</label>
-                                <input 
-                                    type="text" 
-                                    class="swal2-input" 
-                                    id="desc" 
-                                    style="
-                                        width: 55vw;
-                                        border-radius:15px;
-                                        border-color: #D3D3D3;
-                                        background-color: #f5f5f5;
-                                    "
-                                required> 
-                            </div>
-                            <div id="sel-container-class" class="swal2-html-container">
-                                <label 
-                                    class="swa2-input-label" 
-                                    for="obj-class" 
-                                    style="color:black;"
-                                >Selecione uma das classes abaixo para o objeto<label><br>
-                                <select 
-                                    class="swal2-select" 
-                                    id="obj-class" 
-                                    style="
-                                        width: 55vw; 
-                                        height: 8vh; 
-                                        border-radius: 15px; 
-                                        border-color: #D3D3D3;
-                                        transition: all 0.3s ease;
-                                        background-color: #f5f5f5;
-                                    "   
-                                >            
-                                </select>
-                                <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
-                                <label 
-                                    class="swa2-input-label" 
-                                    for="text-class-option" 
-                                    style="color:black;"
-                                >Crie uma classe<label><br>
-                                <input 
-                                    type="text" 
-                                    class="swal2-input" 
-                                    id="text-class-option" 
-                                    style="
-                                        width: 55vw; 
-                                        height: 8vh; 
-                                        border-radius: 15px; 
-                                        border-color: #D3D3D3;
-                                        transition: all 0.3s ease;
-                                        background-color: #f5f5f5;
-                                    "   
-                                >
-                            </div>
-                            <div id="sel-container-type" class="swal2-html-container">
-                                <label 
-                                    class="swa2-input-label" 
-                                    for="obj-type" 
-                                    style="color:black;"
-                                >Selecione um tipo abaixo para o objeto<label><br>
-                                <select 
-                                    class="swal2-select" 
-                                    id="obj-type" 
-                                    style="
-                                        width: 55vw; 
-                                        height: 8vh; 
-                                        border-radius: 15px; 
-                                        border-color: #D3D3D3;
-                                        transition: all 0.3s ease;
-                                        background-color: #f5f5f5;
-                                    "   
-                                >                                    
-                                </select>
-                                <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
-                                <label 
-                                    class="swa2-input-label" 
-                                    for="text-type-option" 
-                                    style="color:black;"
-                                >Crie um tipo<label><br>
-                                <input 
-                                    type="text" 
-                                    class="swal2-input" 
-                                    id="text-type-option" 
-                                    style="
-                                        width: 55vw; 
-                                        height: 8vh; 
-                                        border-radius: 15px; 
-                                        border-color: #D3D3D3;
-                                        transition: all 0.3s ease;
-                                        background-color: #f5f5f5;
-                                    "   
-                                >
-                            </div>
-                            <div class="swal2-html-container">
-                                <label for="lab" class="swal2-html-text">Selectione um laboratório</label>
-                                <select 
-                                    class="swal2-select" 
-                                    id="lab" 
-                                    style="
-                                        width: 55vw; 
-                                        height: 8vh; 
-                                        border-radius: 15px; 
-                                        border-color: #D3D3D3;
-                                        transition: all 0.3s ease;
-                                        background-color: #f5f5f5;
-                                        "   
-                                    >
-                            </div>
-                        `,
-                        preConfirm: async () => {
-                            var objClass = document.getElementById('obj-class').selectedIndex !== 0 || document.getElementById('text-class-option').value ? localStorage.getItem('class'): '' ;
-                            var objType = document.getElementById('obj-type').selectedIndex !== 0 || document.getElementById('text-type-option').value ? localStorage.getItem('type') : '';
-                            writeObjectData(
-                                document.getElementById('obj-name').value,
-                                new Date().toISOString().split('T')[0],
-                                new Date().toTimeString().slice(0, 5),
-                                document.getElementById('desc').value,
-                                objClass,
-                                objType,
-                                `${document.getElementById('obj-name').value}-${document.getElementById('lab').value}`,
-                                document.getElementById('lab').value
-                            ).then(() => {successToastSwal.fire()});
-                        }
-                    });
-
-                    document.getElementById('lab').innerHTML = labData;
-                    const otherClassChoice = document.getElementById('obj-class');
-                    const createdClassChoice = document.getElementById('text-class-option');
-                    const otherTypeChoice = document.getElementById('obj-type');
-                    const createdTypeChoice = document.getElementById('text-type-option');
-
-                    if (otherClassChoice) {
-                        otherClassChoice.addEventListener('change', (event) => {
-                            localStorage.setItem('class', event.target.value);
-                            if (event.target.value != 'none') createdClassChoice.value = "";
-                        })
+        readObjects(null, 'general').then( objResp => {
+            const dataTypeE = {};
+            const dataTypeM = {};
+            const dataElse = {};
+            for (const id in objResp) {
+                if (localStorage.getItem('old-type') != objResp[id].obj_type) {
+                    if (objResp[id].obj_class == 'Eletrônico' ) {
+                        dataTypeE[objResp[id].name] = objResp[id].obj_type
                     }
-                    if (createdClassChoice) {
-                        createdClassChoice.addEventListener('input', (newClass) => {
-                            if (localStorage.getItem('class') != 'none') otherClassChoice.selectedIndex = 0;
-                            localStorage.setItem('class', newClass.target.value);
-                        })
+                    else if (objResp[id].obj_class == 'Móvel' ) {
+                        dataTypeM[objResp[id].name] = objResp[id].obj_type
                     }
-                    if (otherTypeChoice) {
-                        otherTypeChoice.addEventListener('change', (event) => {
-                            localStorage.setItem('type', event.target.value);
-                            if (event.target.value != 'none') createdTypeChoice.value = "";
-                        })
+                    else{
+                        dataElse[objResp[id].name] = objResp[id].obj_type
                     }
-                    if (createdTypeChoice) {
-                        createdTypeChoice.addEventListener('input', (newType) => {
-                            if (localStorage.getItem('type') != 'none') otherTypeChoice.selectedIndex = 0;
-                            localStorage.setItem('type', newType.target.value);
-                        })
-                    }
-                    if (verifyObject()){
-                        readObjects(null, 'general').then(object => {
-                            for (const Id in object) {
-                                if (object[Id].obj_class != localStorage.getItem('old-class')) {
-                                    objClassData += `<option value="${object[Id].obj_class}">${object[Id].obj_class}</option>`
-                                    localStorage.setItem('old-class', object[Id].obj_class)
-                                }
-                                if (object[Id].obj_type != localStorage.getItem('old-type')) {
-                                    objTypeData += `<option value="${object[Id].obj_type}" >${object[Id].obj_type}</option>`
-                                    localStorage.setItem('old-type', object[Id].obj_type)
-                                }
-                            }       
-                            localStorage.removeItem('old-class');
-                            localStorage.removeItem('old-type') ;
-                            document.getElementById('obj-class').innerHTML = objClassData;
-                            document.getElementById('obj-type').innerHTML = objTypeData; 
-                        })
-                    }
-                }
-                else
-                {
-                    inputValue = Swal.getInput().value;
-                    if (verifyObject()){
-                        readObjects(null, 'general').then(result => {
-                            for (const Id in result) {
-                                if (result[Id].obj_type != localStorage.getItem('old-type')) {
-                                    objTypeData += `<option value="${result[Id].obj_type}" >${result[Id].obj_type}</option>`
-                                    localStorage.setItem('old-type', result[Id].obj_type)
-                                }
-                            }       
-                            localStorage.removeItem('old-class');
-                            localStorage.removeItem('old-type') ;          
-                        
-                            //Adicionar itens
-                            switch (inputValue) {
-                                case 'computer':      
-                                    objClass = 'Eletrônico';
-                                    desc = 'Computador com Windows 10, 8GB de RAM e 128GB de armazenamento.';
-                                ;
-                                break;
-                                case 'chair': 
-                                    objClass = 'Móvel';
-                                    desc = 'Cadeira de metal e plástico com quatro pernas e um apoio para caderno.';
-                                ;
-                                break;
-                            }
-                            reControleSwal.fire({
-                                title: 'Criar objeto',
-                                html: `
-                                    <div id="sel-container-type" class="swal2-html-container">
-                                        <label 
-                                            class="swa2-input-label" 
-                                            for="obj-type" 
-                                            style="color:black;"
-                                        >Selecione um tipo abaixo para o objeto<label><br>
-                                        <select 
-                                            class="swal2-select" 
-                                            id="obj-type" 
-                                            style="
-                                                width: 55vw; 
-                                                height: 8vh; 
-                                                border-radius: 15px; 
-                                                border-color: #D3D3D3;
-                                                transition: all 0.3s ease;
-                                                background-color: #f5f5f5;
-                                            "   
-                                        >  
-                                            ${objTypeData}                                  
-                                        </select>
-                                        <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
-                                        <label 
-                                            class="swa2-input-label" 
-                                            for="text-type-option" 
-                                            style="color:black;"
-                                        >Crie um tipo<label><br>
-                                        <input 
-                                            type="text" 
-                                            class="swal2-input" 
-                                            id="text-type-option" 
-                                            style="
-                                                width: 55vw; 
-                                                height: 8vh; 
-                                                border-radius: 15px; 
-                                                border-color: #D3D3D3;
-                                                transition: all 0.3s ease;
-                                                background-color: #f5f5f5;
-                                            "   
-                                        >
-                                    </div>
-                                    <div class="swal2-html-container">
-                                        <label for="lab" class="swal2-html-text">Selectione um laboratório</label>
-                                        <select 
-                                            class="swal2-select" 
-                                            id="lab" 
-                                            style="
-                                                width: 55vw; 
-                                                height: 8vh; 
-                                                border-radius: 15px; 
-                                                border-color: #D3D3D3;
-                                                transition: all 0.3s ease;
-                                                background-color: #f5f5f5;
-                                                "   
-                                        >${labData}</select>
-                                    </div>
-                                    <div class="swal2-html-container">
-                                        <label for="desc" class="swal2-html-text">Digite a descrição do objeto</label>
-                                        <input
-                                            class="swal2-input" 
-                                            id="desc" 
-                                            style="
-                                                width: 55vw; 
-                                                height: 8vh; 
-                                                border-radius: 15px; 
-                                                border-color: #D3D3D3;
-                                                transition: all 0.3s ease;
-                                                background-color: #f5f5f5;
-                                                "   
-                                            value="${desc}"
-                                            placeholder="${desc}"
-                                        >
-                                    </div>
-                                `,
-                                preConfirm: async () => {
-                                    var i = 1;
-                                    //Adicionar itens
-                                    switch (inputValue) {
-                                        case 'computer':
-                                            for (const Id in result) {
-                                                const name = `${result[Id].name}`;
-                                                if (name.startsWith('Computador') && document.getElementById('lab').value == result[Id].lab_id) {i++}
-                                            }
-                                            objName = `Computador ${i}`;
-                                            i = 1;
-                                        break;
-                                        case 'chair':
-                                            for (const Id in result) {
-                                                const name = `${result[Id].name}`;
-                                                if (name.startsWith('Cadeira') && document.getElementById('lab').value == result[Id].lab_id) {i++}
-                                            }
-                                            objName = `Cadeira ${i}`;
-                                            i = 1;
-                                        break;
-                                    }
-                                    writeObjectData(
-                                        objName,
-                                        new Date().toISOString().split('T')[0],
-                                        new Date().toTimeString().slice(0, 5),
-                                        document.getElementById('desc').value,
-                                        objClass,
-                                        localStorage.getItem('type'),
-                                        `${objName}-${document.getElementById('lab').value}`,
-                                        document.getElementById('lab').value
-                                    ).then(() => {successToastSwal.fire()});
-                                }
-                            });
-                            const otherTypeChoice = document.getElementById('obj-type');
-                            const createdTypeChoice = document.getElementById('text-type-option');
-
-                            if (otherTypeChoice) {
-                                otherTypeChoice.addEventListener('change', (event) => {
-                                    localStorage.setItem('type', event.target.value);
-                                    if (event.target.value != 'none') createdTypeChoice.value = "";
-                                })
-                            }
-                            if (createdTypeChoice) {
-                                createdTypeChoice.addEventListener('input', (newType) => {
-                                    if (localStorage.getItem('type') != 'none') otherTypeChoice.selectedIndex = 0;
-                                    localStorage.setItem('type', newType.target.value);
-                                })
-                            }
-                        })
-                    }
+                    localStorage.setItem('old-type', objResp[id].obj_type)
                 }
             }
+            localStorage.removeItem('old-type');
+            reControleSwal.fire({
+                title: 'Objeto',
+                text: 'Escolha uma predefinição de objeto:',
+                width: '30vw',
+                input: 'select',
+                inputAttributes: {
+                    style: `
+                        border-radius:15px;
+                        border-color: #D3D3D3;
+                        background-color: #f5f5f5;
+                        transition: all 0.3s ease;
+                    `
+                },
+                inputOptions: {
+                    Eletrônico: dataTypeE,
+                    Móveis: dataTypeM,
+                    Outro: {
+                        Diversos: dataElse,
+                        otherChoice: 'Adicionar objeto'
+                    }
+                },
+                preConfirm: async () => {
+                    if (Swal.getInput().value == 'otherChoice') {
+
+                        reControleSwal.fire({
+                            title: 'Criar objeto',
+                            html: `
+                                <div class="swal2-html-container" id="name-div">
+                                    <label for="obj-name" class="swal2-html-text">Identificação do objeto</label>
+                                    <input 
+                                        type="text" 
+                                        class="swal2-input" 
+                                        id="obj-name" 
+                                        style="
+                                            width: 55vw;
+                                            border-radius:15px;
+                                            border-color: #D3D3D3;
+                                            background-color: #f5f5f5;
+                                        "
+                                    required> 
+                                </div>
+                                <div class="swal2-html-container">
+                                    <label for="desc" class="swal2-html-text">Descrição do objeto</label>
+                                    <input 
+                                        type="text" 
+                                        class="swal2-input" 
+                                        id="desc" 
+                                        style="
+                                            width: 55vw;
+                                            border-radius:15px;
+                                            border-color: #D3D3D3;
+                                            background-color: #f5f5f5;
+                                        "
+                                    required> 
+                                </div>
+                                <div id="sel-container-class" class="swal2-html-container">
+                                    <label 
+                                        class="swa2-input-label" 
+                                        for="obj-class" 
+                                        style="color:black;"
+                                    >Selecione uma das classes abaixo para o objeto<label><br>
+                                    <select 
+                                        class="swal2-select" 
+                                        id="obj-class" 
+                                        style="
+                                            width: 55vw; 
+                                            height: 8vh; 
+                                            border-radius: 15px; 
+                                            border-color: #D3D3D3;
+                                            transition: all 0.3s ease;
+                                            background-color: #f5f5f5;
+                                        "   
+                                    >            
+                                    </select>
+                                    <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
+                                    <label 
+                                        class="swa2-input-label" 
+                                        for="text-class-option" 
+                                        style="color:black;"
+                                    >Crie uma classe<label><br>
+                                    <input 
+                                        type="text" 
+                                        class="swal2-input" 
+                                        id="text-class-option" 
+                                        style="
+                                            width: 55vw; 
+                                            height: 8vh; 
+                                            border-radius: 15px; 
+                                            border-color: #D3D3D3;
+                                            transition: all 0.3s ease;
+                                            background-color: #f5f5f5;
+                                        "   
+                                    >
+                                </div>
+                                <div id="sel-container-type" class="swal2-html-container">
+                                    <label 
+                                        class="swa2-input-label" 
+                                        for="obj-type" 
+                                        style="color:black;"
+                                    >Selecione um tipo abaixo para o objeto<label><br>
+                                    <select 
+                                        class="swal2-select" 
+                                        id="obj-type" 
+                                        style="
+                                            width: 55vw; 
+                                            height: 8vh; 
+                                            border-radius: 15px; 
+                                            border-color: #D3D3D3;
+                                            transition: all 0.3s ease;
+                                            background-color: #f5f5f5;
+                                        "   
+                                    >                                    
+                                    </select>
+                                    <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
+                                    <label 
+                                        class="swa2-input-label" 
+                                        for="text-type-option" 
+                                        style="color:black;"
+                                    >Crie um tipo<label><br>
+                                    <input 
+                                        type="text" 
+                                        class="swal2-input" 
+                                        id="text-type-option" 
+                                        style="
+                                            width: 55vw; 
+                                            height: 8vh; 
+                                            border-radius: 15px; 
+                                            border-color: #D3D3D3;
+                                            transition: all 0.3s ease;
+                                            background-color: #f5f5f5;
+                                        "   
+                                    >
+                                </div>
+                                <div class="swal2-html-container">
+                                    <label for="lab" class="swal2-html-text">Selectione um laboratório</label>
+                                    <select 
+                                        class="swal2-select" 
+                                        id="lab" 
+                                        style="
+                                            width: 55vw; 
+                                            height: 8vh; 
+                                            border-radius: 15px; 
+                                            border-color: #D3D3D3;
+                                            transition: all 0.3s ease;
+                                            background-color: #f5f5f5;
+                                            "   
+                                        >
+                                </div>
+                            `,
+                            preConfirm: async () => {
+                                var objClass = document.getElementById('obj-class').selectedIndex !== 0 || document.getElementById('text-class-option').value ? localStorage.getItem('class'): '' ;
+                                var objType = document.getElementById('obj-type').selectedIndex !== 0 || document.getElementById('text-type-option').value ? localStorage.getItem('type') : '';
+                                writeObjectData(
+                                    document.getElementById('obj-name').value,
+                                    new Date().toISOString().split('T')[0],
+                                    new Date().toTimeString().slice(0, 5),
+                                    document.getElementById('desc').value,
+                                    objClass,
+                                    objType,
+                                    `${document.getElementById('obj-name').value}-${document.getElementById('lab').value}`,
+                                    document.getElementById('lab').value
+                                ).then(() => {successToastSwal.fire()});
+                            }
+                        });
+
+                        document.getElementById('lab').innerHTML = labData;
+                        const otherClassChoice = document.getElementById('obj-class');
+                        const createdClassChoice = document.getElementById('text-class-option');
+                        const otherTypeChoice = document.getElementById('obj-type');
+                        const createdTypeChoice = document.getElementById('text-type-option');
+
+                        if (otherClassChoice) {
+                            otherClassChoice.addEventListener('change', (event) => {
+                                localStorage.setItem('class', event.target.value);
+                                if (event.target.value != 'none') createdClassChoice.value = "";
+                            })
+                        }
+                        if (createdClassChoice) {
+                            createdClassChoice.addEventListener('input', (newClass) => {
+                                if (localStorage.getItem('class') != 'none') otherClassChoice.selectedIndex = 0;
+                                localStorage.setItem('class', newClass.target.value);
+                            })
+                        }
+                        if (otherTypeChoice) {
+                            otherTypeChoice.addEventListener('change', (event) => {
+                                localStorage.setItem('type', event.target.value);
+                                if (event.target.value != 'none') createdTypeChoice.value = "";
+                            })
+                        }
+                        if (createdTypeChoice) {
+                            createdTypeChoice.addEventListener('input', (newType) => {
+                                if (localStorage.getItem('type') != 'none') otherTypeChoice.selectedIndex = 0;
+                                localStorage.setItem('type', newType.target.value);
+                            })
+                        }
+                        if (verifyObject()){
+                            readObjects(null, 'general').then(object => {
+                                for (const Id in object) {
+                                    if (object[Id].obj_class != localStorage.getItem('old-class')) {
+                                        objClassData += `<option value="${object[Id].obj_class}">${object[Id].obj_class}</option>`
+                                        localStorage.setItem('old-class', object[Id].obj_class)
+                                    }
+                                    if (object[Id].obj_type != localStorage.getItem('old-type')) {
+                                        objTypeData += `<option value="${object[Id].obj_type}" >${object[Id].obj_type}</option>`
+                                        localStorage.setItem('old-type', object[Id].obj_type)
+                                    }
+                                }       
+                                localStorage.removeItem('old-class');
+                                localStorage.removeItem('old-type') ;
+                                document.getElementById('obj-class').innerHTML = objClassData;
+                                document.getElementById('obj-type').innerHTML = objTypeData; 
+                            })
+                        }
+                    }
+                    else
+                    {
+                        inputValue = Swal.getInput().value.slice(0, -2);
+                        if (verifyObject()){
+                            searchFor(inputValue, 'obj-content').then(response => {
+                                for (const Id in objResp) {
+                                    if (objResp[Id].obj_type != localStorage.getItem('old-type')) {
+                                        if (response.obj_class == objResp[Id].obj_class) {
+                                            objUsualType += `<option value="${objResp[Id].obj_type}" >${objResp[Id].obj_type}</option>`;
+                                        }
+                                        localStorage.setItem('old-type', objResp[Id].obj_type);
+                                    }
+                                }       
+                                
+                                localStorage.removeItem('old-class');
+                                localStorage.removeItem('old-type') ;
+
+                                reControleSwal.fire({
+                                    title: 'Criar objeto',
+                                    html: `
+                                            <div id="sel-container-type" class="swal2-html-container">
+                                                <label 
+                                                    class="swa2-input-label" 
+                                                    for="obj-type" 
+                                                    style="color:black;"
+                                                >Selecione um tipo abaixo para o objeto<label><br>
+                                                <select 
+                                                    class="swal2-select" 
+                                                    id="obj-type" 
+                                                    style="
+                                                        width: 55vw; 
+                                                        height: 8vh; 
+                                                        border-radius: 15px; 
+                                                        border-color: #D3D3D3;
+                                                        transition: all 0.3s ease;
+                                                        background-color: #f5f5f5;
+                                                    "   
+                                                >  
+                                                    ${objUsualType}                                  
+                                                </select>
+                                                <br><br><label class="swal2-html-text" style="color: gray;"> ou </label><br><br>
+                                                <label 
+                                                    class="swa2-input-label" 
+                                                    for="text-type-option" 
+                                                    style="color:black;"
+                                                >Crie um tipo<label><br>
+                                                <input 
+                                                    type="text" 
+                                                    class="swal2-input" 
+                                                    id="text-type-option" 
+                                                    style="
+                                                        width: 55vw; 
+                                                        height: 8vh; 
+                                                        border-radius: 15px; 
+                                                        border-color: #D3D3D3;
+                                                        transition: all 0.3s ease;
+                                                        background-color: #f5f5f5;
+                                                    "   
+                                                >
+                                            </div>
+                                            <div class="swal2-html-container">
+                                                <label for="lab" class="swal2-html-text">Selectione um laboratório</label>
+                                                <select 
+                                                    class="swal2-select" 
+                                                    id="lab" 
+                                                    style="
+                                                        width: 55vw; 
+                                                        height: 8vh; 
+                                                        border-radius: 15px; 
+                                                        border-color: #D3D3D3;
+                                                        transition: all 0.3s ease;
+                                                        background-color: #f5f5f5;
+                                                        "   
+                                                >${labData}</select>
+                                            </div>
+                                            <div class="swal2-html-container">
+                                                <label for="desc" class="swal2-html-text">Digite a descrição do objeto</label>
+                                                <input
+                                                    class="swal2-input" 
+                                                    id="desc" 
+                                                    style="
+                                                        width: 55vw; 
+                                                        height: 8vh; 
+                                                        border-radius: 15px; 
+                                                        border-color: #D3D3D3;
+                                                        transition: all 0.3s ease;
+                                                        background-color: #f5f5f5;
+                                                        "   
+                                                    value="${response.desc}"
+                                                    placeholder="${response.desc}"
+                                                >
+                                            </div>
+                                    `,
+                                    preConfirm: async () => {
+                                        var i = 1;  
+                                        for (const Id in objResp) {
+                                            const name = `${objResp[Id].name}`;
+                                            if (name.startsWith(inputValue) && document.getElementById('lab').value == objResp[Id].lab_id) {i++}
+                                        }
+                                        objName = `${inputValue} ${i}`;
+                                        writeObjectData(
+                                            objName,
+                                            new Date().toISOString().split('T')[0],
+                                            new Date().toTimeString().slice(0, 5),
+                                            document.getElementById('desc').value,
+                                            response.obj_class,
+                                            localStorage.getItem('type'),
+                                            `${objName}-${document.getElementById('lab').value}`,
+                                            document.getElementById('lab').value
+                                        ).then(() => {successToastSwal.fire()});
+                                    }
+                                });
+                                const otherTypeChoice = document.getElementById('obj-type');
+                                const createdTypeChoice = document.getElementById('text-type-option');
+
+                                if (otherTypeChoice) {
+                                    otherTypeChoice.addEventListener('change', (event) => {
+                                        localStorage.setItem('type', event.target.value);
+                                        if (event.target.value != 'none') createdTypeChoice.value = "";
+                                    })
+                                }
+                                if (createdTypeChoice) {
+                                    createdTypeChoice.addEventListener('input', (newType) => {
+                                        if (localStorage.getItem('type') != 'none') otherTypeChoice.selectedIndex = 0;
+                                        localStorage.setItem('type', newType.target.value);
+                                    })
+                                }
+                            })
+                        }
+                    }
+                }
+            })
         })
     })
 }
@@ -1676,6 +1672,8 @@ export async function searchFor (
     tag
 ) {
     const dbRef = ref(getDatabase());
+    const referenceObj = await get(child(dbRef, 'object'));
+    const objectRef = referenceObj.val();
     
     switch (tag) {
         
@@ -1727,9 +1725,6 @@ export async function searchFor (
         break;
 
         case 'obj': 
-            const referenceObj = await get(child(dbRef, 'object'));
-            const objectRef = referenceObj.val();
-
             if (referenceObj.exists()) {
                 document.getElementById('eletronics').textContent = '';
                 document.getElementById('furniture').textContent = '';
@@ -1782,6 +1777,16 @@ export async function searchFor (
         ;
         break;
 
+        case 'obj-content':
+            if (!referenceObj.exists()) return;
+            for (const Id in objectRef) {
+                if (Id.startsWith(content)){
+                    return objectRef[Id];
+                }
+            }
+        ;
+        break;
+        
         case 'user': 
             document.getElementById('users-account-list').innerHTML = ''
             onValue(ref(getDatabase(), 'user'), (usersData) => {  
