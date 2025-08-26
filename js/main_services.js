@@ -80,6 +80,12 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
+if (localStorage.getItem('rank') == 3) {
+  document.getElementById('link-side').innerHTML += `
+    <li id="institution">Instituição</li>
+    <li id="acc-management">Gerenciar Contas</li>
+  `
+}
 
 // Dropdown e logout
 function toggleDropdown() {
@@ -97,14 +103,7 @@ window.addEventListener("click", (e) => {
 document.addEventListener("DOMContentLoaded", () => {
 
   //Verificação do nível de acesso do usuário logado
-  if (localStorage.getItem('rank')) {
-    if (localStorage.getItem('rank') == 3) {
-      document.getElementById('link-side').innerHTML += `
-        <li id="institution">Instituição</li>
-        <li id="acc-management">Gerenciar contas</li>
-      `
-    }
-  }
+  
 
   const link = (window.location.pathname).slice(6);
   switch (link) {
