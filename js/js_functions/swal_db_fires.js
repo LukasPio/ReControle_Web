@@ -1748,7 +1748,7 @@ export async function searchFor (
                                 }
                             }
                         });
-                        object.id = Id;console.log(objectRef[Id].name, content)
+                        object.id = Id;
             
                         const link = document.createElement('a');
                         link.id = Id;

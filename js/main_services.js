@@ -33,7 +33,25 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  const containerO = document.getElementById('objs');
+  const containerOE = document.getElementById('eletronics');
+  if (containerOE) {
+    containerOE.addEventListener('click', function (e) {
+      if (e.target.tagName == 'A') {
+        swalFireLookForObject(e.target.id)
+      }
+    })
+  }
+
+  const containerOF = document.getElementById('furniture');
+  if (containerOF) {
+    containerOF.addEventListener('click', function (e) {
+      if (e.target.tagName == 'A') {
+        swalFireLookForObject(e.target.id)
+      }
+    })
+  }
+
+  const containerO = document.getElementById('other');
   if (containerO) {
     containerO.addEventListener('click', function (e) {
       if (e.target.tagName == 'A') {
