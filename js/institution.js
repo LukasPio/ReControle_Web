@@ -101,13 +101,15 @@ document.addEventListener('DOMContentLoaded', () => {
             object.className = 'object-card';
             readReports(null, 'data').then(resp => {
                 for (const Id in resp) {
-                    if (resp[Id].selected_obj.sel_obj_id == ID) {
-                        switch (resp[Id].content.status) {
-                            case 'red': object.className = 'object-card red';
-                            break;
+                    if (resp[Id].dates) {
+                        if (resp[Id].selected_obj.sel_obj_id == ID) {
+                            switch (resp[Id].content.status) {
+                                case 'red': object.className = 'object-card red';
+                                break;
 
-                            case 'yellow': object.className = 'object-card yellow';
-                            break;
+                                case 'yellow': object.className = 'object-card yellow';
+                                break;
+                            }
                         }
                     }
                 }
