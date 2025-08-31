@@ -11,20 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     readReports(null, 'general');
 
-    const searchAcc = document.getElementById('search-acc');
-    if (searchAcc) {
-        searchAcc.addEventListener('input', (event) => {
-            if (event.target.value){
-                document.getElementById('chamados').innerHTML = null;
-                searchFor(event.target.value, 'report')
-            }
-            else
-            if (document.getElementById('chamados').innerHTML == '' || !event.target.value) {
-                readReports(null, 'general');
-            }
-        })
-    }
-
     const writeReportBtn = document.getElementById('reportButton');
     if (writeReportBtn) {
         writeReportBtn.addEventListener('click', () => {

@@ -12,3 +12,100 @@
   border-radius: 8px;
   width: 40vw;
 }
+
+.image-report {
+  border-radius: 15px;
+  max-width: 15vw;
+}
+
+.s-card {
+  margin-top: 2vh;
+  flex: 0 0 calc(33.333% - 30px);
+  background: #fff;
+  border-radius: 12px;
+  border: 0px solid;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.red {
+  border: 2px solid red;
+  transition: border-color 0.3s ease, transform 0.2s ease;
+}
+
+.yellow {
+  border: 2px solid yellow;
+  transition: border-color 0.3s ease, transform 0.2s ease;
+}
+
+.navbar {
+  border: 1px solid #D3D3D3;
+  border-radius: 1vh;
+  background-color: #ffffff;
+  padding: 1vh;
+}
+
+.navbar button {
+  margin-right: 3vw;
+  padding-bottom: 10px;
+  border: 0px;
+  border-radius: 10px;
+  background-color: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  color: #525252;
+}
+
+.navbar button:hover {
+  color: #2f5cf3;
+  font-weight: 600;
+  transform: scale(1.05);
+}
+
+.navbar .b-active {
+  font-weight: 600;
+  background-color: #e3e9fd;
+  color: #2f5cf3;
+  padding: 10px;
+}
+
+.manage-list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.manage-list li {
+  background-color: #FFFFFF;              
+  border: 1px solid #E0E0E5;         
+  border-radius: 8px;  
+  padding: 1rem 1.25rem;         
+  display: flex;
+  justify-content: space-between;     
+  align-items: center;
+  transition: background-color .2s,
+              box-shadow .2s,
+              border-color .2s;
+}
+
+.manage-list li .account-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1d3893;                    
+}
+
+.manage-accounts-list li .account-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2f5cf3;                      
+}
+
+.manage-accounts-list li:hover {
+  background-color: #EFF0FF;             
+  border-color: #2f5cf3;                
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}

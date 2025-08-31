@@ -6,6 +6,8 @@
     <title>Banco de Dados | Recontrole</title>
     <link rel="icon" href="../assets/recontrole_logo_icon.png" />
     <link rel="stylesheet" href="../css/institution.css" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_back" />
     <!-- Chart.js e SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
@@ -48,15 +50,12 @@
         </div>
       </header>
 
-      <section class="dashboard">
+      <section class="dashboard" id="main">
         <h1>Objetos</h1>
         <div>
           <button class="btn-create-rep" id="obj-add-btn">Criar Objeto</button>
         </div>
         <ul align="right" ><a href="./institution.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></a></ul>
-        <div>
-          <input type="search" placeholder="Procurar laboratório ou objeto por ID" id="search-acc"/><br><br>
-        </div id="objs">
           <div><h2 id="remove-h2-1"></h2>
           <div id="eletronics" class="objs"> 
           </div>

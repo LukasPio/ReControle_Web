@@ -122,15 +122,7 @@ main {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.red {
-  border: 2px solid red;
-  transition: border-color 0.3s ease, transform 0.2s ease;
-}
 
-.yellow {
-  border: 2px solid yellow;
-  transition: border-color 0.3s ease, transform 0.2s ease;
-}
 
 .lab-card a, .object-card a {
   color: #2f5cf3;

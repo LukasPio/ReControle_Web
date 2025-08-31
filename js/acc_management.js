@@ -6,20 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loading.fire();
     
     readUsers(null, 'acc-manage');
-
-    const searchAcc = document.getElementById('search-acc');
-    if (searchAcc) {
-        searchAcc.addEventListener('input', (event) => {
-            
-            if (event.target.value){
-                searchFor(event.target.value, 'user');
-            }
-            if (document.getElementById('users-account-list').innerHTML == '' || !event.target.value) {
-                document.getElementById('users-account-list').innerHTML = ''
-                readUsers(null, 'acc-manage');
-            }
-        })
-    }
         
     const container = document.getElementById('users-account-list');
     container.addEventListener('click', function (e) {

@@ -1676,11 +1676,6 @@ export async function searchFor (
     const objectRef = referenceObj.val();
     
     switch (tag) {
-        
-        case 'full': 
-            
-        ;
-        break;
 
         case 'lab':
             const referenceLab = await get(child(dbRef, 'laboratory'));
@@ -1688,13 +1683,12 @@ export async function searchFor (
             const labURLDesc = {};
 
             if (referenceLab.exists()) {
-                document.getElementById('labs').innerHTML = '';
                 for(const labID in labRef) {
                     if ((labID.startsWith(content) || labID.endsWith(content))) { 
                         labURLDesc[labID] = [labRef[labID].content.lab_img_url, labRef[labID].content.desc]
 
                         const laboratory = document.createElement('div')
-                        laboratory.className = 'lab-card'
+                        laboratory.className = 'lab-card s-card'
                         laboratory.id = labID
 
                         const labIDElement = document.createElement('p')
@@ -1705,20 +1699,14 @@ export async function searchFor (
                         seeMoreElement.innerHTML = `Ver mais`
                         seeMoreElement.style = 'cursor: pointer;'
 
-                        const img = document.createElement('p')
-                        img.innerHTML = `<img src="${labURLDesc[labID][0]}"><br>`
-                        if (!labURLDesc[labID][0]) {
-                            img.innerHTML = `<img src="../assets/default_classroom.avif"><br>`
+                        if (document.getElementById('response')) {
+                            document.getElementById('response').innerHTML = ''
                         }
-
-                        const desc = document.createElement('p')
-                        desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`
-
                         laboratory.appendChild(labIDElement)
-                        laboratory.appendChild(img)
                         laboratory.appendChild(seeMoreElement)
-                        laboratory.appendChild(desc)
-                        document.getElementById('labs').appendChild(laboratory)
+                        if (!document.getElementById(`${labID}`)) {
+                            document.getElementById('main').appendChild(laboratory)
+                        }
                     }
                 }
             }
@@ -1727,53 +1715,76 @@ export async function searchFor (
 
         case 'obj': 
             if (referenceObj.exists()) {
-                document.getElementById('eletronics').textContent = '';
-                document.getElementById('furniture').textContent = '';
-                document.getElementById('other').textContent = '';
+                const globalObject = document.createElement('div')
+                globalObject.id = 'objs'
+                
+                const eletronics = document.createElement('div')
+                eletronics.id = 'eletronics'
+                        
+                const furniture = document.createElement('div')
+                furniture.id = 'furniture'
+                        
+                const other = document.createElement('div')
+                other.id = 'other'
+
                 for(const Id in objectRef) {
                     if ((objectRef[Id].name.startsWith(content) || objectRef[Id].name.endsWith(content))) { 
-                        
-                        const object = document.createElement('div');
-                        object.className = 'object-card';
+
+                        const object = document.createElement('div')
+                        object.className = 'object-card s-card'
                         readReports(null, 'data').then(resp => {
                             for (const ID in resp) {
                                 if (resp[ID].selected_obj.sel_obj_id == Id) {
                                     switch (resp[ID].content.status) {
-                                        case 'red': object.className = 'object-card red';
+                                        case 'red': object.className = 'object-card s-card red'
                                         break;
 
-                                        case 'yellow': object.className = 'object-card yellow';
+                                        case 'yellow': object.className = 'object-card s-card yellow'
                                         break;
                                     }
                                 }
                             }
                         });
-                        object.id = Id;
+                        object.id = Id
             
-                        const link = document.createElement('a');
-                        link.id = Id;
-                        link.innerHTML = `Ver mais`;
-                        link.style = 'cursor: pointer;';
+                        const link = document.createElement('a')
+                        link.id = Id
+                        link.innerHTML = `Ver mais`
+                        link.style = 'cursor: pointer;'
 
-                        const objIDElement = document.createElement('p');
-                        objIDElement.innerHTML = `<strong>${objectRef[Id].name}</strong><br> <p style="margin: 15px;"> ${objectRef[Id].desc} <br><br> ${objectRef[Id].lab_id} </p>`;
+                        const objIDElement = document.createElement('p')
+                        objIDElement.innerHTML = `<strong>${objectRef[Id].name}</strong><br> <p style="margin: 15px;"> ${objectRef[Id].desc} <br><br> ${objectRef[Id].lab_id} </p>`
 
-                        object.appendChild(objIDElement);
-                        object.appendChild(link);
-                        if (objectRef[Id].obj_class == 'Eletrônico') {
-                            document.getElementById('eletronics').appendChild(object);
-                            document.getElementById('remove-h2-1').textContent = 'Eletrônicos';
-                        }
-                        else if (objectRef[Id].obj_class == 'Móvel') {
-                            document.getElementById('furniture').appendChild(object);
-                            document.getElementById('remove-h2-2').textContent = 'Móveis';
-                        }
-                        else {
-                            document.getElementById('other').appendChild(object);
-                            document.getElementById('remove-h2-3').textContent = 'Diversos';
+                        object.appendChild(objIDElement)
+                        object.appendChild(link)
+                        if (!document.getElementById(`${Id}`)) {
+                            if (objectRef[Id].obj_class == 'Eletrônico') {
+                                if (eletronics.textContent == '') {
+                                    eletronics.innerHTML = '<h2><br>Eletrônicos</h2>'
+                                }
+                                eletronics.appendChild(object)
+                            }
+                            else if (objectRef[Id].obj_class == 'Móvel') {
+                                if (furniture.textContent == '') {
+                                    furniture.innerHTML = '<h2><br>Móveis</h2>'
+                                }
+                                furniture.appendChild(object)
+                            }
+                            else {
+                                if (other.textContent == '') {
+                                    other.innerHTML = '<h2><br>Diversos</h2>'
+                                }
+                                other.appendChild(object)
+                            }
+                            
                         }
                     }
                 }
+                globalObject.appendChild(eletronics)
+                globalObject.appendChild(furniture)
+                globalObject.appendChild(other)
+                document.getElementById('main').appendChild(globalObject)
+                
             }
         ;
         break;
@@ -1788,101 +1799,73 @@ export async function searchFor (
         ;
         break;
         
-        case 'user': 
-            document.getElementById('users-account-list').innerHTML = ''
+        case 'user':
             onValue(ref(getDatabase(), 'user'), (usersData) => {  
                 const resp = usersData.val();
+                const userUl = document.createElement('ul')
+                userUl.className = 'manage-list'
                 for (const userID in resp) {
-                    const originalName = resp[userID].user_name
-                    if (originalName.startsWith(content) == true || originalName.endsWith(content)) {
+                    if (userID.startsWith(content)) {
+
                         const user = document.createElement('li')
                         user.id = userID
+
                         const userName = document.createElement('span')
                         userName.textContent = `Nome: ${resp[userID].user_name}`
                         userName.id = `${resp[userID].user_name}`
                         userName.className = 'account-name'
-
-                        const userRank = document.createElement('span')
-                        userRank.textContent = `Nível de acesso: ${resp[userID].rank }`
-                        userRank.className = 'account-value'
 
                         const userEmail = document.createElement('span')
                         userEmail.textContent = `E-mail: ${resp[userID].user_email}`
                         userEmail.id = `${resp[userID].user_email}`
                         userEmail.className = 'account-value'
 
+
                         user.appendChild(userName)
-                        user.appendChild(userRank)
                         user.appendChild(userEmail)
-                        document.getElementById('users-account-list').appendChild(user)
-                    }
-                    else
-                    {
-                        document.getElementById('users-account-list').innerHTML = 'Nenhum usuário encontrado.'
+                        userUl.appendChild(user)
                     }
                 }
+                document.getElementById('main').appendChild(userUl)
             })
         ;
-        break
+        break;
 
         case 'report': 
             const reference = await get(child(dbRef, 'reports'));
             const reportRef = reference.val();
             const reportContents = {};
             if (reference.exists()) {
-                document.getElementById('chamados').textContent = '';
+                
                 for(const repID in reportRef){
                     if (repID.startsWith(content)) {
-                        const report = document.createElement('div');
-                        report.className = 'chamado-card';
-                        report.id = repID;
+                        const report = document.createElement('div')
+                        report.className = 'chamado-card s-card'
+                        report.id = repID
                 
-                        const link = document.createElement('a');
-                        link.id = repID;
-                        link.innerHTML = `Ver mais`;
-                        link.style = 'cursor: pointer;';
-            
-                        const imageDiv = document.createElement('div');
-                        const center = document.createElement('center');
-                        const imageElement = document.createElement('img');
-                        imageElement.className = 'image-report';
-            
-                        const statusAuthorDiv = document.createElement('div');
-                        statusAuthorDiv.style = 'padding-top: 3px;';
-                        const statusElement = document.createElement('p');
+                        const link = document.createElement('a')
+                        link.id = repID
+                        link.innerHTML = `Ver mais`
+                        link.style = 'cursor: pointer;'
                             
                         switch (reportRef[repID].content.status) {
                             case 'red': 
-                                statusElement.innerHTML = 'Pendente';
-                                statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
-                                report.style = 'border-color: red; border: 2px solid red;';
+                                report.style = 'border-color: red; border: 2px solid red;'
                             break;
                     
                             case 'yellow': 
-                                statusElement.innerHTML = 'Em andamento';
-                                statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
-                                report.style = 'border-color: yellow; border: 2px solid yellow;';
+                                report.style = 'border-color: yellow; border: 2px solid yellow;'
                             break;
                     
                             case 'green': 
-                                statusElement.innerHTML = 'Concluído';
-                                statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
-                                report.style = 'border-color: green; border: 2px solid green;';
+                                report.style = 'border-color: green; border: 2px solid green;'
                             break;
                         }
                             
-                        const userElement = document.createElement('p');
-                        userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
-                        readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp );
-                    
-                        if (reportRef[repID].content.img_url != undefined) {
-                            imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : reportRef[repID].content.img_url;
-                            var image = `${reportRef[repID].content.img_url}`;
-                            if (!image.startsWith('data:image/png;base64,') ) {
-                                imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
-                            }
-                        }
-                                
+                        const userElement = document.createElement('p')
+                        userElement.style = 'background-color: #D3D3D3; border-radius: 15px;'
+                        readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp )
+                       
                         if (reportRef[repID].dates) {
                             if (reportRef[repID].content?.title) {
                                 reportContents[repID] = reportRef[repID].content?.title
@@ -1892,29 +1875,15 @@ export async function searchFor (
                                 reportContents[repID] = 'Sem Título para exibir'
                             }
                 
-                            const repIDElement = document.createElement('p');
-                            repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
-                    
-                            const localAndData = document.createElement('p');
-                            localAndData.innerHTML = `
-                                ${reportRef[repID].selected_obj?.sel_lab_id}
-                                <p style="
-                                    height: 2px;
-                                    background: linear-gradient(to right, #ccc);
-                                    margin: 15px 0;
-                                "></p>
-                            `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
+                            const repIDElement = document.createElement('p')
+                            repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`
                                 
-                            report.appendChild(repIDElement);
-                            report.appendChild(link);
-                            report.appendChild(localAndData);
-                            imageDiv.appendChild(imageElement);
-                            center.appendChild(imageDiv);
-                            center.appendChild(statusElement);
-                            center.appendChild(userElement);
-                            statusAuthorDiv.appendChild(center);
-                            report.appendChild(statusAuthorDiv);
-                            document.getElementById('chamados').appendChild(report);
+                            if (document.getElementById('response')) {
+                                document.getElementById('response').innerHTML = ''
+                            }
+                            report.appendChild(repIDElement)
+                            report.appendChild(link)
+                            document.getElementById('main').appendChild(report)
                                             
                         }
                         else
@@ -1927,36 +1896,18 @@ export async function searchFor (
                                 reportContents[repID] = 'Sem Título para exibir'
                             }
                 
-                            const repIDElement = document.createElement('p');
-                            repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
-                    
-                            const localAndData = document.createElement('p');
-                            if (reportRef[repID].content?.local)
-                                localAndData.innerHTML = `
-                                    ${reportRef[repID].content?.local}
-                                    <p 
-                                        style="
-                                            height: 2px;
-                                            background: #ccc;
-                                            margin: 15px 0;
-                                    "></p>
-                                `,
+                            const repIDElement = document.createElement('p')
+                            repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`
                 
-                                report.appendChild(repIDElement),
-                                report.appendChild(link),
-                                report.appendChild(localAndData),
-                                imageDiv.appendChild(imageElement),
-                                center.appendChild(imageDiv),
-                                center.appendChild(statusElement),
-                                center.appendChild(userElement),
-                                statusAuthorDiv.appendChild(center),
-                                report.appendChild(statusAuthorDiv),
-                                document.getElementById('chamados').appendChild(report);
+                            if (document.getElementById('response')) {
+                                document.getElementById('response').innerHTML = ''
+                            }
+                            report.appendChild(repIDElement)
+                            report.appendChild(link)
+                            if (!document.getElementById(`${repID}`)) {
+                                document.getElementById('main').appendChild(report)
+                            }
                         }
-                    }
-                    else
-                    {
-                        document.getElementById('chamados').textContent = 'Nenhum chamado encontrado.';
                     }
                 }
             }

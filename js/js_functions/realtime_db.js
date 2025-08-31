@@ -162,6 +162,20 @@ export async function updateMobileReportData (
 //-------------------------------------------------------------------------------
 // Leitura de dados
 
+
+export async function readAll () {
+  const dbRef = ref(getDatabase());
+  const userRef = await get(child(dbRef, 'user'));
+  const callRef = await get(child(dbRef, 'reports'));
+  const labRef = await get(child(dbRef, 'laboratory'));
+  const objRef = await get(child(dbRef, 'object'));
+  return {
+    users: userRef.val(),
+    calls: callRef.val(),
+    labs: labRef.val(),
+    objs: objRef.val()
+  }
+}
 // Função para realizar todas as tarefas de leitura dos usuários
 export async function readUsers (
   userID,
@@ -559,6 +573,8 @@ export async function readReports(
                       imageElement.src = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
                   }
               }
+              
+              imageDiv.style.maxWidth = '10vw';
                               
               if (resp.dates) {
                   if (resp.content?.title) {
@@ -636,12 +652,7 @@ export async function readReports(
        
       // Trará todas as datas adjuntos aos ID dos chamados
       case 'data':
-        if (reference.exists()) {
-          for(const repID in reportRef){
-            reportPostedDatas[repID] = reportRef[repID]
-          }
-        }
-        return reportPostedDatas;
+        return reportRef;
 
       // Trará os títulos e os conteúdos adjuntos aos ID dos respectivos chamados
       case 'text-content': 
@@ -994,10 +1005,13 @@ export function verifyObject (
  
 }
 
-// Função que faz a contagem para o gráfico da página principal
+// Função que faz a contagem para o gráfico da página principal - cbm : count by month
 export async function countReportsByMonth () {
   const repBMRef = await get(child(ref(getDatabase()), 'reports'));
-  const countByMonth = {};
+  const cbmWeb = {};
+  const cbmMobile = {};
+  const cbmInProgress = {};
+  const cbmConcluded = {};
 
   if (repBMRef.exists()) {
     for (const repID in repBMRef.val()) {
@@ -1007,10 +1021,23 @@ export async function countReportsByMonth () {
       if (data) {
         const month = data.substring(5, 7);
 
-        countByMonth[month] = (countByMonth[month] || 0) + 1;
+        if (report.content.status == 'red') {
+          if (report.dates) {
+            cbmWeb[month] = (cbmWeb[month] || 0) + 1
+          }
+          else
+          {
+            cbmMobile[month] = (cbmMobile[month] || 0) + 1
+          }
+        }
+        else if (report.content.status == 'yellow') {
+          cbmInProgress[month] = (cbmInProgress[month] || 0) + 1
+        }
+        else {
+          cbmConcluded[month] = (cbmConcluded[month] || 0) + 1
+        }
       }
     }
   }
-
-  return countByMonth;
+  return [cbmWeb, cbmMobile, cbmInProgress, cbmConcluded];
 } 

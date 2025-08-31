@@ -13,26 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loading.fire({timer: 1050});
 
     readObjects(null, 'content');
-    
-    const searchAcc = document.getElementById('search-acc');
-    if (searchAcc) {
-        searchAcc.addEventListener('input', (event) => {
-            if (event.target.value){
-                if (document.getElementById('eletronics') || document.getElementById('furniture')) {
-                    document.getElementById('eletronics').textContent = '';
-                    document.getElementById('furniture').textContent = '';
-                    document.getElementById('other').textContent = '';
-                }
-                searchFor(event.target.value, 'obj')
-            }
-            else if (document.getElementById('eletronics').innerHTML == '' || document.getElementById('furniture').innerHTML == '' || !event.target.value) {
-                readObjects(null, 'content')
-            }
-            else {
-                console.log('aaaaaaaa')
-            }
-        })
-    }
 
     onAuthStateChanged(auth, (user) => {
         const addObj = document.getElementById('obj-add-btn');
