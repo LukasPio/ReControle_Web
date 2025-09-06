@@ -1697,7 +1697,8 @@ export async function searchFor (
                         const seeMoreElement = document.createElement('a')
                         seeMoreElement.id = labID
                         seeMoreElement.innerHTML = `Ver mais`
-                        seeMoreElement.style = 'cursor: pointer;'
+                        seeMoreElement.style = 'cursor: pointer;color: #0074CC;text-decoration: underline;'
+                        seeMoreElement.className = 'manage-l';
 
                         if (document.getElementById('response')) {
                             document.getElementById('response').innerHTML = ''
@@ -1750,7 +1751,8 @@ export async function searchFor (
                         const link = document.createElement('a')
                         link.id = Id
                         link.innerHTML = `Ver mais`
-                        link.style = 'cursor: pointer;'
+                        link.style = 'cursor: pointer; color: #0074CC;text-decoration: underline;'
+                        link.className = 'manage-o'
 
                         const objIDElement = document.createElement('p')
                         objIDElement.innerHTML = `<strong>${objectRef[Id].name}</strong><br> <p style="margin: 15px;"> ${objectRef[Id].desc} <br><br> ${objectRef[Id].lab_id} </p>`
@@ -1805,10 +1807,12 @@ export async function searchFor (
                 const userUl = document.createElement('ul')
                 userUl.className = 'manage-list'
                 for (const userID in resp) {
-                    if (userID.startsWith(content)) {
+                    const userName = `${resp[userID].user_name}`
+                    if (userName.startsWith(content)) {
 
                         const user = document.createElement('li')
                         user.id = userID
+                        user.className = 'manage-u'
 
                         const userName = document.createElement('span')
                         userName.textContent = `Nome: ${resp[userID].user_name}`
@@ -1847,6 +1851,7 @@ export async function searchFor (
                         link.id = repID
                         link.innerHTML = `Ver mais`
                         link.style = 'cursor: pointer;'
+                        link.className = 'manage-r'
                             
                         switch (reportRef[repID].content.status) {
                             case 'red': 

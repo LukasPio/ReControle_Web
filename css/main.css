@@ -97,15 +97,21 @@
   color: #1d3893;                    
 }
 
-.manage-accounts-list li .account-value {
+.manage-list li .account-value {
   font-size: 1rem;
   font-weight: 600;
   color: #2f5cf3;                      
 }
 
-.manage-accounts-list li:hover {
+.manage-list li:hover {
   background-color: #EFF0FF;             
   border-color: #2f5cf3;                
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   cursor: pointer;
+}
+
+.active {
+  background: #e3e9fd;
+  color: #2f5cf3;
+  font-weight: bold;
 }
