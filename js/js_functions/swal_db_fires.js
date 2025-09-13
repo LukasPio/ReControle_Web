@@ -8,11 +8,12 @@ import {
     updateWebReportData,
     updateMobileReportData,
     verifyObject,
-    writeObjectData
+    writeObjectData,
+    writeUserData
 
 } from './realtime_db.js';
 import {reControleSwal, successToastSwal, errorToastSwal} from './swal_mixins.js';
-import { getDatabase, ref, child, get, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+import { getDatabase, ref, child, get, onValue, remove } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 
 export async function createReportSwal (
     title,
@@ -1055,18 +1056,69 @@ export async function swalFireLookForLaboratory (
     })
 }
 
+export async function updateUserSwal(
+    userId,
+    name
+) {
+    readUsers(userId, 'general').then(resp => {
+        const rank = resp.rank;
+        reControleSwal.fire({
+            width: '40vw',
+            title: `Nível de acesso de ${name}`,
+            input: 'range',
+            inputAttributes: {
+                max: 3,
+                min: 1
+            },
+            inputValue: rank,
+            preConfirm: async () => {
+                if (rank == Swal.getInput().value) return;
+                writeUserData(
+                    userId,
+                    Swal.getInput().value,
+                    resp.user_img_url,
+                    resp.user_name,
+                    resp.user_email
+                ).then(successToastSwal.fire({title: 'Atualização bem sucedida.'}))
+            }
+        });
+    })
+}
+
 export async function swalFireLookForUser (
     userID
 ) {
     readUsers(userID, 'general').then(resp => {
         var imageURL = resp.user_img_url;
         if (!imageURL) {imageURL = '../../assets/avatar.png'}
-        reControleSwal.fire({
+        const swalLook = reControleSwal.mixin({
             title: resp.user_name,
             imageWidth: '35vw',
             imageUrl: imageURL,
-            showCancelButton: false
+            cancelButtonText: 'OK',
+            confirmButtonText: 'Alterar',
+            showDenyButton: true,
+            denyButtonText: 'Remover conta',
+            denyButtonColor: '',
+            preConfirm: async () => {
+                updateUserSwal(userID, resp.user_name)
+            },
+            preDeny: async () => {
+                remove(ref(getDatabase(), `user/${userID}`)).then(successToastSwal.fire({title: 'Conta removida com sucesso.'}))
+            }
         })
+        if (localStorage.getItem('rank') == 3) {
+            swalLook.fire()
+        }
+        else if (localStorage.getItem('rank') == 2) {
+            swalLook.fire({showDenyButton: false})
+        }
+        else {
+            swalLook.fire({
+                showConfirmButton: false,
+                showDenyButton: false
+            })
+        }
     })
 }
 
@@ -1121,10 +1173,9 @@ export async function createObjectSwal () {
                 inputOptions: {
                     Eletrônico: dataTypeE,
                     Móveis: dataTypeM,
-                    Outro: {
-                        Diversos: dataElse,
-                        otherChoice: 'Adicionar objeto'
-                    }
+                    Diversos: dataElse,
+                    Outro: 'Adicionar objeto'
+                    
                 },
                 preConfirm: async () => {
                     if (Swal.getInput().value == 'otherChoice') {
@@ -1324,15 +1375,26 @@ export async function createObjectSwal () {
                         inputValue = Swal.getInput().value.slice(0, -2);
                         if (verifyObject()){
                             searchFor(inputValue, 'obj-content').then(response => {
-                                for (const Id in objResp) {
-                                    if (objResp[Id].obj_type != localStorage.getItem('old-type')) {
-                                        if (response.obj_class == objResp[Id].obj_class) {
-                                            objUsualType += `<option value="${objResp[Id].obj_type}" >${objResp[Id].obj_type}</option>`;
+                                if (response != undefined) {
+                                    for (const Id in objResp) {
+                                        if (objResp[Id].obj_type != localStorage.getItem('old-type')) {
+                                            if (response.obj_class == objResp[Id].obj_class) {
+                                                
+                                                    objUsualType += `<option value="${objResp[Id].obj_type}" >${objResp[Id].obj_type}</option>`;
+                                                
+                                                
+                                            }
+                                            localStorage.setItem('old-type', objResp[Id].obj_type);
                                         }
-                                        localStorage.setItem('old-type', objResp[Id].obj_type);
-                                    }
-                                }       
-                                
+                                    }      
+                                } 
+                                else
+                                {
+                                    objUsualType = '<option>Sem itens para exibir.<option>';        
+                                    response = {
+                                        desc: ""
+                                    }        
+                                }
                                 localStorage.removeItem('old-class');
                                 localStorage.removeItem('old-type') ;
 

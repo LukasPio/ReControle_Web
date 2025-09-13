@@ -237,6 +237,7 @@ export async function readUsers (
       //Lerá todos os usuários e os colocará num formato acessível ao acc-managment
       case 'acc-manage':
         onValue(ref(getDatabase(), 'user'), (usersData) => {
+          document.getElementById('users-account-list').innerHTML = ''
           for (let userID in usersData.val()) {
             const user = document.createElement('li')
             user.id = userID
@@ -428,6 +429,7 @@ export async function readReports(
                 imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
               }
             }
+            imageElement.style.maxHeight = '30vh';
             
             if (reportRef[repID].dates) {
               if (reportRef[repID].content?.title) {
@@ -573,8 +575,7 @@ export async function readReports(
                       imageElement.src = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
                   }
               }
-              
-              imageDiv.style.maxWidth = '10vw';
+              imageElement.style.maxHeight = '30vh';
                               
               if (resp.dates) {
                   if (resp.content?.title) {
