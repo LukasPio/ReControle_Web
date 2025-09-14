@@ -12,6 +12,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loading.fire({timer: 1850});
 
+    if (localStorage.getItem('rank') > 1) {
+        document.getElementById('add-div').innerHTML = `
+            <input type="checkbox" id="fab-toggle" class="fab-toggle" />
+
+            <label for="fab-toggle" class="btn-create-rep fab-main">
+                <svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF"><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/></svg>
+            </label>
+
+            <div class="fab-options2">
+                <button class="btn-create-rep" id="lab-add-btn">Adicionar Laboratório</button>
+            </div>
+            <div class="fab-options1">
+                <button class="btn-create-rep" id="obj-add-btn">Adicionar Objeto</button>
+            </div>
+        `
+    }
+
     readLaboratories(null, 'general').then(labRef => {
         const labURLDesc = {};
         document.getElementById('labs').innerHTML = '';

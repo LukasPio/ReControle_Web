@@ -516,7 +516,7 @@ export async function readReports(
 
           for(const repID in reportRef){
             if (reportRef[repID].dates)
-            datas[repID] = reportRef[repID].dates.posted_date.posted_day;
+            datas[repID] = reportRef[repID].dates.posted_date.posted_day,
             horas[repID] = reportRef[repID].dates.posted_date.posted_time;
           }
           

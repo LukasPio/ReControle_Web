@@ -254,7 +254,6 @@ onAuthStateChanged(auth, (user) => {
 
 if (localStorage.getItem('rank') == 3) {
   document.getElementById('link-side').innerHTML += `
-    <li id="institution">Instituição</li>
     <li id="acc-management">Gerenciar Contas</li>
   `
 }

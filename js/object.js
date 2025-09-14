@@ -12,6 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loading.fire({timer: 1050});
 
+    if (localStorage.getItem('rank') > 1) {
+        const button = document.createElement('button');
+        button.className = "btn-create-rep";
+        button.id = "obj-add-btn";
+        button.textContent = "Criar Objeto";
+        document.getElementById('add-div').appendChild(button)
+    }
+
     readObjects(null, 'content');
 
     onAuthStateChanged(auth, (user) => {
