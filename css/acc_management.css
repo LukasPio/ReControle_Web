@@ -1,80 +1,112 @@
+/* Reset e base (clean e corporativo: minimalismo com tipografia refinada) */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Segoe UI", sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
   display: flex;
   height: 100vh;
-  background-color: #f7f9fc;
+  background-color: #f8fafc; /* Cinza claro mais clean e corporativo */
+  color: #1e293b; /* Texto escuro profissional */
 }
 
+/* Sidebar (clean: espaçamento consistente, corporativo: sombras sutis) */
 .sidebar {
   width: 240px;
-  background: #fff;
-  border-right: 1px solid #e0e0e0;
-  padding: 20px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb; /* Borda mais suave */
+  padding: 20px 0; /* Padding vertical para clean */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05); /* Sombra insana sutil */
 }
 
 .logo {
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 700; /* Bold mais corporativo */
   margin-bottom: 40px;
+  padding: 0 20px;
+  color: #1e293b;
 }
 
 .sidebar ul {
   list-style: none;
+  padding: 0 20px; /* Padding interno clean */
 }
 
 .sidebar li {
-  padding: 12px 8px;
+  padding: 12px 16px; /* Padding mais equilibrado */
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* Reduzido para clean */
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transição insana suave */
+  font-weight: 500;
 }
 
 .sidebar li:hover,
 .sidebar li.active {
-  background: #e3e9fd;
-  color: #2f5cf3;
-  font-weight: bold;
+  background: linear-gradient(
+    135deg,
+    #2f5cf3,
+    #3b82f6
+  ); /* Gradiente corporativo insano */
+  color: #ffffff;
+  transform: translateX(4px); /* Micro-movimento insano */
+  box-shadow: 0 4px 12px rgba(47, 92, 243, 0.3); /* Glow no hover */
 }
 
+/* Main area (corporativo: flex clean) */
 main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
+/* Topbar (clean: padding reduzido, corporativo: foco em usabilidade) */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
-  padding: 15px 30px;
-  border-bottom: 1px solid #e0e0e0;
+  background: #ffffff;
+  padding: 16px 24px; /* Padding mais clean */
+  border-bottom: 1px solid #e5e7eb; /* Borda suave */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra corporativa */
 }
 
 .topbar input[type="search"] {
-  width: 300px;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
+  width: 300px; /* Padronizado (prioridade sobre 30vw para desktop) */
+  padding: 10px 16px; /* Padding mais confortável */
+  border: 1px solid #d1d5db; /* Borda cinza clean */
+  border-radius: 12px; /* Arredondado mais moderno */
+  background: #f9fafb; /* Fundo sutil */
+  font-size: 14px;
+  transition: all 0.2s ease; /* Transição insana */
+}
+
+.topbar input[type="search"]:focus {
+  outline: none;
+  border-color: #2f5cf3;
+  box-shadow: 0 0 0 3px rgba(47, 92, 243, 0.1); /* Glow corporativo */
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 16px; /* Gap mais clean */
 }
 
 .actions img {
-  width: 30px;
-  height: 30px;
+  width: 24px; /* Tamanho mais consistente */
+  height: 24px;
   object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.2s ease; /* Hover insano */
+}
+
+.actions img:hover {
+  transform: scale(1.1); /* Escala sutil */
 }
 
 .profile {
@@ -87,13 +119,18 @@ main {
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  border: 2px solid #2f5cf3; /* Borda acento corporativo */
 }
 
+/* Dashboard (clean: padding generoso, overflow suave) */
 .dashboard {
-  padding: 30px;
+  flex: 1; /* Preenche espaço */
+  padding: 24px; /* Padding clean */
   overflow-y: auto;
+  background: #f8fafc;
 }
 
+/* Seções genéricas (mantidas, mas clean) */
 .chamados {
   display: flex;
   gap: 20px;
@@ -104,29 +141,45 @@ main {
 .chamado-card {
   flex: 1;
   min-width: 250px;
-  background: #fff;
+  background: #ffffff;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Sombra mais insana */
+  transition: box-shadow 0.3s ease;
+}
+
+.chamado-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12); /* Hover corporativo */
 }
 
 .chamado-card a {
   color: #2f5cf3;
   font-size: 0.9rem;
   text-decoration: underline;
+  transition: color 0.2s ease;
 }
 
+.chamado-card a:hover {
+  color: #1e40af; /* Escurece insano */
+}
+
+/* Gráfico (clean: padding consistente) */
 .grafico-box {
-  background: #fff;
+  background: #ffffff;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px; /* Espaçamento clean */
 }
 
 .grafico-box h2 {
   margin-bottom: 20px;
   font-size: 1.2rem;
+  font-weight: 600;
+  color: #1e293b;
 }
+
+/* Account dropdown (corporativo: dropdown refinado) */
 .account-dropdown {
   position: relative;
   cursor: pointer;
@@ -135,12 +188,21 @@ main {
 .account-toggle {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px; /* Gap mais clean */
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #f3f4f6; /* Fundo sutil */
+  transition: background 0.2s ease;
+}
+
+.account-toggle:hover {
+  background: #e5e7eb;
 }
 
 .account-name {
   font-weight: 500;
-  color: #333;
+  color: #374151; /* Cinza corporativo */
+  font-size: 14px;
 }
 
 .account-img {
@@ -150,93 +212,205 @@ main {
   object-fit: cover;
 }
 
+/* Account menu (insano: sombra elevada) */
 .account-menu {
   position: absolute;
   right: 0;
   top: 45px;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Sombra insana */
+  border: 1px solid #e5e7eb;
+  border-radius: 12px; /* Mais arredondado */
   list-style: none;
-  padding: 10px 0;
-  border-radius: 8px;
+  padding: 8px 0;
   width: 180px;
   display: none;
   z-index: 1000;
 }
 
 .account-menu li {
-  padding: 10px 20px;
+  padding: 12px 20px; /* Padding clean */
+  transition: background 0.2s ease;
+}
+
+.account-menu li:hover {
+  background: #f8fafc; /* Fundo hover clean */
 }
 
 .account-menu li a {
   text-decoration: none;
-  color: #333;
+  color: #374151;
   display: block;
-  transition: background 0.2s ease;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .account-menu li a:hover {
-  background: #f0f0f0;
+  color: #2f5cf3; /* Acento insano */
 }
 
+/* Manage accounts list (foco principal: clean grid, corporativo badges, insano animações) */
 .manage-accounts-list {
   list-style: none;
   margin: 1.5rem 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(350px, 1fr)
+  ); /* Grid responsivo insano para clean layout */
+  gap: 1.25rem; /* Gap mais clean */
 }
 
 .manage-accounts-list li {
-  background-color: #FFFFFF;              
-  border: 1px solid #E0E0E5;         
-  border-radius: 8px;  
-  padding: 1rem 1.25rem;         
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb; /* Borda suave corporativa */
+  border-radius: 12px; /* Mais arredondado */
+  padding: 1.25rem; /* Padding equilibrado */
   display: flex;
-  justify-content: space-between;     
+  justify-content: space-between;
   align-items: center;
-  transition: background-color .2s,
-              box-shadow .2s,
-              border-color .2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transição insana fluida */
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease forwards; /* Animação de entrada insana */
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Animação insana de fade-in sequencial (para itens da lista) */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.manage-accounts-list li:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.manage-accounts-list li:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.manage-accounts-list li:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.manage-accounts-list li:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.manage-accounts-list li:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.manage-accounts-list li:hover {
+  background-color: #f8fafc; /* Fundo hover clean */
+  border-color: #2f5cf3; /* Acento corporativo */
+  box-shadow: 0 8px 25px rgba(47, 92, 243, 0.15); /* Glow insano */
+  transform: translateY(-4px) scale(1.02); /* Elevação e escala dinâmica */
+  cursor: pointer;
+}
+
+/* Barra lateral insana no hover (efeito corporativo premium) */
+.manage-accounts-list li::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, #2f5cf3, #3b82f6);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.manage-accounts-list li:hover::before {
+  transform: scaleY(1);
 }
 
 .manage-accounts-list li .account-name {
   font-size: 1rem;
-  font-weight: 500;
-  color: #1d3893;                    
+  font-weight: 600; /* Mais bold corporativo */
+  color: #1e293b; /* Escuro clean */
+  flex: 1; /* Ocupa espaço */
 }
 
 .manage-accounts-list li .account-value {
   font-size: 1rem;
   font-weight: 600;
-  color: #2f5cf3;                      
+  color: #2f5cf3; /* Acento consistente */
+  margin-left: auto; /* Alinha à direita clean */
 }
 
-.manage-accounts-list li:hover {
-  background-color: #EFF0FF;             
-  border-color: #2f5cf3;                
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
+/* Suporte para badges de role/status (adicione no HTML se necessário, para corporativo) */
+.account-role,
+.account-status {
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-left: 8px;
 }
 
+.account-role.admin {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.account-status.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.account-status.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Responsividade (clean em mobile) */
 @media (max-width: 768px) {
+  .sidebar {
+    width: 200px; /* Reduz em mobile */
+  }
+
+  .topbar input[type="search"] {
+    width: 100%; /* Full width clean */
+    max-width: 250px;
+  }
+
   .manage-accounts-list {
+    grid-template-columns: 1fr; /* Stack vertical */
     gap: 0.75rem;
   }
+
   .manage-accounts-list li {
     flex-direction: column;
     align-items: flex-start;
-    padding: 0.75rem 1rem;
+    padding: 1rem;
+    gap: 8px; /* Gap interno clean */
   }
+
   .manage-accounts-list li .account-value {
     margin-top: 0.5rem;
+    margin-left: 0; /* Reset em mobile */
+  }
+
+  .dashboard {
+    padding: 16px; /* Padding reduzido */
   }
 }
 
+/* Input search global (padronizado para evitar conflitos) */
 input[type="search"] {
-  width: 30vw;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
+  width: 30vw; /* Fallback para telas menores */
+  min-width: 200px; /* Mínimo clean */
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  background: #f9fafb;
+  transition: all 0.2s ease;
+}
+
+input[type="search"]:focus {
+  border-color: #2f5cf3;
+  box-shadow: 0 0 0 3px rgba(47, 92, 243, 0.1);
 }

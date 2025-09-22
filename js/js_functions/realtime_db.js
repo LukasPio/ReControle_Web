@@ -1,5 +1,13 @@
-import { getDatabase, ref, push, set, child, get, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
-import {errorSwalResponse} from '../js_functions/swal_fire_errors.js';
+import {
+  getDatabase,
+  ref,
+  push,
+  set,
+  child,
+  get,
+  onValue,
+} from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+import { errorSwalResponse } from "../js_functions/swal_fire_errors.js";
 
 /* **IMPORTANTE**
 
@@ -20,23 +28,17 @@ import {errorSwalResponse} from '../js_functions/swal_fire_errors.js';
 //Cadastro ou edição de dados
 
 // Cadastrar ou editar o usuário
-export async function writeUserData(
-  userID, 
-  rank, 
-  imageUrl,
-  name,
-  email
-) {
+export async function writeUserData(userID, rank, imageUrl, name, email) {
   set(ref(getDatabase(), `user/${userID}`), {
     rank: rank,
     user_img_url: imageUrl,
     user_name: name,
-    user_email: email
-  })
+    user_email: email,
+  });
 }
 
 // Cadastrar ou editar o laboratório
-export async function writeLaboratoryData (
+export async function writeLaboratoryData(
   labID,
   classificationOfLabs,
   labURL,
@@ -50,23 +52,23 @@ export async function writeLaboratoryData (
     classif_labs: classificationOfLabs,
     content: {
       lab_img_url: labURL,
-      desc: labDesc
+      desc: labDesc,
     },
     data: createDate,
     author: author,
     status: status,
-    lab_floor: floor
-  })
+    lab_floor: floor,
+  });
 }
 
 // Cadastrar ou editar o objeto
-export async function writeObjectData (
+export async function writeObjectData(
   name,
   gotDay,
   gotTime,
   description,
-  objectClass, 
-  objectType, 
+  objectClass,
+  objectType,
   objectID,
   selectedLab
 ) {
@@ -77,14 +79,14 @@ export async function writeObjectData (
     obj_type: objectType,
     delivered_date: {
       del_day: gotDay,
-      del_time: gotTime
+      del_time: gotTime,
     },
-    lab_id: selectedLab
-  })
+    lab_id: selectedLab,
+  });
 }
 
 // Cadastrar ou editar a ocorrência
-export function writeReportsData (
+export function writeReportsData(
   imageUrl,
   text,
   title,
@@ -96,35 +98,36 @@ export function writeReportsData (
   solvedTime,
   //reportID,
   selectedLaboratoryID,
-  selectedObjectID,
+  selectedObjectID
 ) {
-  set(push(ref(getDatabase(), `reports/`)), { //${reportID}
+  set(push(ref(getDatabase(), `reports/`)), {
+    //${reportID}
     content: {
       img_url: imageUrl,
       text: text,
       title: title,
       status: status,
-      autor: author
+      autor: author,
     },
     dates: {
       posted_date: {
         posted_day: postedDay,
-        posted_time: postedTime
+        posted_time: postedTime,
       },
       solved_date: {
         solved_day: solvedDay,
-        solved_time: solvedTime
-      }
+        solved_time: solvedTime,
+      },
     },
     selected_obj: {
       sel_lab_id: selectedLaboratoryID,
-      sel_obj_id: selectedObjectID
-    }
-  })
+      sel_obj_id: selectedObjectID,
+    },
+  });
 }
 
 // Atualizar a ocorrência da Web
-export async function updateWebReportData (
+export async function updateWebReportData(
   author,
   reportID,
   newTitle,
@@ -137,12 +140,12 @@ export async function updateWebReportData (
     title: newTitle,
     text: newText,
     img_url: newURL,
-    status: newStatus
-  })
+    status: newStatus,
+  });
 }
 
 // Atualizar a ocorrência do Mobile
-export async function updateMobileReportData (
+export async function updateMobileReportData(
   reportID,
   text,
   imageUrl,
@@ -155,159 +158,166 @@ export async function updateMobileReportData (
     text: text,
     local: local,
     status: status,
-    autor: author
-  })
+    autor: author,
+  });
 }
 
 //-------------------------------------------------------------------------------
 // Leitura de dados
 
-
-export async function readAll () {
+export async function readAll() {
   const dbRef = ref(getDatabase());
-  const userRef = await get(child(dbRef, 'user'));
-  const callRef = await get(child(dbRef, 'reports'));
-  const labRef = await get(child(dbRef, 'laboratory'));
-  const objRef = await get(child(dbRef, 'object'));
+  const userRef = await get(child(dbRef, "user"));
+  const callRef = await get(child(dbRef, "reports"));
+  const labRef = await get(child(dbRef, "laboratory"));
+  const objRef = await get(child(dbRef, "object"));
   return {
     users: userRef.val(),
     calls: callRef.val(),
     labs: labRef.val(),
-    objs: objRef.val()
-  }
+    objs: objRef.val(),
+  };
 }
 // Função para realizar todas as tarefas de leitura dos usuários
-export async function readUsers (
-  userID,
-  contentType,
-  contentName
-) {
+export async function readUsers(userID, contentType, contentName) {
   const dbRef = ref(getDatabase());
   const userRef = await get(child(dbRef, `user/${userID}`));
   if (userID) {
     switch (contentType) {
-
       // Trará o rank do usuário
-      case 'user-rank':
+      case "user-rank":
         try {
           if (userRef.exists()) {
-            return userRef.val().rank
+            return userRef.val().rank;
           } else {
-            return "No data available"
+            return "No data available";
           }
         } catch (error) {
-          errorSwalResponse(error)
-          return null
-        };
-      
-      // Trará o nome do usuário
-      case 'user-name': 
-        try {
-          if (userRef.exists()) {
-            return userRef.val().user_name
-          } else {
-            return "No data available"
-          }
-        } catch (error) {
-          errorSwalResponse(error)
-          return null
+          errorSwalResponse(error);
+          return null;
         }
-      ;
+
+      // Trará o nome do usuário
+      case "user-name":
+        try {
+          if (userRef.exists()) {
+            return userRef.val().user_name;
+          } else {
+            return "No data available";
+          }
+        } catch (error) {
+          errorSwalResponse(error);
+          return null;
+        }
 
       // Trará tudo do usuário
-      case 'general':
-        try{
+      case "general":
+        try {
           if (userRef.exists()) {
-            return userRef.val()
+            return userRef.val();
           }
+        } catch (error) {
+          errorSwalResponse(error);
+          return null;
         }
-        catch (error) {
-          errorSwalResponse(error)
-          return null
-        };
 
       default:
-        return 'Incorrect content type';
+        return "Incorrect content type";
     }
-  }
-  else
-  {
+  } else {
     switch (contentType) {
-
       //Lerá todos os usuários e os colocará num formato acessível ao acc-managment
-      case 'acc-manage':
-        onValue(ref(getDatabase(), 'user'), (usersData) => {
-          document.getElementById('users-account-list').innerHTML = ''
+      case "acc-manage":
+        onValue(ref(getDatabase(), "user"), (usersData) => {
+          document.getElementById("users-account-list").innerHTML = "";
           for (let userID in usersData.val()) {
-            const user = document.createElement('li')
-            user.id = userID
-            user.className = 'user-acc'
-            const userName = document.createElement('span')
-            userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`
-            userName.id = `${({ userID, ...usersData.val()[userID]}).user_name}`
-            userName.className = 'account-name'
+            const user = document.createElement("li");
+            user.id = userID;
+            user.className = "user-acc";
+            const userName = document.createElement("span");
+            userName.textContent = `Nome: ${
+              { userID, ...usersData.val()[userID] }.user_name
+            }`;
+            userName.id = `${{ userID, ...usersData.val()[userID] }.user_name}`;
+            userName.className = "account-name";
 
-            const userRank = document.createElement('span')
-            userRank.textContent = `Nível de acesso: ${({ userID, ...usersData.val()[userID]}).rank }`
-            userRank.className = 'account-value'
+            const userRank = document.createElement("span");
+            userRank.textContent = `Nível de acesso: ${
+              { userID, ...usersData.val()[userID] }.rank
+            }`;
+            userRank.className = "account-value";
 
-            const userEmail = document.createElement('span')
-            userEmail.textContent = `E-mail: ${({ userID, ...usersData.val()[userID]}).user_email}`
-            userEmail.id = `${({ userID, ...usersData.val()[userID]}).user_email}`
-            userEmail.className = 'account-value'
+            const userEmail = document.createElement("span");
+            userEmail.textContent = `E-mail: ${
+              { userID, ...usersData.val()[userID] }.user_email
+            }`;
+            userEmail.id = `${
+              { userID, ...usersData.val()[userID] }.user_email
+            }`;
+            userEmail.className = "account-value";
 
-            user.appendChild(userName)
-            user.appendChild(userRank)
-            user.appendChild(userEmail)
-            document.getElementById('users-account-list').appendChild(user)
+            user.appendChild(userName);
+            user.appendChild(userRank);
+            user.appendChild(userEmail);
+            document.getElementById("users-account-list").appendChild(user);
           }
-        })
-      ;break;
-        document.getElementById('users-account-list').innerHTML = ''
-        onValue(ref(getDatabase(), 'user'), (usersData) => {  
+        });
+        break;
+        document.getElementById("users-account-list").innerHTML = "";
+        onValue(ref(getDatabase(), "user"), (usersData) => {
           for (let userID in usersData.val()) {
-            const originalName = `${({ userID, ...usersData.val()[userID]}).user_name}`
-            if (originalName.startsWith(contentName) == true || originalName.endsWith(contentName)) {
-              const user = document.createElement('li')
-              user.id = userID
-              const userName = document.createElement('span')
-              userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`
-              userName.id = `${({ userID, ...usersData.val()[userID]}).user_name}`
-              userName.className = 'account-name'
+            const originalName = `${
+              { userID, ...usersData.val()[userID] }.user_name
+            }`;
+            if (
+              originalName.startsWith(contentName) == true ||
+              originalName.endsWith(contentName)
+            ) {
+              const user = document.createElement("li");
+              user.id = userID;
+              const userName = document.createElement("span");
+              userName.textContent = `Nome: ${
+                { userID, ...usersData.val()[userID] }.user_name
+              }`;
+              userName.id = `${
+                { userID, ...usersData.val()[userID] }.user_name
+              }`;
+              userName.className = "account-name";
 
-              const userRank = document.createElement('span')
-              userRank.textContent = `Nível de acesso: ${({ userID, ...usersData.val()[userID]}).rank }`
-              userRank.className = 'account-value'
+              const userRank = document.createElement("span");
+              userRank.textContent = `Nível de acesso: ${
+                { userID, ...usersData.val()[userID] }.rank
+              }`;
+              userRank.className = "account-value";
 
-              const userEmail = document.createElement('span')
-              userEmail.textContent = `E-mail: ${({ userID, ...usersData.val()[userID]}).user_email}`
-              userEmail.id = `${({ userID, ...usersData.val()[userID]}).user_email}`
-              userEmail.className = 'account-value'
+              const userEmail = document.createElement("span");
+              userEmail.textContent = `E-mail: ${
+                { userID, ...usersData.val()[userID] }.user_email
+              }`;
+              userEmail.id = `${
+                { userID, ...usersData.val()[userID] }.user_email
+              }`;
+              userEmail.className = "account-value";
 
-              user.appendChild(userName)
-              user.appendChild(userRank)
-              user.appendChild(userEmail)
-              document.getElementById('users-account-list').appendChild(user)
+              user.appendChild(userName);
+              user.appendChild(userRank);
+              user.appendChild(userEmail);
+              document.getElementById("users-account-list").appendChild(user);
             }
           }
-        })
-      ;
-      break; 
+        });
+        break;
 
       default:
-        return 'Incorrect content type';
+        return "Incorrect content type";
     }
   }
 }
 
 // Função para realizar todas as tarefas de leitura de occorrências
-export async function readReports(
-  reportID,
-  contentType,
-  contentName
-) {
+export async function readReports(reportID, contentType, contentName) {
   const dbRef = ref(getDatabase());
-  const reference = await get(child(ref(getDatabase()), 'reports'));
+  const reference = await get(child(ref(getDatabase()), "reports"));
   const reportRef = reference.val();
   const reportPostedDatas = {};
   const reportContents = {};
@@ -315,135 +325,142 @@ export async function readReports(
   if (reportID) {
     switch (contentType) {
       // Trará todas as informações da ocorrência
-      case 'general': 
+      case "general":
         try {
-          const reportRef = await get(child(dbRef, `reports/${reportID}`))
+          const reportRef = await get(child(dbRef, `reports/${reportID}`));
           if (reportRef.exists()) {
-            return reportRef.val()
+            return reportRef.val();
           } else {
-            return "No data available"
+            return "No data available";
           }
         } catch (error) {
-          errorSwalResponse(error)
-          return 'null'
-        };
+          errorSwalResponse(error);
+          return "null";
+        }
 
       // Lerá a data de postagem de um chamado
-      case 'data':
+      case "data":
         try {
-          const reportRef = await get(child(dbRef, `reports/${reportID}`))
+          const reportRef = await get(child(dbRef, `reports/${reportID}`));
           if (reportRef.exists()) {
-            return reportRef.val().dates?.posted_date?.posted_day
+            return reportRef.val().dates?.posted_date?.posted_day;
           } else {
-            return "No data available"
+            return "No data available";
           }
         } catch (error) {
-          errorSwalResponse(error)
-          return 'null'
-        };
+          errorSwalResponse(error);
+          return "null";
+        }
 
       // Lerá o conteúdo de um chamado
-      case 'text-content': 
+      case "text-content":
         try {
-          const reportRef = await get(child(dbRef, `reports/${reportID}`))
+          const reportRef = await get(child(dbRef, `reports/${reportID}`));
           if (reportRef.exists()) {
-            return reportRef.val().content
+            return reportRef.val().content;
           } else {
-            return "No data available"
+            return "No data available";
           }
         } catch (error) {
-          errorSwalResponse(error)
-          return null
-        };
+          errorSwalResponse(error);
+          return null;
+        }
 
       // Lerá o ID do objeto em questão
-      case 'selected-object':
-          try {
-            const reportRef = await get(child(dbRef, `reports/${reportID}`))
-            if (reportRef.exists()) {
-              return reportRef.val().selected_obj.sel_obj_id
-            } else {
-              return "No data available"
-            }
-          } catch (error) {
-            errorSwalResponse(error)
-            return null
-          };
+      case "selected-object":
+        try {
+          const reportRef = await get(child(dbRef, `reports/${reportID}`));
+          if (reportRef.exists()) {
+            return reportRef.val().selected_obj.sel_obj_id;
+          } else {
+            return "No data available";
+          }
+        } catch (error) {
+          errorSwalResponse(error);
+          return null;
+        }
 
-      default: 
-        return 'Incorrect content-type.';
+      default:
+        return "Incorrect content-type.";
     }
-  }
-  else
-  {
+  } else {
     switch (contentType) {
       // trará todos os chamados com o conteúdo e o seu ID
-      case 'general': 
+      case "general":
         if (reference.exists()) {
-          document.getElementById('chamados').innerHTML = '';
-          for(const repID in reportRef){
-              
-            const report = document.createElement('div');
-            report.className = 'chamado-card';
+          document.getElementById("chamados").innerHTML = "";
+          for (const repID in reportRef) {
+            const report = document.createElement("div");
+            report.className = "chamado-card";
             report.id = repID;
-  
-            const link = document.createElement('a');
+
+            const link = document.createElement("a");
             link.id = repID;
             link.innerHTML = `Ver mais`;
-            link.style = 'cursor: pointer;';
+            link.style = "cursor: pointer;";
 
-            const imageDiv = document.createElement('div');
-            const center = document.createElement('center');
-            const imageElement = document.createElement('img');
-            imageElement.className = 'image-report';
+            const imageDiv = document.createElement("div");
+            const center = document.createElement("center");
+            const imageElement = document.createElement("img");
+            imageElement.className = "image-report";
 
-            const statusAuthorDiv = document.createElement('div');
-            statusAuthorDiv.style = 'padding-top: 3px;';
-            const statusElement = document.createElement('p');
-            
+            const statusAuthorDiv = document.createElement("div");
+            statusAuthorDiv.style = "padding-top: 3px;";
+            const statusElement = document.createElement("p");
+
             switch (reportRef[repID].content.status) {
-              case 'red': 
-                statusElement.innerHTML = 'Pendente';
-                statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
-              break;
+              case "red":
+                statusElement.innerHTML = "Pendente";
+                statusElement.style =
+                  "border-color: red; border: 2px solid red; border-radius: 15px;";
+                break;
 
-              case 'yellow': 
-                statusElement.innerHTML = 'Em andamento';
-                statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
-              break;
+              case "yellow":
+                statusElement.innerHTML = "Em andamento";
+                statusElement.style =
+                  "border-color: yellow; border: 2px solid yellow; border-radius: 15px;";
+                break;
 
-              case 'green': 
-                statusElement.innerHTML = 'Concluído';
-                statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
-              break;
+              case "green":
+                statusElement.innerHTML = "Concluído";
+                statusElement.style =
+                  "border-color: green; border: 2px solid green; border-radius: 15px;";
+                break;
             }
-            
-            const userElement = document.createElement('p');
-            userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
-            readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp );
+
+            const userElement = document.createElement("p");
+            userElement.style =
+              "background-color: #D3D3D3; border-radius: 15px;";
+            readUsers(reportRef[repID].content.autor, "user-name").then(
+              (resp) => (userElement.textContent = resp)
+            );
 
             if (reportRef[repID].content.img_url != undefined) {
-              imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : reportRef[repID].content.img_url;
+              imageElement.src =
+                reportRef[repID].content.img_url === ""
+                  ? "../../assets/default_occur.jpg"
+                  : reportRef[repID].content.img_url;
               var image = `${reportRef[repID].content.img_url}`;
-              if (!image.startsWith('data:image/png;base64,') ) {
-                imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
+              if (!image.startsWith("data:image/png;base64,")) {
+                imageElement.src =
+                  reportRef[repID].content.img_url === ""
+                    ? "../../assets/default_occur.jpg"
+                    : "data:image/png;base64, " + image;
               }
             }
-            imageElement.style.maxHeight = '30vh';
-            
+            imageElement.style.maxHeight = "30vh";
+
             if (reportRef[repID].dates) {
               if (reportRef[repID].content?.title) {
-                reportContents[repID] = reportRef[repID].content?.title
-              }
-              else
-              {
-                reportContents[repID] = 'Sem Título para exibir'
+                reportContents[repID] = reportRef[repID].content?.title;
+              } else {
+                reportContents[repID] = "Sem Título para exibir";
               }
 
-              const repIDElement = document.createElement('p');
+              const repIDElement = document.createElement("p");
               repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
 
-              const localAndData = document.createElement('p');
+              const localAndData = document.createElement("p");
               localAndData.innerHTML = `
                 ${reportRef[repID].selected_obj?.sel_lab_id}
                 <p style="
@@ -452,7 +469,7 @@ export async function readReports(
                     margin: 15px 0;
                   "></p>
               `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
-              
+
               report.appendChild(repIDElement);
               report.appendChild(link);
               report.appendChild(localAndData);
@@ -462,179 +479,27 @@ export async function readReports(
               center.appendChild(userElement);
               statusAuthorDiv.appendChild(center);
               report.appendChild(statusAuthorDiv);
-              document.getElementById('chamados').appendChild(report);
-
-              
-            }
-            else
-            {
-               if (reportRef[repID].content?.text) {
-                reportContents[repID] = reportRef[repID].content?.text
-              }
-              else
-              {
-                reportContents[repID] = 'Sem Título para exibir'
+              document.getElementById("chamados").appendChild(report);
+            } else {
+              if (reportRef[repID].content?.text) {
+                reportContents[repID] = reportRef[repID].content?.text;
+              } else {
+                reportContents[repID] = "Sem Título para exibir";
               }
 
-              const repIDElement = document.createElement('p');
+              const repIDElement = document.createElement("p");
               repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
 
-              const localAndData = document.createElement('p');
+              const localAndData = document.createElement("p");
               if (reportRef[repID].content?.local)
-              localAndData.innerHTML = `
+                (localAndData.innerHTML = `
                 ${reportRef[repID].content?.local}
                 <p style="
                   height: 2px;
                   background: #ccc;
                   margin: 15px 0;
                 "></p>
-              `,
-
-              report.appendChild(repIDElement),
-              report.appendChild(link),
-              report.appendChild(localAndData),
-              imageDiv.appendChild(imageElement),
-              center.appendChild(imageDiv),
-              center.appendChild(statusElement),
-              center.appendChild(userElement),
-              statusAuthorDiv.appendChild(center),
-              report.appendChild(statusAuthorDiv),
-              document.getElementById('chamados').appendChild(report);
-            }
-          }
-        }
-      ;
-      break;
-
-      // Aterar para assim que tiver a data de criação
-      // trará todos os chamados com o conteúdo e o seu ID para os três primeiros (a ser alterado)
-      case 'general-home' :
-        if (reference.exists()) {
-
-          const datas = {};
-          const horas = {};
-
-          for(const repID in reportRef){
-            if (reportRef[repID].dates)
-            datas[repID] = reportRef[repID].dates.posted_date.posted_day,
-            horas[repID] = reportRef[repID].dates.posted_date.posted_time;
-          }
-          
-          const recentes = Object.entries(datas)
-          .map(([id, valor]) => {
-              const datetime = new Date(`${datas[id]}T${horas[id]}`);
-              return { id, ...valor, datetime };
-          }).filter(item => item && item.datetime instanceof Date && !isNaN(item.datetime)).sort((a, b) => b.datetime - a.datetime).slice(0, 3);
-
-          recentes.forEach((item) => {    
-              const resp = reportRef[item.id];
-              var reportContents = '';
-              const report = document.createElement('div');
-              report.className = 'chamado-card';
-              report.id = item.id;
-                    
-              const link = document.createElement('a');
-              link.id = item.id;
-              link.innerHTML = `Ver mais`;
-              link.style = 'cursor: pointer;';
-                  
-              const imageDiv = document.createElement('div');
-              const center = document.createElement('center');
-              const imageElement = document.createElement('img');
-              imageElement.className = 'image-report';
-                  
-              const statusAuthorDiv = document.createElement('div');
-              statusAuthorDiv.style = 'padding-top: 3px;';
-              const statusElement = document.createElement('p');
-                              
-              switch (resp.content.status) {
-                  case 'red': 
-                      statusElement.innerHTML = 'Pendente';
-                      statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
-                  break;
-              
-                  case 'yellow': 
-                      statusElement.innerHTML = 'Em andamento';
-                      statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
-                  break;
-              
-                  case 'green': 
-                      statusElement.innerHTML = 'Concluído';
-                      statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
-                  break;
-              }
-                              
-              const userElement = document.createElement('p');
-              userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
-              readUsers(resp.content.autor, 'user-name').then(respT => userElement.textContent = respT );
-                  
-              if (resp.content.img_url != undefined) {
-                  imageElement.src = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : resp.content.img_url;
-                  var image = `${resp.content.img_url}`;
-                  if (!image.startsWith('data:image/png;base64,') ) {
-                      imageElement.src = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
-                  }
-              }
-              imageElement.style.maxHeight = '30vh';
-                              
-              if (resp.dates) {
-                  if (resp.content?.title) {
-                      reportContents = resp.content?.title
-                  }
-                  else
-                  {
-                      reportContents = 'Sem Título para exibir'
-                  }
-              
-                  const repIDElement = document.createElement('p');
-                  repIDElement.innerHTML = `<strong>${item.id}</strong><br> ${reportContents}`;                
-                      
-                  const localAndData = document.createElement('p');
-                  localAndData.innerHTML = `
-                      ${resp.selected_obj?.sel_lab_id}
-                      <p style="
-                          height: 2px;
-                          background: linear-gradient(to right, #ccc);
-                          margin: 15px 0;
-                      "></p>
-                  `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
-                                
-                  report.appendChild(repIDElement);
-                  report.appendChild(link);
-                  report.appendChild(localAndData);
-                  imageDiv.appendChild(imageElement);
-                  center.appendChild(imageDiv);
-                  center.appendChild(statusElement);
-                  center.appendChild(userElement);
-                  statusAuthorDiv.appendChild(center);
-                  report.appendChild(statusAuthorDiv);
-                  document.getElementById('chamados').appendChild(report);                
-                            
-              }
-              else
-              {
-                if (resp.content?.text) {
-                    reportContents = resp.content?.text
-                }
-                else
-                {
-                    reportContents = 'Sem Título para exibir'
-                }
-                  
-                const repIDElement = document.createElement('p');
-                repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents}`;
-              
-                const localAndData = document.createElement('p');
-                if (resp.content?.local)
-                  localAndData.innerHTML = `
-                    ${resp.content?.local}
-                    <p 
-                      style="
-                        height: 2px;
-                        background: #ccc;
-                        margin: 15px 0;
-                    "></p>
-                  `,
+              `),
                   report.appendChild(repIDElement),
                   report.appendChild(link),
                   report.appendChild(localAndData),
@@ -644,289 +509,420 @@ export async function readReports(
                   center.appendChild(userElement),
                   statusAuthorDiv.appendChild(center),
                   report.appendChild(statusAuthorDiv),
-                  document.getElementById('chamados').appendChild(report);
+                  document.getElementById("chamados").appendChild(report);
             }
-          })
+          }
         }
-      ;
-      break;
-       
+        break;
+
+      // Aterar para assim que tiver a data de criação
+      // trará todos os chamados com o conteúdo e o seu ID para os três primeiros (a ser alterado)
+      case "general-home":
+        if (reference.exists()) {
+          const datas = {};
+          const horas = {};
+
+          for (const repID in reportRef) {
+            if (reportRef[repID].dates)
+              (datas[repID] = reportRef[repID].dates.posted_date.posted_day),
+                (horas[repID] = reportRef[repID].dates.posted_date.posted_time);
+          }
+
+          const recentes = Object.entries(datas)
+            .map(([id, valor]) => {
+              const datetime = new Date(`${datas[id]}T${horas[id]}`);
+              return { id, ...valor, datetime };
+            })
+            .filter(
+              (item) =>
+                item && item.datetime instanceof Date && !isNaN(item.datetime)
+            )
+            .sort((a, b) => b.datetime - a.datetime)
+            .slice(0, 3);
+
+          recentes.forEach((item) => {
+            const resp = reportRef[item.id];
+            var reportContents = "";
+            const report = document.createElement("div");
+            report.className = "chamado-card";
+            report.id = item.id;
+
+            const link = document.createElement("a");
+            link.id = item.id;
+            link.innerHTML = `Ver mais`;
+            link.style = "cursor: pointer;";
+
+            const imageDiv = document.createElement("div");
+            const center = document.createElement("center");
+            const imageElement = document.createElement("img");
+            imageElement.className = "image-report";
+
+            const statusAuthorDiv = document.createElement("div");
+            statusAuthorDiv.style = "padding-top: 3px;";
+            const statusElement = document.createElement("p");
+
+            switch (resp.content.status) {
+              case "red":
+                statusElement.innerHTML = "Pendente";
+                statusElement.style =
+                  "border-color: red; border: 2px solid red; border-radius: 15px;";
+                break;
+
+              case "yellow":
+                statusElement.innerHTML = "Em andamento";
+                statusElement.style =
+                  "border-color: yellow; border: 2px solid yellow; border-radius: 15px;";
+                break;
+
+              case "green":
+                statusElement.innerHTML = "Concluído";
+                statusElement.style =
+                  "border-color: green; border: 2px solid green; border-radius: 15px;";
+                break;
+            }
+
+            const userElement = document.createElement("p");
+            userElement.style =
+              "background-color: #D3D3D3; border-radius: 15px;";
+            readUsers(resp.content.autor, "user-name").then(
+              (respT) => (userElement.textContent = respT)
+            );
+
+            if (resp.content.img_url != undefined) {
+              imageElement.src =
+                resp.content.img_url === ""
+                  ? "../../assets/default_occur.jpg"
+                  : resp.content.img_url;
+              var image = `${resp.content.img_url}`;
+              if (!image.startsWith("data:image/png;base64,")) {
+                imageElement.src =
+                  resp.content.img_url === ""
+                    ? "../../assets/default_occur.jpg"
+                    : "data:image/png;base64, " + image;
+              }
+            }
+            imageElement.style.maxHeight = "30vh";
+
+            if (resp.dates) {
+              if (resp.content?.title) {
+                reportContents = resp.content?.title;
+              } else {
+                reportContents = "Sem Título para exibir";
+              }
+
+              const repIDElement = document.createElement("p");
+              repIDElement.innerHTML = `<strong>${item.id}</strong><br> ${reportContents}`;
+
+              const localAndData = document.createElement("p");
+              localAndData.innerHTML = `
+                      ${resp.selected_obj?.sel_lab_id}
+                      <p style="
+                          height: 2px;
+                          background: linear-gradient(to right, #ccc);
+                          margin: 15px 0;
+                      "></p>
+                  `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
+
+              report.appendChild(repIDElement);
+              report.appendChild(link);
+              report.appendChild(localAndData);
+              imageDiv.appendChild(imageElement);
+              center.appendChild(imageDiv);
+              center.appendChild(statusElement);
+              center.appendChild(userElement);
+              statusAuthorDiv.appendChild(center);
+              report.appendChild(statusAuthorDiv);
+              document.getElementById("chamados").appendChild(report);
+            } else {
+              if (resp.content?.text) {
+                reportContents = resp.content?.text;
+              } else {
+                reportContents = "Sem Título para exibir";
+              }
+
+              const repIDElement = document.createElement("p");
+              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents}`;
+
+              const localAndData = document.createElement("p");
+              if (resp.content?.local)
+                (localAndData.innerHTML = `
+                    ${resp.content?.local}
+                    <p 
+                      style="
+                        height: 2px;
+                        background: #ccc;
+                        margin: 15px 0;
+                    "></p>
+                  `),
+                  report.appendChild(repIDElement),
+                  report.appendChild(link),
+                  report.appendChild(localAndData),
+                  imageDiv.appendChild(imageElement),
+                  center.appendChild(imageDiv),
+                  center.appendChild(statusElement),
+                  center.appendChild(userElement),
+                  statusAuthorDiv.appendChild(center),
+                  report.appendChild(statusAuthorDiv),
+                  document.getElementById("chamados").appendChild(report);
+            }
+          });
+        }
+        break;
+
       // Trará todas as datas adjuntos aos ID dos chamados
-      case 'data':
+      case "data":
         return reportRef;
 
       // Trará os títulos e os conteúdos adjuntos aos ID dos respectivos chamados
-      case 'text-content': 
-      if (reference.exists()) {
-          for(const repID in reportRef){
-            reportPostedDatas[repID] = reportRef[repID]
-            reportTitles[repID] = reportRef[repID].content?.title
-            reportContents[repID] = reportRef[repID].content?.text
+      case "text-content":
+        if (reference.exists()) {
+          for (const repID in reportRef) {
+            reportPostedDatas[repID] = reportRef[repID];
+            reportTitles[repID] = reportRef[repID].content?.title;
+            reportContents[repID] = reportRef[repID].content?.text;
           }
         }
         return reportPostedDatas, reportTitles, reportContents;
 
-      default: 
-      return 'Incorrect content-type';
+      default:
+        return "Incorrect content-type";
     }
   }
 }
 
 // Função para realizar todas as tarefas de leitura dos objetos
-export async function readObjects(
-objectID,
-contentType
-) {
+export async function readObjects(objectID, contentType) {
   const dbRef = ref(getDatabase());
-  
-  const reference = await get(child(dbRef, 'object')); 
+
+  const reference = await get(child(dbRef, "object"));
   const objectRef = reference.val();
   const objectClasses = {};
   const objectTypes = {};
-  
+
   const objectPRef = await get(child(dbRef, `object/${objectID}`));
   const ObjValue = objectPRef.val();
   if (objectID) {
     switch (contentType) {
-
       //Retorna tudo de um objeto
-      case 'general': 
-        return ObjValue
-      ;
+      case "general":
+        return ObjValue;
 
       // Trará todas as propriedades do objeto selecionado
-      case 'property': 
+      case "property":
         try {
           if (objectPRef.exists()) {
-            const objectDescription = objectPRef.val().desc
-            const ObjectGotDate = objectPRef.val().delivered_date
-            const objectName = objectPRef.val().name
-            return objectDescription, ObjectGotDate, objectName
+            const objectDescription = objectPRef.val().desc;
+            const ObjectGotDate = objectPRef.val().delivered_date;
+            const objectName = objectPRef.val().name;
+            return objectDescription, ObjectGotDate, objectName;
           }
+        } catch (error) {
+          errorSwalResponse(error);
+          return null;
         }
-        catch (error) {
-          errorSwalResponse(error)
-          return null
-        }
-      ;
-      break;
+        break;
 
       // Trará a classe e o tipo do objeto selecionado
-      case 'class-type':
+      case "class-type":
         if (objectPRef.exists()) {
           const data = [ObjValue.obj_class, ObjValue.obj_type];
-          return data
+          return data;
+        } else {
+          return "No data avaiable";
         }
-        else
-        {
-          return 'No data avaiable'
-        }
-      ;
 
       // Trará a classe do objeto selecionado
-      case 'class':
-      ;
-      break;
-        
+      case "class":
+        break;
+
       // Trará o ID do laboratório do objeto selecionado
-      case 'lab-id':
-        return ObjValue.lab_id
-      ;
+      case "lab-id":
+        return ObjValue.lab_id;
 
-      default: 
-        return 'Incorrect content-type.';
+      default:
+        return "Incorrect content-type.";
     }
-  }
-  else
-  {
+  } else {
     switch (contentType) {
-
       // tudo
-      case 'general': 
-        return objectRef
-      ;
-      
+      case "general":
+        return objectRef;
+
       // Trará todas as classes existentes
-      case 'class':
+      case "class":
         if (reference.exists()) {
-          for(const objectID in objectRef) {
+          for (const objectID in objectRef) {
             objectClasses[objectID] = objectRef[objectID].obj_class;
             return Object.entries(objectClasses);
           }
         }
-      ;
-      break;
-      
+        break;
+
       // Trará todas os tipos existentes
-      case 'type':
+      case "type":
         if (reference.exists()) {
-          for(const objectID in objectRef) {
+          for (const objectID in objectRef) {
             objectTypes[objectID] = objectRef[objectID].obj_type;
-            
           }
-          return objectTypes
+          return objectTypes;
         }
-      ;
-      break;
+        break;
 
       // Trará todas os IDs existentes
-      case 'id': 
-        if (reference.exists()){
+      case "id":
+        if (reference.exists()) {
           for (const ID in objectRef) {
-            objectTypes[ID] = ID
+            objectTypes[ID] = ID;
           }
-          return Object.values(objectTypes)
+          return Object.values(objectTypes);
         }
-      ;
-      break;
+        break;
 
       // Fará a lista no "gerenciar BD"
-      case 'content': 
+      case "content":
         if (reference.exists()) {
-          document.getElementById('other').innerHTML = '';
-          document.getElementById('eletronics').innerHTML = '';
-          document.getElementById('furniture').innerHTML = '';
-          for(const ID in objectRef) {
-            const object = document.createElement('div');
-            object.className = 'object-card';
-            readReports(null, 'data').then(resp => {
-                for (const Id in resp) {
-                    if (resp[Id].selected_obj.sel_obj_id == ID) {
-                        switch (resp[Id].content.status) {
-                            case 'red': object.className = 'object-card red';
-                            break;
+          document.getElementById("other").innerHTML = "";
+          document.getElementById("eletronics").innerHTML = "";
+          document.getElementById("furniture").innerHTML = "";
+          for (const ID in objectRef) {
+            const object = document.createElement("div");
+            object.className = "object-card";
+            readReports(null, "data").then((resp) => {
+              for (const Id in resp) {
+                if (resp[Id].selected_obj.sel_obj_id == ID) {
+                  switch (resp[Id].content.status) {
+                    case "red":
+                      object.className = "object-card red";
+                      break;
 
-                            case 'yellow': object.className = 'object-card yellow';
-                            break;
-                        }
-                    }
+                    case "yellow":
+                      object.className = "object-card yellow";
+                      break;
+                  }
                 }
+              }
             });
-            object.id = ID; 
- 
-            const link = document.createElement('a');
+            object.id = ID;
+
+            const link = document.createElement("a");
             link.id = ID;
             link.innerHTML = `Ver mais`;
-            link.style = 'cursor: pointer;';
+            link.style = "cursor: pointer;";
 
-            const objIDElement = document.createElement('p');
+            const objIDElement = document.createElement("p");
             objIDElement.innerHTML = `<strong>${objectRef[ID].name}</strong><br> <p style="margin: 15px;"> ${objectRef[ID].desc} <br><br> ${objectRef[ID].lab_id} </p>`;
 
             object.appendChild(objIDElement);
             object.appendChild(link);
-            if (objectRef[ID].obj_class == 'Eletrônico') {
-              document.getElementById('eletronics').appendChild(object);
-              document.getElementById('remove-h2-1').textContent = 'Eletrônicos';
-            }
-            else if (objectRef[ID].obj_class == 'Móvel') {
-              document.getElementById('furniture').appendChild(object);
-              document.getElementById('remove-h2-2').textContent = 'Móveis';
-            }
-            else {
-              document.getElementById('other').appendChild(object);
-              document.getElementById('remove-h2-3').textContent = 'Diversos';
+            if (objectRef[ID].obj_class == "Eletrônico") {
+              document.getElementById("eletronics").appendChild(object);
+              document.getElementById("remove-h2-1").textContent =
+                "Eletrônicos";
+            } else if (objectRef[ID].obj_class == "Móvel") {
+              document.getElementById("furniture").appendChild(object);
+              document.getElementById("remove-h2-2").textContent = "Móveis";
+            } else {
+              document.getElementById("other").appendChild(object);
+              document.getElementById("remove-h2-3").textContent = "Diversos";
             }
           }
         }
-      ;
-      break;
+        break;
 
-      default: 
-        return 'Incorrect content-type.';
+      default:
+        return "Incorrect content-type.";
     }
   }
 }
 
 // Função para realizar todas as tarefas de leitura dos laboratórios
-export async function readLaboratories (
-  labID,
-  contentType
-) {
+export async function readLaboratories(labID, contentType) {
   const dbRef = ref(getDatabase());
-  const reference = await get(child(dbRef, 'laboratory'));
+  const reference = await get(child(dbRef, "laboratory"));
   const labRef = reference.val();
   const labClasses = {};
   const labURLDesc = {};
-  const laboratoryRef = await get(child(ref(getDatabase()), `laboratory/${labID}`));
+  const laboratoryRef = await get(
+    child(ref(getDatabase()), `laboratory/${labID}`)
+  );
   if (labID) {
     switch (contentType) {
-      case 'general': 
+      case "general":
         try {
           if (laboratoryRef.exists()) {
             const laboratoryProperty = laboratoryRef.val();
             return laboratoryProperty;
           }
-        }
-        catch (error) {
+        } catch (error) {
           errorSwalResponse(error);
           return null;
-        };
-      break;
-
-      case 'class': ;
-      break;
-
-      default: 
-        return 'Incorrect content-type.';
-    }
-  }
-  else
-  {
-    switch (contentType) {
-      case 'general': 
-        if (reference.exists()) {
-          return labRef
         }
-      ;
-      break;
+        break;
 
-      case 'content': 
+      case "class":
+        break;
+
+      default:
+        return "Incorrect content-type.";
+    }
+  } else {
+    switch (contentType) {
+      case "general":
         if (reference.exists()) {
-          document.getElementById('labs').innerHTML = '';
-          for(const labID in labRef) {
-            labURLDesc[labID] = [labRef[labID].content.lab_img_url, labRef[labID].content.desc];
-            
-            const laboratory = document.createElement('div');
-            laboratory.className = 'lab-card';
+          return labRef;
+        }
+        break;
+
+      case "content":
+        if (reference.exists()) {
+          document.getElementById("labs").innerHTML = "";
+          for (const labID in labRef) {
+            labURLDesc[labID] = [
+              labRef[labID].content.lab_img_url,
+              labRef[labID].content.desc,
+            ];
+
+            const laboratory = document.createElement("div");
+            laboratory.className = "lab-card";
             laboratory.id = labID;
 
             //ID
-            const labIDElement = document.createElement('p');
+            const labIDElement = document.createElement("p");
             labIDElement.innerHTML = `<strong>${labID}</strong><br><br>`;
-                    
+
             //Elemento de visualização da sala em questão
-            const seeMoreElement = document.createElement('a');
+            const seeMoreElement = document.createElement("a");
             seeMoreElement.id = labID;
             seeMoreElement.innerHTML = `Ver mais`;
-            seeMoreElement.style = 'cursor: pointer;';
+            seeMoreElement.style = "cursor: pointer;";
 
             //Imagem do laboratório
-            const img = document.createElement('p');
+            const img = document.createElement("p");
             img.innerHTML = `<img src="${labURLDesc[labID][0]}" style="width: 50vw; height: 30vh;"><br>`;
             if (!labURLDesc[labID][0]) {
               img.innerHTML = `<img src="../assets/default_classroom.avif" style="width: 50vw; height: 30vh;"><br>`;
             }
 
             //Descrição
-            const desc = document.createElement('p');
+            const desc = document.createElement("p");
             desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`;
 
             //Verificação da existência de ocorrências relacionadas ao laboratório referente.
-            readReports(null, 'data').then(resp => {
-              var int1 = 0, int2 = 0;
+            readReports(null, "data").then((resp) => {
+              var int1 = 0,
+                int2 = 0;
               for (const ID in resp) {
-                if (resp[ID].selected_obj?.sel_lab_id == labID){  
-                  if (resp[ID].content.status == 'red') {
+                if (resp[ID].selected_obj?.sel_lab_id == labID) {
+                  if (resp[ID].content.status == "red") {
                     int1++;
-                  }
-                  else if (resp[ID].content.status == 'yellow') {
+                  } else if (resp[ID].content.status == "yellow") {
                     int2++;
-                  }      
+                  }
                 }
               }
 
-              if (int1 != 0 || int2 != 0){
-                const transition = document.createElement('p');
+              if (int1 != 0 || int2 != 0) {
+                const transition = document.createElement("p");
                 transition.innerHTML = `
                   <p style="
                       height: 2px;
@@ -934,13 +930,13 @@ export async function readLaboratories (
                       margin: 15px 0;
                     "></p>
                 `;
-                const pendingProgressElement = document.createElement('div');
-                const text = document.createElement('b');
-                text.innerHTML = 'Ocorrências<br><br>';
-                const pendingElement = document.createElement('label');
-                pendingElement.className = 'pending';
-                const progressElement = document.createElement('label');
-                progressElement.className = 'progress';
+                const pendingProgressElement = document.createElement("div");
+                const text = document.createElement("b");
+                text.innerHTML = "Ocorrências<br><br>";
+                const pendingElement = document.createElement("label");
+                pendingElement.className = "pending";
+                const progressElement = document.createElement("label");
+                progressElement.className = "progress";
 
                 progressElement.textContent = `Em andamento: ${int2}`;
                 pendingElement.textContent = `Pendente: ${int1}`;
@@ -951,64 +947,57 @@ export async function readLaboratories (
                 laboratory.appendChild(text);
                 laboratory.appendChild(pendingProgressElement);
               }
-            })
+            });
             laboratory.appendChild(labIDElement);
             laboratory.appendChild(img);
             laboratory.appendChild(seeMoreElement);
             laboratory.appendChild(desc);
-              
-            document.getElementById('labs').appendChild(laboratory);
+
+            document.getElementById("labs").appendChild(laboratory);
           }
         }
-      ;
-      break;
+        break;
 
-      case 'class': 
+      case "class":
         if (reference.exists()) {
-          localStorage.setItem('old-lab', '0')
-          for(const labID in labRef) {
-            if (localStorage.getItem('old-lab') != labRef[labID].classif_labs) {
+          localStorage.setItem("old-lab", "0");
+          for (const labID in labRef) {
+            if (localStorage.getItem("old-lab") != labRef[labID].classif_labs) {
               labClasses[labID] = labRef[labID].classif_labs;
-              localStorage.setItem('old-lab', labClasses[labID])
+              localStorage.setItem("old-lab", labClasses[labID]);
             }
           }
           return labClasses;
-        };
-      break;
-        
-      case 'count': 
-        var labData = '<option value="none"></option>';
-        for(const Id in labRef) {
-          labData += `<option value="${Id}">${Id}</option>`
         }
-        return labData
-      ;
+        break;
 
-      default: 
-        return 'Incorrect content-type.';
+      case "count":
+        var labData = '<option value="none"></option>';
+        for (const Id in labRef) {
+          labData += `<option value="${Id}">${Id}</option>`;
+        }
+        return labData;
+
+      default:
+        return "Incorrect content-type.";
     }
   }
 }
 
 // Função para vireficar a existência de qualquer objeto que seja.
-export function verifyObject (
-  objectId
-) {
+export function verifyObject(objectId) {
   const dbRef = ref(getDatabase());
-  const objectPRef = (dbRef, `object/${objectId}`)
+  const objectPRef = (dbRef, `object/${objectId}`);
   if (objectPRef) {
-    return true
+    return true;
+  } else {
+    return false;
   }
-  else 
-  {
-    return false
-  }
- 
 }
 
 // Função que faz a contagem para o gráfico da página principal - cbm : count by month
-export async function countReportsByMonth () {
-  const repBMRef = await get(child(ref(getDatabase()), 'reports'));
+export async function countReportsByMonth() {
+  const repBMRef = await get(child(ref(getDatabase()), "reports"));
   const cbmWeb = {};
   const cbmMobile = {};
   const cbmInProgress = {};
@@ -1022,23 +1011,19 @@ export async function countReportsByMonth () {
       if (data) {
         const month = data.substring(5, 7);
 
-        if (report.content.status == 'red') {
+        if (report.content.status == "red") {
           if (report.dates) {
-            cbmWeb[month] = (cbmWeb[month] || 0) + 1
+            cbmWeb[month] = (cbmWeb[month] || 0) + 1;
+          } else {
+            cbmMobile[month] = (cbmMobile[month] || 0) + 1;
           }
-          else
-          {
-            cbmMobile[month] = (cbmMobile[month] || 0) + 1
-          }
-        }
-        else if (report.content.status == 'yellow') {
-          cbmInProgress[month] = (cbmInProgress[month] || 0) + 1
-        }
-        else {
-          cbmConcluded[month] = (cbmConcluded[month] || 0) + 1
+        } else if (report.content.status == "yellow") {
+          cbmInProgress[month] = (cbmInProgress[month] || 0) + 1;
+        } else {
+          cbmConcluded[month] = (cbmConcluded[month] || 0) + 1;
         }
       }
     }
   }
   return [cbmWeb, cbmMobile, cbmInProgress, cbmConcluded];
-} 
+}
