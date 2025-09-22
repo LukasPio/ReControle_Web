@@ -1,4 +1,5 @@
 import {readReports, countReportsByMonth, readUsers, readAll} from './js_functions/realtime_db.js';
+import { swalFireLookForOcurrence } from './js_functions/swal_db_fires.js';
 import { loading } from './js_functions/swal_mixins.js';
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -6,9 +7,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     readReports(null, 'general-home');
 
+    const chamados = document.getElementById('chamados-home');
+    if (chamados) {
+        chamados.addEventListener('click', function (e) {
+            if (e.target.className != 'chamados') {
+                swalFireLookForOcurrence(e.target.closest('div').attributes.data_id.value)
+            }
+        })
+    }
+
 });
-
-
 
 const ctx = document.getElementById("graficoLinha").getContext("2d");
 countReportsByMonth().then(resp => {

@@ -181,8 +181,6 @@ main {
   font-weight: 600;
   color: #1e293b;
 }
-
-/* Account dropdown (corporativo: dropdown refinado) */
 .account-dropdown {
   position: relative;
   cursor: pointer;
@@ -191,21 +189,12 @@ main {
 .account-toggle {
   display: flex;
   align-items: center;
-  gap: 8px; /* Gap mais clean */
-  padding: 8px 12px;
-  border-radius: 20px;
-  background: #f3f4f6; /* Fundo sutil */
-  transition: background 0.2s ease;
-}
-
-.account-toggle:hover {
-  background: #e5e7eb;
+  gap: 10px;
 }
 
 .account-name {
   font-weight: 500;
-  color: #374151; /* Cinza corporativo */
-  font-size: 14px;
+  color: #333;
 }
 
 .account-img {
@@ -215,79 +204,31 @@ main {
   object-fit: cover;
 }
 
-/* Account menu (insano: sombra elevada) */
 .account-menu {
   position: absolute;
   right: 0;
   top: 45px;
-  background: #ffffff;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Sombra insana */
-  border: 1px solid #e5e7eb;
-  border-radius: 12px; /* Mais arredondado */
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   list-style: none;
-  padding: 8px 0;
+  padding: 10px 0;
+  border-radius: 8px;
   width: 180px;
   display: none;
   z-index: 1000;
 }
 
 .account-menu li {
-  padding: 12px 20px; /* Padding clean */
-  transition: background 0.2s ease;
-}
-
-.account-menu li:hover {
-  background: #f8fafc; /* Fundo hover clean */
+  padding: 10px 20px;
 }
 
 .account-menu li a {
   text-decoration: none;
-  color: #374151;
+  color: #333;
   display: block;
-  font-weight: 500;
-  transition: color 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .account-menu li a:hover {
-  color: #2f5cf3; /* Acento insano */
-}
-
-/* Responsividade (clean em mobile) */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 200px; /* Reduz em mobile */
-  }
-
-  .topbar input[type="search"] {
-    width: 100%; /* Full width clean */
-    max-width: 250px;
-  }
-
-  .dashboard {
-    padding: 16px; /* Padding reduzido */
-  }
-
-  .chamados {
-    flex-direction: column; /* Stack vertical */
-  }
-
-  .chamado-card {
-    min-width: 100%;
-  }
-}
-
-/* Input search global (padronizado para evitar conflitos) */
-input[type="search"] {
-  width: 30vw; /* Fallback para telas menores */
-  min-width: 200px; /* Mínimo clean */
-  padding: 10px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
-  background: #f9fafb;
-  transition: all 0.2s ease;
-}
-
-input[type="search"]:focus {
-  border-color: #2f5cf3;
-  box-shadow: 0 0 0 3px rgba(47, 92, 243, 0.1);
+  background: #f0f0f0;
 }
