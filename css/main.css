@@ -115,3 +115,310 @@
   color: #2f5cf3;
   font-weight: bold;
 }
+
+.account-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.account-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.account-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 10px 0;
+  border-radius: 8px;
+  width: 180px;
+  display: none;
+  z-index: 1000;
+}
+
+.account-menu li {
+  padding: 10px 20px;
+}
+
+.account-menu li a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  transition: background 0.2s ease;
+}
+
+.account-menu li a:hover {
+  background: #f0f0f0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  background-color: #f7f9fc;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  padding: 20px;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar li {
+  padding: 12px 8px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sidebar li:hover,
+.sidebar li.active {
+  background: #e3e9fd;
+  color: #2f5cf3;
+  font-weight: bold;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 15px 30px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.topbar input[type="search"] {
+  width: 300px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.actions img {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+/* Dashboard */
+.dashboard {
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.chamados {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+/* === Chamado Card === */
+.chamado-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 12px 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex: 1;
+  min-width: 250px;
+}
+
+.chamado-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.chamado-card p {
+  margin: 6px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.chamado-card a {
+  color: #007bff;
+  font-weight: 500;
+  text-decoration: none;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+.chamado-card a:hover {
+  text-decoration: underline;
+}
+
+/* Imagem */
+.image-report {
+  display: block;
+  margin: 10px auto;
+  border-radius: 8px;
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+}
+
+/* Status */
+.status-pendente {
+  color: red;
+  border: 2px solid red;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.status-andamento {
+  color: orange;
+  border: 2px solid orange;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.status-concluido {
+  color: green;
+  border: 2px solid green;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 13px;
+  display: inline-block;
+}
+
+/* Autor */
+.chamado-card .autor {
+  background-color: #f1f1f1;
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: 13px;
+  margin-top: 6px;
+  display: inline-block;
+}
+
+/* GrÃ¡fico */
+.grafico-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.grafico-box h2 {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+/* Conta */
+.account-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.account-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.account-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  list-style: none;
+  padding: 10px 0;
+  border-radius: 8px;
+  width: 180px;
+  display: none;
+  z-index: 1000;
+}
+
+.account-menu li {
+  padding: 10px 20px;
+}
+
+.account-menu li a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  transition: background 0.2s ease;
+}
+
+.account-menu li a:hover {
+  background: #f0f0f0;
+}

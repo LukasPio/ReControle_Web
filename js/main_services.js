@@ -5,11 +5,8 @@ import {
   signOut,
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { firebaseConfig, hrefsConfig } from "./js_config/Config.js";
-import {readAll, readReports, readUsers} from './js_functions/realtime_db.js';
-import { getDatabase, ref, child, get, onValue } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+import {readAll, readUsers} from './js_functions/realtime_db.js';
 import {searchFor, swalFireLookForLaboratory, swalFireLookForObject, swalFireLookForOcurrence, swalFireLookForUser} from './js_functions/swal_db_fires.js';
-import { loading } from "./js_functions/swal_mixins.js";
-
 // Inicializa Firebase
 toString;
 initializeApp(firebaseConfig);
@@ -172,8 +169,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const containerR = document.getElementById('chamados');
   if (containerR) {
     containerR.addEventListener('click', function (e) {
-      if (e.target.tagName == 'A') {
-        swalFireLookForOcurrence(e.target.id)
+      if (e.target.className != 'chamados') {
+        swalFireLookForOcurrence(e.target.closest('div').attributes.data_id.value)
       }
     })
   }

@@ -176,11 +176,11 @@ export async function readAll () {
     objs: objRef.val()
   }
 }
+
 // Função para realizar todas as tarefas de leitura dos usuários
 export async function readUsers (
   userID,
-  contentType,
-  contentName
+  contentType
 ) {
   const dbRef = ref(getDatabase());
   const userRef = await get(child(dbRef, `user/${userID}`));
@@ -237,58 +237,36 @@ export async function readUsers (
       //Lerá todos os usuários e os colocará num formato acessível ao acc-managment
       case 'acc-manage':
         onValue(ref(getDatabase(), 'user'), (usersData) => {
+          
           document.getElementById('users-account-list').innerHTML = ''
-          for (let userID in usersData.val()) {
+          const refData = usersData.val()
+          for (let userID in refData) {
+            const ref = refData[userID]
+            // elemento pai
             const user = document.createElement('li')
             user.id = userID
             user.className = 'user-acc'
             const userName = document.createElement('span')
-            userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`
-            userName.id = `${({ userID, ...usersData.val()[userID]}).user_name}`
+            userName.textContent = `Nome: ${ref.user_name}`
+            userName.id = `${ref.user_name}`
             userName.className = 'account-name'
 
+            // nível de acesso
             const userRank = document.createElement('span')
-            userRank.textContent = `Nível de acesso: ${({ userID, ...usersData.val()[userID]}).rank }`
+            userRank.textContent = `Nível de acesso: ${ref.rank }`
             userRank.className = 'account-value'
 
+            // e-mail
             const userEmail = document.createElement('span')
-            userEmail.textContent = `E-mail: ${({ userID, ...usersData.val()[userID]}).user_email}`
-            userEmail.id = `${({ userID, ...usersData.val()[userID]}).user_email}`
+            userEmail.textContent = `E-mail: ${ref.user_email}`
+            userEmail.id = `${ref.user_email}`
             userEmail.className = 'account-value'
 
+            // montagem
             user.appendChild(userName)
             user.appendChild(userRank)
             user.appendChild(userEmail)
             document.getElementById('users-account-list').appendChild(user)
-          }
-        })
-      ;break;
-        document.getElementById('users-account-list').innerHTML = ''
-        onValue(ref(getDatabase(), 'user'), (usersData) => {  
-          for (let userID in usersData.val()) {
-            const originalName = `${({ userID, ...usersData.val()[userID]}).user_name}`
-            if (originalName.startsWith(contentName) == true || originalName.endsWith(contentName)) {
-              const user = document.createElement('li')
-              user.id = userID
-              const userName = document.createElement('span')
-              userName.textContent = `Nome: ${({ userID, ...usersData.val()[userID]}).user_name}`
-              userName.id = `${({ userID, ...usersData.val()[userID]}).user_name}`
-              userName.className = 'account-name'
-
-              const userRank = document.createElement('span')
-              userRank.textContent = `Nível de acesso: ${({ userID, ...usersData.val()[userID]}).rank }`
-              userRank.className = 'account-value'
-
-              const userEmail = document.createElement('span')
-              userEmail.textContent = `E-mail: ${({ userID, ...usersData.val()[userID]}).user_email}`
-              userEmail.id = `${({ userID, ...usersData.val()[userID]}).user_email}`
-              userEmail.className = 'account-value'
-
-              user.appendChild(userName)
-              user.appendChild(userRank)
-              user.appendChild(userEmail)
-              document.getElementById('users-account-list').appendChild(user)
-            }
           }
         })
       ;
@@ -303,8 +281,7 @@ export async function readUsers (
 // Função para realizar todas as tarefas de leitura de occorrências
 export async function readReports(
   reportID,
-  contentType,
-  contentName
+  contentType
 ) {
   const dbRef = ref(getDatabase());
   const reference = await get(child(ref(getDatabase()), 'reports'));
@@ -382,46 +359,46 @@ export async function readReports(
         if (reference.exists()) {
           document.getElementById('chamados').innerHTML = '';
           for(const repID in reportRef){
-              
+
+            // elemento pai
             const report = document.createElement('div');
             report.className = 'chamado-card';
-            report.id = repID;
-  
-            const link = document.createElement('a');
-            link.id = repID;
-            link.innerHTML = `Ver mais`;
-            link.style = 'cursor: pointer;';
+            report.setAttribute("data_id", repID);
 
+            // Imagem
             const imageDiv = document.createElement('div');
             const center = document.createElement('center');
             const imageElement = document.createElement('img');
             imageElement.className = 'image-report';
+            imageElement.style.maxHeight = "30vh";
 
+            //status
             const statusAuthorDiv = document.createElement('div');
             statusAuthorDiv.style = 'padding-top: 3px;';
             const statusElement = document.createElement('p');
-            
             switch (reportRef[repID].content.status) {
               case 'red': 
                 statusElement.innerHTML = 'Pendente';
-                statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
+                statusElement.className = "status-pendente";
               break;
 
               case 'yellow': 
                 statusElement.innerHTML = 'Em andamento';
-                statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
+                statusElement.className = "status-andamento";
               break;
 
               case 'green': 
                 statusElement.innerHTML = 'Concluído';
-                statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
+                statusElement.className = "status-concluido";
               break;
             }
             
+            // autor (nome)
             const userElement = document.createElement('p');
-            userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
+            userElement.className = "autor";
             readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp );
 
+            // conteúdo da imagem
             if (reportRef[repID].content.img_url != undefined) {
               imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : reportRef[repID].content.img_url;
               var image = `${reportRef[repID].content.img_url}`;
@@ -429,76 +406,60 @@ export async function readReports(
                 imageElement.src = reportRef[repID].content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
               }
             }
-            imageElement.style.maxHeight = '30vh';
             
             if (reportRef[repID].dates) {
+              
+              // título
               if (reportRef[repID].content?.title) {
                 reportContents[repID] = reportRef[repID].content?.title
-              }
-              else
-              {
+              } else {
                 reportContents[repID] = 'Sem Título para exibir'
               }
-
               const repIDElement = document.createElement('p');
-              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
+              repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br>`;
 
-              const localAndData = document.createElement('p');
+              // local e linha separadora
+              const localAndData = document.createElement("p");
+              localAndData.className = "local";
               localAndData.innerHTML = `
-                ${reportRef[repID].selected_obj?.sel_lab_id}
-                <p style="
-                    height: 2px;
-                    background: linear-gradient(to right, #ccc);
-                    margin: 15px 0;
-                  "></p>
-              `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
+                ${reportRef[repID].selected_obj?.sel_lab_id || reportContents[repID].content?.local || ""}
+                <p class="linha-separadora"></p>
+              `;
               
               report.appendChild(repIDElement);
-              report.appendChild(link);
               report.appendChild(localAndData);
-              imageDiv.appendChild(imageElement);
-              center.appendChild(imageDiv);
-              center.appendChild(statusElement);
-              center.appendChild(userElement);
-              statusAuthorDiv.appendChild(center);
+              report.appendChild(imageElement);
+              report.appendChild(statusElement);
+              report.appendChild(userElement);
               report.appendChild(statusAuthorDiv);
               document.getElementById('chamados').appendChild(report);
 
               
-            }
-            else
-            {
-               if (reportRef[repID].content?.text) {
-                reportContents[repID] = reportRef[repID].content?.text
-              }
-              else
-              {
-                reportContents[repID] = 'Sem Título para exibir'
+            } else {
+              // título
+              if (reportRef[repID].content?.text) {
+                reportRef[repID] = reportRef[repID].content?.text
+              } else {
+                reportRef[repID] = 'Sem Título para exibir'
               }
 
               const repIDElement = document.createElement('p');
-              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
+              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportRef[repID]}`;
 
-              const localAndData = document.createElement('p');
-              if (reportRef[repID].content?.local)
+              // local e linha separadora
+              const localAndData = document.createElement("p");
+              localAndData.className = "local";
               localAndData.innerHTML = `
-                ${reportRef[repID].content?.local}
-                <p style="
-                  height: 2px;
-                  background: #ccc;
-                  margin: 15px 0;
-                "></p>
-              `,
+                ${reportRef[repID].selected_obj?.sel_lab_id || reportRef[repID].content?.local || ""}
+                <p class="linha-separadora"></p>
+              `;
 
-              report.appendChild(repIDElement),
-              report.appendChild(link),
-              report.appendChild(localAndData),
-              imageDiv.appendChild(imageElement),
-              center.appendChild(imageDiv),
-              center.appendChild(statusElement),
-              center.appendChild(userElement),
-              statusAuthorDiv.appendChild(center),
-              report.appendChild(statusAuthorDiv),
+              report.appendChild(repIDElement);
+              report.appendChild(localAndData);
+              report.appendChild(imageElement);
+              report.appendChild(statusElement);
+              report.appendChild(userElement);
+              report.appendChild(statusAuthorDiv);
               document.getElementById('chamados').appendChild(report);
             }
           }
@@ -506,149 +467,191 @@ export async function readReports(
       ;
       break;
 
-      // Aterar para assim que tiver a data de criação
-      // trará todos os chamados com o conteúdo e o seu ID para os três primeiros (a ser alterado)
-      case 'general-home' :
+      case 'general-home':
         if (reference.exists()) {
-
           const datas = {};
           const horas = {};
 
-          for(const repID in reportRef){
-            if (reportRef[repID].dates)
-            datas[repID] = reportRef[repID].dates.posted_date.posted_day,
-            horas[repID] = reportRef[repID].dates.posted_date.posted_time;
-          }
-          
-          const recentes = Object.entries(datas)
-          .map(([id, valor]) => {
-              const datetime = new Date(`${datas[id]}T${horas[id]}`);
-              return { id, ...valor, datetime };
-          }).filter(item => item && item.datetime instanceof Date && !isNaN(item.datetime)).sort((a, b) => b.datetime - a.datetime).slice(0, 3);
-
-          recentes.forEach((item) => {    
-              const resp = reportRef[item.id];
-              var reportContents = '';
-              const report = document.createElement('div');
-              report.className = 'chamado-card';
-              report.id = item.id;
-                    
-              const link = document.createElement('a');
-              link.id = item.id;
-              link.innerHTML = `Ver mais`;
-              link.style = 'cursor: pointer;';
-                  
-              const imageDiv = document.createElement('div');
-              const center = document.createElement('center');
-              const imageElement = document.createElement('img');
-              imageElement.className = 'image-report';
-                  
-              const statusAuthorDiv = document.createElement('div');
-              statusAuthorDiv.style = 'padding-top: 3px;';
-              const statusElement = document.createElement('p');
-                              
-              switch (resp.content.status) {
-                  case 'red': 
-                      statusElement.innerHTML = 'Pendente';
-                      statusElement.style = 'border-color: red; border: 2px solid red; border-radius: 15px;';
-                  break;
-              
-                  case 'yellow': 
-                      statusElement.innerHTML = 'Em andamento';
-                      statusElement.style = 'border-color: yellow; border: 2px solid yellow; border-radius: 15px;';
-                  break;
-              
-                  case 'green': 
-                      statusElement.innerHTML = 'Concluído';
-                      statusElement.style = 'border-color: green; border: 2px solid green; border-radius: 15px;';
-                  break;
-              }
-                              
-              const userElement = document.createElement('p');
-              userElement.style = 'background-color: #D3D3D3; border-radius: 15px;';
-              readUsers(resp.content.autor, 'user-name').then(respT => userElement.textContent = respT );
-                  
-              if (resp.content.img_url != undefined) {
-                  imageElement.src = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : resp.content.img_url;
-                  var image = `${resp.content.img_url}`;
-                  if (!image.startsWith('data:image/png;base64,') ) {
-                      imageElement.src = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
-                  }
-              }
-              imageElement.style.maxHeight = '30vh';
-                              
-              if (resp.dates) {
-                  if (resp.content?.title) {
-                      reportContents = resp.content?.title
-                  }
-                  else
-                  {
-                      reportContents = 'Sem Título para exibir'
-                  }
-              
-                  const repIDElement = document.createElement('p');
-                  repIDElement.innerHTML = `<strong>${item.id}</strong><br> ${reportContents}`;                
-                      
-                  const localAndData = document.createElement('p');
-                  localAndData.innerHTML = `
-                      ${resp.selected_obj?.sel_lab_id}
-                      <p style="
-                          height: 2px;
-                          background: linear-gradient(to right, #ccc);
-                          margin: 15px 0;
-                      "></p>
-                  `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
-                                
-                  report.appendChild(repIDElement);
-                  report.appendChild(link);
-                  report.appendChild(localAndData);
-                  imageDiv.appendChild(imageElement);
-                  center.appendChild(imageDiv);
-                  center.appendChild(statusElement);
-                  center.appendChild(userElement);
-                  statusAuthorDiv.appendChild(center);
-                  report.appendChild(statusAuthorDiv);
-                  document.getElementById('chamados').appendChild(report);                
-                            
-              }
-              else
-              {
-                if (resp.content?.text) {
-                    reportContents = resp.content?.text
-                }
-                else
-                {
-                    reportContents = 'Sem Título para exibir'
-                }
-                  
-                const repIDElement = document.createElement('p');
-                repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents}`;
-              
-                const localAndData = document.createElement('p');
-                if (resp.content?.local)
-                  localAndData.innerHTML = `
-                    ${resp.content?.local}
-                    <p 
-                      style="
-                        height: 2px;
-                        background: #ccc;
-                        margin: 15px 0;
-                    "></p>
-                  `,
-                  report.appendChild(repIDElement),
-                  report.appendChild(link),
-                  report.appendChild(localAndData),
-                  imageDiv.appendChild(imageElement),
-                  center.appendChild(imageDiv),
-                  center.appendChild(statusElement),
-                  center.appendChild(userElement),
-                  statusAuthorDiv.appendChild(center),
-                  report.appendChild(statusAuthorDiv),
-                  document.getElementById('chamados').appendChild(report);
+          for (const repID in reportRef) {
+            if (reportRef[repID].dates) {
+              datas[repID] = reportRef[repID].dates.posted_date.posted_day;
+              horas[repID] = reportRef[repID].dates.posted_date.posted_time;
             }
+          }
+
+          const recentes = Object.entries(datas)
+          .map(([id]) => {
+            const datetime = new Date(`${datas[id]}T${horas[id]}`);
+            return { id, datetime };
           })
+          .filter(
+            (item) =>
+              item && item.datetime instanceof Date && !isNaN(item.datetime)
+          )
+          .sort((a, b) => b.datetime - a.datetime)
+          .slice(0, 3);
+
+          recentes.forEach((item) => {
+            const resp = reportRef[item.id];
+            let reportContents = "";
+            const report = document.createElement("div");
+            report.className = "chamado-card";
+            report.setAttribute("data_id", item.id); // ID só como atributo
+
+            // imagem
+            const imageElement = document.createElement("img");
+            imageElement.className = "image-report";
+            imageElement.style.maxHeight = "30vh";
+
+            if (resp.content.img_url !== undefined) {
+              let image = resp.content.img_url;
+              if (!image) {
+                image = "../../assets/default_occur.jpg";
+              } else if (!image.startsWith("data:image/png;base64,")) {
+                image = "data:image/png;base64, " + image;
+              }
+              imageElement.src = image;
+            }
+
+            // status
+            const statusElement = document.createElement("p");
+            switch (resp.content.status) {
+              case "red":
+                statusElement.innerHTML = "Pendente";
+                statusElement.className = "status-pendente";
+                break;
+              case "yellow":
+                statusElement.innerHTML = "Em andamento";
+                statusElement.className = "status-andamento";
+                break;
+              case "green":
+                statusElement.innerHTML = "Concluído";
+                statusElement.className = "status-concluido";
+                break;
+            }
+
+            // autor
+            const userElement = document.createElement("p");
+            userElement.className = "autor";
+            readUsers(resp.content.autor, "user-name").then(
+              (respT) => (userElement.textContent = respT)
+            );
+
+            // título
+            if (resp.content?.title) {
+              reportContents = resp.content?.title;
+            } else if (resp.content?.text) {
+              reportContents = resp.content?.text;
+            } else {
+              reportContents = "Sem Título para exibir";
+            }
+
+            const titleElement = document.createElement("p");
+            titleElement.className = "titulo-chamado";
+            titleElement.innerHTML = `<strong>${reportContents}</strong>`;
+
+            // local e linha separadora
+            const localAndData = document.createElement("p");
+            localAndData.className = "local";
+            localAndData.innerHTML = `
+              ${resp.selected_obj?.sel_lab_id || resp.content?.local || ""}
+              <p class="linha-separadora"></p>
+            `;
+
+            // montagem
+            report.appendChild(titleElement);
+            report.appendChild(localAndData);
+            report.appendChild(imageElement);
+            report.appendChild(statusElement);
+            report.appendChild(userElement);
+
+            document.getElementById("chamados").appendChild(report);
+          });
+
+          if (recentes.length < 3) {
+            let k = 0;
+            for (const id in reportRef) {
+              if (!reportRef[id].dates) {
+                if ((recentes.length + k - 3) == 0) break;
+
+                let reportContents = "";
+                const report = document.createElement("div");
+                report.className = "chamado-card";
+                report.setAttribute("data_id", id); // ID só como atributo
+
+                // imagem
+                const imageElement = document.createElement("img");
+                imageElement.className = "image-report";
+                imageElement.style.maxHeight = "30vh";
+
+                if (reportRef[id].content.img_url) {
+                  let image = reportRef[id].content?.img_url;
+                  if (!image) {
+                    image = "../../assets/default_occur.jpg";
+                  } else if (!image.startsWith("data:image/png;base64,")) {
+                    image = "data:image/png;base64, " + image;
+                  }
+                  imageElement.src = image;
+                }
+
+                // status
+                const statusElement = document.createElement("p");
+                switch (reportRef[id].content.status) {
+                  case "red":
+                    statusElement.innerHTML = "Pendente";
+                    statusElement.className = "status-pendente";
+                    break;
+                  case "yellow":
+                    statusElement.innerHTML = "Em andamento";
+                    statusElement.className = "status-andamento";
+                    break;
+                  case "green":
+                    statusElement.innerHTML = "Concluído";
+                    statusElement.className = "status-concluido";
+                    break;
+                }
+
+                // autor
+                const userElement = document.createElement("p");
+                userElement.className = "autor";
+                readUsers(reportRef[id].content.autor, "user-name").then(
+                  (resp) => (userElement.textContent = resp)
+                );
+
+                // título
+                if (reportRef[id].content?.title) {
+                  reportContents = reportRef[id].content?.title;
+                } else if (reportRef[id].content?.text) {
+                  reportContents = reportRef[id].content?.text;
+                } else {
+                  reportContents = "Sem Título para exibir";
+                }
+
+                const titleElement = document.createElement("p");
+                titleElement.className = "titulo-chamado";
+                titleElement.innerHTML = `<strong>${reportContents}</strong>`;
+
+                // local e linha separadora
+                const localAndData = document.createElement("p");
+                localAndData.className = "local";
+                localAndData.innerHTML = `
+                  ${reportRef[id].selected_obj?.sel_lab_id || reportRef[id].content?.local || ""}
+                  <p class="linha-separadora"></p>
+                `;
+
+                // montagem
+                report.appendChild(titleElement);
+                report.appendChild(localAndData);
+                report.appendChild(imageElement);
+                report.appendChild(statusElement);
+                report.appendChild(userElement);
+
+                document.getElementById("chamados").appendChild(report);
+                k++;
+              }
+            }
+          }
         }
-      ;
       break;
        
       // Trará todas as datas adjuntos aos ID dos chamados
@@ -722,11 +725,6 @@ contentType
           return 'No data avaiable'
         }
       ;
-
-      // Trará a classe do objeto selecionado
-      case 'class':
-      ;
-      break;
         
       // Trará o ID do laboratório do objeto selecionado
       case 'lab-id':
@@ -850,6 +848,8 @@ export async function readLaboratories (
   const laboratoryRef = await get(child(ref(getDatabase()), `laboratory/${labID}`));
   if (labID) {
     switch (contentType) {
+
+      //Trará todo o conteúdo do laboratório selecionado
       case 'general': 
         try {
           if (laboratoryRef.exists()) {
@@ -863,9 +863,6 @@ export async function readLaboratories (
         };
       break;
 
-      case 'class': ;
-      break;
-
       default: 
         return 'Incorrect content-type.';
     }
@@ -873,6 +870,7 @@ export async function readLaboratories (
   else
   {
     switch (contentType) {
+      //Trará todo o conteúdo de todos os laboratórios
       case 'general': 
         if (reference.exists()) {
           return labRef
@@ -880,6 +878,7 @@ export async function readLaboratories (
       ;
       break;
 
+      //Trará todo o conteúdo dos laboratórios para a tela do usuário diretamente
       case 'content': 
         if (reference.exists()) {
           document.getElementById('labs').innerHTML = '';
@@ -963,6 +962,7 @@ export async function readLaboratories (
       ;
       break;
 
+      //Trará todas as classes dos laboratórios
       case 'class': 
         if (reference.exists()) {
           localStorage.setItem('old-lab', '0')
@@ -976,6 +976,7 @@ export async function readLaboratories (
         };
       break;
         
+      //Conta todos os laboratórios existentes, ativos ou não
       case 'count': 
         var labData = '<option value="none"></option>';
         for(const Id in labRef) {
