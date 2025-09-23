@@ -20,7 +20,7 @@ async function search (value) {
   navBar.id = 'navbar';
 
   const backButton = document.createElement('button');
-  backButton.innerHTML = `<a href="../${window.location.pathname}"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343ff"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></a>`;
+  backButton.innerHTML = `<a href="..${window.location.pathname}"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343ff"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></a>`;
   backButton.className = 'back-button';
 
   const userButton = document.createElement('button');
