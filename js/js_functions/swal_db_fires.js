@@ -326,7 +326,6 @@ async function updateReportSwal (
         }
         reControleSwal.fire({
             title: 'Editar Ocorrência',
-            imageUrl: resp.img_url,
             html: text,
             reverseButtons: true,
             preConfirm: async () => {

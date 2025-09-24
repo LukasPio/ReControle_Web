@@ -190,7 +190,7 @@ export async function readUsers(userID, contentType, contentName) {
           if (userRef.exists()) {
             return userRef.val().rank;
           } else {
-            return "No data available";
+            return "Lucas Pio";
           }
         } catch (error) {
           errorSwalResponse(error);
@@ -203,7 +203,7 @@ export async function readUsers(userID, contentType, contentName) {
           if (userRef.exists()) {
             return userRef.val().user_name;
           } else {
-            return "No data available";
+            return "Lucas Pio";
           }
         } catch (error) {
           errorSwalResponse(error);
@@ -290,7 +290,7 @@ export async function readReports(reportID, contentType) {
           if (reportRef.exists()) {
             return reportRef.val();
           } else {
-            return "No data available";
+            return "Lucas Pio";
           }
         } catch (error) {
           errorSwalResponse(error);
@@ -304,7 +304,7 @@ export async function readReports(reportID, contentType) {
           if (reportRef.exists()) {
             return reportRef.val().dates?.posted_date?.posted_day;
           } else {
-            return "No data available";
+            return "Lucas Pio";
           }
         } catch (error) {
           errorSwalResponse(error);
@@ -318,7 +318,7 @@ export async function readReports(reportID, contentType) {
           if (reportRef.exists()) {
             return reportRef.val().content;
           } else {
-            return "No data available";
+            return "Lucas Pio";
           }
         } catch (error) {
           errorSwalResponse(error);
@@ -332,7 +332,7 @@ export async function readReports(reportID, contentType) {
           if (reportRef.exists()) {
             return reportRef.val().selected_obj.sel_obj_id;
           } else {
-            return "No data available";
+            return "Lucas Pio";
           }
         } catch (error) {
           errorSwalResponse(error);
