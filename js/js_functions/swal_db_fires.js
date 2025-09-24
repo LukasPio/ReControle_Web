@@ -30,16 +30,7 @@ export async function createReportSwal (
     selectData;
 
     // Todos os problemas previsíveis possíveis
-    switch (title) {
-        case 'Exemplos de falhas...': 
-            mainProblem = 'Este problema aqui';
-        ;
-        break;
-        default: 
-            mainProblem = title;
-        ;
-    }
-
+    
     readObjects(null, 'general').then(resp => {
         selectData = '<option value="none"></option>';
         for (const ID in resp) {
@@ -50,7 +41,7 @@ export async function createReportSwal (
             title: 'Só mais uns passos...',
             html: `
                 <div class="swal2-html-container">
-                    <label for="main-title" class="swal2-html-text">Título do ocorrido</label>
+                    <label for="main-title" class="swal2-html-text">Título do Ocorrido</label>
                     <input 
                         type="text" 
                         class="swal2-input" 
@@ -65,7 +56,7 @@ export async function createReportSwal (
                     required> 
                 </div>
                 <div class="swal2-html-container">
-                    <label for="main-problem" class="swal2-html-text">Problema a relatar</label>
+                    <label for="main-problem" class="swal2-html-text">Problema a Relatar</label>
                     <input 
                         type="text" 
                         class="swal2-input" 
@@ -76,11 +67,11 @@ export async function createReportSwal (
                             border-color: #D3D3D3;
                             background-color: #f5f5f5;
                         "  
-                        value="${mainProblem}"
+                        value="${title}"
                     > 
                 </div>
                 <div class="swal2-html-container">
-                    <label for="file-upload" class="swal2=html-text">Selecione um arquivo de imagem</label><br><br>
+                    <label for="file-upload" class="swal2=html-text">Selecione um Arquivo de Imagem</label><br>
                     <div class="swal2-html-container" id="file-upload">
                         <label for="selected-file" class="swal2=html-text">Imagem</label><br>
                         <input 
@@ -93,7 +84,7 @@ export async function createReportSwal (
                     </div>
                 </div>
                 <div class="swal2-html-container">
-                    <label for="selected-obj" class="swal2-html-text">Objeto selectionado</label>
+                    <label for="selected-obj" class="swal2-html-text">Objeto Selecionado</label><br>
                     <select 
                         class="swal2-input"
                         id="selected-obj" 
@@ -108,7 +99,7 @@ export async function createReportSwal (
                     </select>
                 </div>
                 <div class="swal2-html-container" >
-                    <label for="selected-obj" class="swal2-html-text">Dia da validação da ocorrência</label><br>
+                    <label for="selected-obj" class="swal2-html-text">Dia da Validação da Ocorrência</label><br>
                     <input 
                         type="date" 
                         class="swal2-input" 
@@ -135,7 +126,7 @@ export async function createReportSwal (
                     >
                 </div>
             `,
-            confirmButtonText: 'Enviar ocorrência',
+            confirmButtonText: 'Enviar Ocorrência',
             confirmButtonColor: '#2f5cf3',
             preConfirm: async () => {
                 newMainTitle = document.getElementById('main-title').value;
@@ -231,7 +222,7 @@ async function updateReportSwal (
                     >
                 </div>
                 <div class="swal2-html-container">
-                    <label for="file-upload" class="swal2=html-text">Selecione um arquivo de imagem</label><br><br>
+                    <label for="file-upload" class="swal2=html-text">Selecione um Arquivo de Imagem</label><br>
                     <div class="swal2-html-container" id="file-upload">
                     
                         <label for="file-url" class="swal2=html-text">Imagem</label><br>
@@ -284,7 +275,7 @@ async function updateReportSwal (
                     >
                 </div>
                 <div class="swal2-html-container">
-                    <label for="file-upload" class="swal2=html-text">Selecione um arquivo de imagem</label><br><br>
+                    <label for="file-upload" class="swal2=html-text">Selecione um Arquivo de Imagem</label><br>
                     <div class="swal2-html-container" id="file-upload">
                     
                         <label for="file-url" class="swal2=html-text">Imagem</label><br>
@@ -298,7 +289,7 @@ async function updateReportSwal (
                     </div>
                 </div>
                 <div class="swal2-html-container">
-                    <label for="local" class="swal2=html-text">Local selecionado</label><br>
+                    <label for="local" class="swal2=html-text">Local Selecionado</label><br>
                     <input 
                         type="text"
                         accept=".jpg,.png,image/*" 
@@ -334,7 +325,7 @@ async function updateReportSwal (
             `
         }
         reControleSwal.fire({
-            title: 'Editar ocorrência',
+            title: 'Editar Ocorrência',
             imageUrl: resp.img_url,
             html: text,
             reverseButtons: true,
@@ -587,13 +578,13 @@ export async function createLaboratorySwal (
             labClassData += `<option value="${labClasses[labID]}">${labClasses[labID]}</option>`
         }
         reControleSwal.fire({
-            title: 'Adicionar laboratório',
+            title: 'Adicionar Laboratório',
             html: `
                 <div class="swal2-html-container">
                     <label 
                         for="author-name" 
                         class="swal2-html-text" 
-                        style="color: black;"
+                        style="color: black;width: 55vw;"
                     >Autor</label>
                     <p id="author-name">${userName}</p>
                 </div>
@@ -602,7 +593,7 @@ export async function createLaboratorySwal (
                         for="lab-id" 
                         class="swal2-input-label" 
                         style="color:black;"
-                    >Identitficador do laboratório</label>
+                    >Identitficador do Laboratório</label>
                     <input 
                         type="text" 
                         class="swal2-input" 
@@ -622,7 +613,7 @@ export async function createLaboratorySwal (
                         for="input2" 
                         class="swal2-input-label" 
                         style="color:black;"
-                    >Informações do laboratório</label>
+                    >Informações do Laboratório</label>
                     <input 
                         type="text" 
                         class="swal2-input" 
@@ -639,7 +630,7 @@ export async function createLaboratorySwal (
                     required>
                 </div>
                 <div class="swal2-html-container">
-                    <label for="file-upload" class="swal2=html-text">Selecione um arquivo de imagem</label><br><br>
+                    <label for="file-upload" class="swal2=html-text">Selecione um Arquivo de Imagem</label><br><br>
                     <div class="swal2-html-container" id="file-upload">
                         <label for="lab-url" class="swal2=html-text">Imagem</label><br>
                         <input 
@@ -656,7 +647,7 @@ export async function createLaboratorySwal (
                         class="swa2-input-label" 
                         for="lab-class" 
                         style="color:black;"
-                    >Selecione uma das classes abaixo para o seu laboratório<label><br>
+                    >Selecione uma das Classes Abaixo para o seu Laboratório<label><br>
                     <select 
                         class="swal2-select" 
                         id="lab-class" 
@@ -696,7 +687,7 @@ export async function createLaboratorySwal (
                         for="status" 
                         class="swal2-input-label" 
                         style="color:black;"
-                    >Selecione o estado do laboratório</label>
+                    >Selecione o Estado do Laboratório</label>
                     <select
                         class="swal2-select"
                         id="status"
@@ -718,7 +709,7 @@ export async function createLaboratorySwal (
                         for="floor-number" 
                         class="swal2-input-label" 
                         style="color:black;"
-                    >Selecione o andar referente ao laboratório</label><br>
+                    >Selecione o Andar Referente ao Laboratório</label><br>
                     <input 
                         type="range" 
                         max="4" min="0" step="1"
@@ -978,7 +969,7 @@ export async function swalFireLookForLaboratory (
             cancelButtonText: 'Ok',
             html: `
                 <div class="swal2-html-container">
-                    <label for="class" class="swal2-html-text" style="font-weight:bold;">Classificação do laboratório</label><br><br>
+                    <label for="class" class="swal2-html-text" style="font-weight:bold;">Classificação do Laboratório</label><br><br>
                     <center>
                         <p 
                             id="class"

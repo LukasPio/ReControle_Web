@@ -234,7 +234,7 @@ export async function readUsers(userID, contentType, contentName) {
           for (let userID in ref) {
             const userDt = ref[userID];
             const user = document.createElement("li");
-            user.id = userID;
+            user.setAttribute('data_id', userID);
             user.className = "user-acc";
             const userName = document.createElement("span");
             userName.textContent = `Nome: ${
@@ -244,6 +244,7 @@ export async function readUsers(userID, contentType, contentName) {
             userName.className = "account-name";
 
             const userRank = document.createElement("span");
+            userRank.style.paddingRight = '15vw'
             userRank.textContent = `Nível de acesso: ${
               userDt.rank
             }`;
@@ -273,7 +274,7 @@ export async function readUsers(userID, contentType, contentName) {
 }
 
 // Função para realizar todas as tarefas de leitura de occorrências
-export async function readReports(reportID, contentType, contentName) {
+export async function readReports(reportID, contentType) {
   const dbRef = ref(getDatabase());
   const reference = await get(child(ref(getDatabase()), "reports"));
   const reportRef = reference.val();
@@ -434,7 +435,7 @@ export async function readReports(reportID, contentType, contentName) {
               }
 
               const repIDElement = document.createElement("p");
-              repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`;
+              repIDElement.innerHTML = `<strong> ${reportContents[repID]}</strong><br>`;
 
               const localAndData = document.createElement("p");
               if (reportRef[repID].content?.local)
@@ -446,15 +447,12 @@ export async function readReports(reportID, contentType, contentName) {
                   margin: 15px 0;
                 "></p>
               `),
-                  report.appendChild(repIDElement),
-                  report.appendChild(link),
-                  report.appendChild(localAndData),
-                  imageDiv.appendChild(imageElement),
-                  center.appendChild(imageDiv),
-                  center.appendChild(statusElement),
-                  center.appendChild(userElement),
-                  statusAuthorDiv.appendChild(center),
-                  report.appendChild(statusAuthorDiv),
+                  report.appendChild(repIDElement);
+                  report.appendChild(localAndData);
+                  report.appendChild(imageElement);
+                  report.appendChild(statusElement);
+                  report.appendChild(userElement);
+                  report.appendChild(statusAuthorDiv);
                   document.getElementById("chamados").appendChild(report);
             }
           }

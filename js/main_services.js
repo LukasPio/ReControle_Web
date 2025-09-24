@@ -193,6 +193,15 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  const containerOA = document.getElementById('objs');
+  if (containerOA) {
+    containerOA.addEventListener('click', function (e) {
+      if (e.target.tagName == 'A') {
+        swalFireLookForObject(e.target.id)
+      }
+    })
+  }
+
   const containerOF = document.getElementById('furniture');
   if (containerOF) {
     containerOF.addEventListener('click', function (e) {

@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
     const container = document.getElementById('users-account-list');
     container.addEventListener('click', function (e) {
-        const target = e.target;
-        if (target.tagName !== 'LI') return;
-        swalFireLookForUser(target.id);
+        if (e.target.className != 'users-accaount-list') {
+            swalFireLookForUser(e.target.closest('li').attributes.data_id.value)
+        }
 
     })
 })
