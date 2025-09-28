@@ -322,7 +322,7 @@ input[type="search"]:focus {
    ================================================== */
 .manage-accounts-list {
   list-style: none;
-  margin: 1.5rem 0 0;
+  margin: 1.5rem 0 0; 
   padding: 0;
   display: grid;
   grid-template-columns: 1fr;
@@ -467,6 +467,11 @@ input[type="search"]:focus {
   font-size: 14px;
 }
 
+#add-div {
+  bottom: 16px;
+  right: 16px;
+}
+
 /* Botão Create Report */
 .btn-create-rep {
   background-color: #2f5cf3;
@@ -479,6 +484,17 @@ input[type="search"]:focus {
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
+  bottom: 16px;
+  right: 16px;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9999;
+  display: inline-block;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-user-drag: none;
+
 }
 
 .btn-create-rep:hover {

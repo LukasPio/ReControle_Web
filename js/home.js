@@ -20,10 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const ctx = document.getElementById("graficoLinha").getContext("2d");
 countReportsByMonth().then(resp => {
-    const webValues = ['01', '02', '03', '04', '05', '06', '07', '08', '09','10', '11', '12'].map(mes => resp[0][mes] || 0);
-    const mobileValues = ['01', '02', '03', '04', '05', '06', '07', '08', '09','10', '11', '12'].map(mes => resp[1][mes] || 0);
-    const inProgressValues = ['01', '02', '03', '04', '05', '06', '07', '08', '09','10', '11', '12'].map(mes => resp[2][mes] || 0);
-    const concludedValues = ['01', '02', '03', '04', '05', '06', '07', '08', '09','10', '11', '12'].map(mes => resp[3][mes] || 0);
+    const webValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[0][mes] || 0);
+    const mobileValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[1][mes] || 0);
+    const inProgressValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[2][mes] || 0);
+    const concludedValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[3][mes] || 0);
     new Chart(ctx, {
         type: "line",
         data: {
@@ -63,7 +63,7 @@ countReportsByMonth().then(resp => {
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 10
+                    max: 20
                 }
             },
         }

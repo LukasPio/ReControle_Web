@@ -179,7 +179,7 @@ export async function readAll() {
   };
 }
 // Função para realizar todas as tarefas de leitura dos usuários
-export async function readUsers(userID, contentType, contentName) {
+export async function readUsers(userID, contentType) {
   const dbRef = ref(getDatabase());
   const userRef = await get(child(dbRef, `user/${userID}`));
   if (userID) {
@@ -244,7 +244,6 @@ export async function readUsers(userID, contentType, contentName) {
             userName.className = "account-name";
 
             const userRank = document.createElement("span");
-            userRank.style.paddingRight = '15vw'
             userRank.textContent = `Nível de acesso: ${
               userDt.rank
             }`;
@@ -463,19 +462,20 @@ export async function readReports(reportID, contentType) {
       // trará todos os chamados com o conteúdo e o seu ID para os três primeiros (a ser alterado)
       case 'general-home':
         if (reference.exists()) {
-          const datas = {};
-          const horas = {};
+          const dates = {};
 
           for (const repID in reportRef) {
             if (reportRef[repID].dates) {
-              datas[repID] = reportRef[repID].dates.posted_date.posted_day;
-              horas[repID] = reportRef[repID].dates.posted_date.posted_time;
+              dates[repID] = new Date(`${reportRef[repID].dates.posted_date.posted_day}T${reportRef[repID].dates.posted_date.posted_time}`)
+            }
+            else{
+              dates[repID] = new Date(reportRef[repID].content.timestamp)
             }
           }
-
-          const recentes = Object.entries(datas)
+          
+          const recentes = Object.entries(dates)
           .map(([id]) => {
-            const datetime = new Date(`${datas[id]}T${horas[id]}`);
+            const datetime = new Date(`${dates[id]}`);
             return { id, datetime };
           })
           .filter(
@@ -566,89 +566,6 @@ export async function readReports(reportID, contentType) {
             document.getElementById("chamados").appendChild(report);
           });
 
-          if (recentes.length < 3) {
-            let k = 0;
-            for (const id in reportRef) {
-              if (!reportRef[id].dates) {
-                if ((recentes.length + k - 3) == 0) break;
-
-                let reportContents = "";
-                const report = document.createElement("div");
-                report.className = "chamado-card";
-                report.setAttribute("data_id", id); // ID só como atributo
-
-                // imagem
-                const imageElement = document.createElement("img");
-                imageElement.className = "image-report";
-                imageElement.style.maxHeight = "30vh";
-
-                if (reportRef[id].content.img_url) {
-                  let image = reportRef[id].content?.img_url;
-                  if (!image) {
-                    image = "../../assets/default_occur.jpg";
-                  } else if (!image.startsWith("data:image/png;base64,")) {
-                    image = "data:image/png;base64, " + image;
-                  }
-                  imageElement.src = image;
-                }
-
-                // status
-                const statusElement = document.createElement("p");
-                switch (reportRef[id].content.status) {
-                  case "red":
-                    statusElement.innerHTML = "Pendente";
-                    statusElement.className = "status-pendente";
-                    break;
-                  case "yellow":
-                    statusElement.innerHTML = "Em andamento";
-                    statusElement.className = "status-andamento";
-                    break;
-                  case "green":
-                    statusElement.innerHTML = "Concluído";
-                    statusElement.className = "status-concluido";
-                    break;
-                }
-
-                // autor
-                const userElement = document.createElement("p");
-                userElement.className = "autor";
-                readUsers(reportRef[id].content.autor, "user-name").then(
-                  (resp) => (userElement.textContent = resp)
-                );
-
-                // título
-                if (reportRef[id].content?.title) {
-                  reportContents = reportRef[id].content?.title;
-                } else if (reportRef[id].content?.text) {
-                  reportContents = reportRef[id].content?.text;
-                } else {
-                  reportContents = "Sem Título para exibir";
-                }
-
-                const titleElement = document.createElement("p");
-                titleElement.className = "titulo-chamado";
-                titleElement.innerHTML = `<strong>${reportContents}</strong>`;
-
-                // local e linha separadora
-                const localAndData = document.createElement("p");
-                localAndData.className = "local";
-                localAndData.innerHTML = `
-                  ${reportRef[id].selected_obj?.sel_lab_id || reportRef[id].content?.local || ""}
-                  <p class="linha-separadora"></p>
-                `;
-
-                // montagem
-                report.appendChild(titleElement);
-                report.appendChild(localAndData);
-                report.appendChild(imageElement);
-                report.appendChild(statusElement);
-                report.appendChild(userElement);
-
-                document.getElementById("chamados").appendChild(report);
-                k++;
-              }
-            }
-          }
         }
       break;
 
@@ -981,18 +898,78 @@ export function verifyObject(objectId) {
 // Função que faz a contagem para o gráfico da página principal - cbm : count by month
 export async function countReportsByMonth() {
   const repBMRef = await get(child(ref(getDatabase()), "reports"));
-  const cbmWeb = {};
-  const cbmMobile = {};
-  const cbmInProgress = {};
-  const cbmConcluded = {};
+  const cbmWeb = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+    10: 0,
+    11: 0,
+    12: 0
+  };
+  const cbmMobile = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+    10: 0,
+    11: 0,
+    12: 0
+  };
+  const cbmInProgress = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+    10: 0,
+    11: 0,
+    12: 0
+  };
+  const cbmConcluded = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+    10: 0,
+    11: 0,
+    12: 0
+  };
 
   if (repBMRef.exists()) {
     for (const repID in repBMRef.val()) {
       const report = repBMRef.val()[repID];
-      const data = report?.dates?.posted_date?.posted_day;
+      const data = report?.dates?.posted_date?.posted_day || report?.content.timestamp;
+      var month = `${data}`;
 
-      if (data) {
-        const month = data.substring(5, 7);
+      if (data) { 
+        if (!month.includes('-') ) {
+          month = new Date(data).getMonth() + 1
+        }
+        else
+        {
+          month = data.substring(5, 7)
+        }
+        
 
         if (report.content.status == "red") {
           if (report.dates) {
@@ -1008,5 +985,5 @@ export async function countReportsByMonth() {
       }
     }
   }
-  return [cbmWeb, cbmMobile, cbmInProgress, cbmConcluded];
+  return [cbmWeb, cbmMobile, cbmInProgress, cbmConcluded, ];
 }

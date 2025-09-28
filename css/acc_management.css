@@ -250,18 +250,26 @@ main {
 }
 
 /* Manage accounts list (foco principal: clean grid, corporativo badges, insano animações) */
-.manage-accounts-list {
+.manage-accounts-list { 
   list-style: none;
   margin: 1.5rem 0 0;
   padding: 0;
-  display: grid;
   grid-template-columns: repeat(
     auto-fit,
     minmax(350px, 1fr)
   ); /* Grid responsivo insano para clean layout */
+  display: flex;
+  flex-wrap: wrap;
+
+
   gap: 1.25rem; /* Gap mais clean */
 }
 
+.manage-accounts-list > li {
+  flex: 0 0 50%; /* Cada div ocupa 50% da largura */
+  box-sizing: border-box;
+
+}
 .manage-accounts-list li {
   background-color: #ffffff;
   border: 1px solid #e5e7eb; /* Borda suave corporativa */
@@ -287,19 +295,19 @@ main {
 }
 
 .manage-accounts-list li:nth-child(1) {
-  animation-delay: 0.1s;
+  animation-delay: 0.15s;
 }
 .manage-accounts-list li:nth-child(2) {
-  animation-delay: 0.2s;
-}
-.manage-accounts-list li:nth-child(3) {
   animation-delay: 0.3s;
 }
+.manage-accounts-list li:nth-child(3) {
+  animation-delay: 0.45s;
+}
 .manage-accounts-list li:nth-child(4) {
-  animation-delay: 0.4s;
+  animation-delay: 0.6s;
 }
 .manage-accounts-list li:nth-child(5) {
-  animation-delay: 0.5s;
+  animation-delay: 0.75s;
 }
 
 .manage-accounts-list li:hover {
@@ -338,7 +346,8 @@ main {
   font-size: 1rem;
   font-weight: 600;
   color: #2f5cf3; /* Acento consistente */
-  margin-left: auto; /* Alinha à direita clean */
+  margin-left: 3vw; /* Alinha à direita clean */
+  margin-right: 3vw;
 }
 
 /* Suporte para badges de role/status (adicione no HTML se necessário, para corporativo) */
