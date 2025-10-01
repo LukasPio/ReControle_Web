@@ -3,6 +3,7 @@ import {
   getAuth,
   onAuthStateChanged,
   signOut,
+  updateProfile,
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { firebaseConfig, hrefsConfig } from "./js_config/Config.js";
 import {readAll, readUsers} from './js_functions/realtime_db.js';
