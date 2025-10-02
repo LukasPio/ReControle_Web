@@ -352,8 +352,6 @@ export async function readReports(reportID, contentType) {
             report.className = "chamado-card";
             report.setAttribute('data_id', repID);
 
-            const imageDiv = document.createElement("div");
-            const center = document.createElement("center");
             const imageElement = document.createElement("img");
             imageElement.className = "image-report";
 
@@ -426,7 +424,7 @@ export async function readReports(reportID, contentType) {
               report.appendChild(userElement);
               report.appendChild(statusAuthorDiv);
               document.getElementById("chamados").appendChild(report);
-            } else {
+            } else if (!reportRef[repID].content?.deleted){
               if (reportRef[repID].content?.text) {
                 reportContents[repID] = reportRef[repID].content?.text;
               } else {
@@ -468,7 +466,7 @@ export async function readReports(reportID, contentType) {
             if (reportRef[repID].dates) {
               dates[repID] = new Date(`${reportRef[repID].dates.posted_date.posted_day}T${reportRef[repID].dates.posted_date.posted_time}`)
             }
-            else{
+            else if (!reportRef[repID].content.deleted) {
               dates[repID] = new Date(reportRef[repID].content.timestamp)
             }
           }
@@ -912,20 +910,6 @@ export async function countReportsByMonth() {
     11: 0,
     12: 0
   };
-  const cbmMobile = {
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0,
-    8: 0,
-    9: 0,
-    10: 0,
-    11: 0,
-    12: 0
-  };
   const cbmInProgress = {
     1: 0,
     2: 0,
@@ -960,30 +944,26 @@ export async function countReportsByMonth() {
       const report = repBMRef.val()[repID];
       const data = report?.dates?.posted_date?.posted_day || report?.content.timestamp;
       var month = `${data}`;
-
+      
       if (data) { 
         if (!month.includes('-') ) {
           month = new Date(data).getMonth() + 1
-        }
-        else
-        {
+        } else {
           month = data.substring(5, 7)
         }
         
-
         if (report.content.status == "red") {
-          if (report.dates) {
-            cbmWeb[month] = (cbmWeb[month] || 0) + 1;
-          } else {
-            cbmMobile[month] = (cbmMobile[month] || 0) + 1;
-          }
-        } else if (report.content.status == "yellow") {
+          cbmWeb[month] = (cbmWeb[month] || 0) + 1;
+        } 
+        
+        if (report.content.status == "yellow") {
           cbmInProgress[month] = (cbmInProgress[month] || 0) + 1;
-        } else {
+        } 
+        if (report.content.status == "green") {
           cbmConcluded[month] = (cbmConcluded[month] || 0) + 1;
         }
       }
     }
   }
-  return [cbmWeb, cbmMobile, cbmInProgress, cbmConcluded, ];
+  return [cbmWeb, cbmInProgress, cbmConcluded];
 }

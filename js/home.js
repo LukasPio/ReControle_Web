@@ -20,28 +20,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const ctx = document.getElementById("graficoLinha").getContext("2d");
 countReportsByMonth().then(resp => {
+    console.log(resp)
     const webValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[0][mes] || 0);
-    const mobileValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[1][mes] || 0);
-    const inProgressValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[2][mes] || 0);
-    const concludedValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[3][mes] || 0);
+    const inProgressValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[1][mes] || 0);
+    const concludedValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[2][mes] || 0);
     new Chart(ctx, {
         type: "line",
         data: {
             labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dez'],
             datasets: [{
-                label: "Chamados criados pelo desktop",
+                label: "Chamados criados",
                 data: webValues,
                 borderColor: "red",
                 tension: 0.4,
                 pointBackgroundColor: "red",
-            },
-            {
-                label: "Chamados criados pelo aplicativo",
-                data: mobileValues,
-                borderColor: "orange",
-                tension: 0.4,
-                pointBackgroundColor: "orange", 
-            },                
+            },            
             {
                 label: "Chamados em andamento",
                 data: inProgressValues,
@@ -63,7 +56,7 @@ countReportsByMonth().then(resp => {
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 20
+                    max: 10
                 }
             },
         }

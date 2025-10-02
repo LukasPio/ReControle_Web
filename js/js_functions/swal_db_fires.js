@@ -1164,7 +1164,7 @@ export async function createObjectSwal () {
                     Eletrônico: dataTypeE,
                     Móveis: dataTypeM,
                     Diversos: dataElse,
-                    Outro: 'Adicionar objeto'
+                    otherChoice: 'Adicionar objeto'
                     
                 },
                 preConfirm: async () => {
