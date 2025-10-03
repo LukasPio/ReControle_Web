@@ -232,3 +232,60 @@ main {
 .account-menu li a:hover {
   background: #f0f0f0;
 }
+
+.btn-download {
+  background-color: #2f5cf3;
+  color: #ffffff;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  display: inline-block;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-user-drag: none;
+}
+
+.btn-copy {
+  background-color: #ffffff;
+  color: #2f5cf3;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-left: 15px;
+  transition: all 0.2s ease;
+  display: inline-block;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-user-drag: none;
+}
+.btn-copy:hover {
+  background-color: #ffffff;
+  transform: scale(1.05);
+}
+.btn-download:hover  {
+  background-color: #1e40af;
+  transform: scale(1.05);
+}
+
+.graphic-actions {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.graphic-data{
+  margin-top: 12px;
+}
+#end {
+  margin-bottom: 4vh;
+}

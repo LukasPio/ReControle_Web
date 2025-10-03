@@ -938,6 +938,7 @@ export async function countReportsByMonth() {
     11: 0,
     12: 0
   };
+  var allByYear = 0;
 
   if (repBMRef.exists()) {
     for (const repID in repBMRef.val()) {
@@ -962,8 +963,9 @@ export async function countReportsByMonth() {
         if (report.content.status == "green") {
           cbmConcluded[month] = (cbmConcluded[month] || 0) + 1;
         }
+        allByYear++;
       }
     }
   }
-  return [cbmWeb, cbmInProgress, cbmConcluded];
+  return [cbmWeb, cbmInProgress, cbmConcluded, allByYear];
 }
