@@ -1,4 +1,4 @@
-import {readUsers} from './js_functions/realtime_db.js';
+import { readUsers } from './js_functions/realtime_db.js';
 import { searchFor, swalFireLookForUser } from './js_functions/swal_db_fires.js';
 import { loading } from './js_functions/swal_mixins.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";

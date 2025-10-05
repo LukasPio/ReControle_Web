@@ -969,3 +969,69 @@ export async function countReportsByMonth() {
   }
   return [cbmWeb, cbmInProgress, cbmConcluded, allByYear];
 }
+
+export async function conutReportsByLab() {
+  const labs = await get(child(ref(getDatabase()), "laboratory"));
+  const reps = await get(child(ref(getDatabase()), "reports"));
+  const repsByMonth = {
+    1:  {q: 0, id: []},
+    2:  {q: 0, id: []},
+    3:  {q: 0, id: []},
+    4:  {q: 0, id: []},
+    5:  {q: 0, id: []},
+    6:  {q: 0, id: []},
+    7:  {q: 0, id: []},
+    8:  {q: 0, id: []},
+    9:  {q: 0, id: []},
+    10: {q: 0, id: []},
+    11: {q: 0, id: []},
+    12: {q: 0, id: []},
+  };
+  const counts = {};
+  
+  for (const rId in reps.val()) {
+    const rep = reps.val()[rId];
+    const data = rep?.dates?.posted_date?.posted_day || rep?.content.timestamp;
+    var month = `${data}`;
+      
+    if (data) { 
+      if (!month.includes('-') ) {
+        month = new Date(data).getMonth() + 1
+      } else {
+        month = data.substring(5, 7)
+      }
+
+      if (rep.content.status != 'green') {
+        repsByMonth[month].q = (repsByMonth[month].q || 0) + 1;
+        (repsByMonth[month].id).push(rep.selected_obj?.sel_lab_id || rep.content.local)
+      }    
+    }
+  }
+  for (const lId in labs.val()) {
+    const lab = labs.val()[lId];
+    counts[lId] = {
+      1:  0,
+      2:  0,
+      3:  0,
+      4:  0,
+      5:  0,
+      6:  0,
+      7:  0,
+      8:  0,
+      9:  0,
+      10: 0,
+      11: 0,
+      12: 0
+    }    
+  }
+  for (const id in repsByMonth) {
+    const ids = repsByMonth[id].id
+    if (ids.length > 0) {
+      for (const rId in ids) {   
+        counts[ids[rId]][id]++
+      }
+    }
+  }
+  return counts
+
+}
