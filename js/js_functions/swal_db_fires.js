@@ -9,11 +9,33 @@ import {
     updateMobileReportData,
     verifyObject,
     writeObjectData,
-    writeUserData
+    writeUserData,
+    setExcludingWeb,
+    setExcludingMobile,
+    setConcluded
 
 } from './realtime_db.js';
-import {reControleSwal, successToastSwal, errorToastSwal} from './swal_mixins.js';
-import { getDatabase, ref, child, get, onValue, remove } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+import {
+    reControleSwal, 
+    successToastSwal, 
+    errorToastSwal
+
+} from './swal_mixins.js';
+import { 
+    getDatabase, 
+    ref, 
+    child, 
+    get, 
+    onValue, 
+    remove 
+
+} from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+import { initializeApp }  from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js';
+import { 
+    getAuth, 
+    onAuthStateChanged 
+} from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
+import { firebaseConfig } from "../js_config/Config.js";
 
 export async function createReportSwal (
     title,
@@ -99,7 +121,7 @@ export async function createReportSwal (
                     </select>
                 </div>
                 <div class="swal2-html-container" >
-                    <label for="selected-obj" class="swal2-html-text">Dia da Validação da Ocorrência</label><br>
+                    <label for="selected-obj" class="swal2-html-text">Dia do acontecimento da Ocorrência</label><br>
                     <input 
                         type="date" 
                         class="swal2-input" 
@@ -134,8 +156,9 @@ export async function createReportSwal (
                 newSelectedObject = document.getElementById('selected-obj').value;
                 occuredDate = document.getElementById('occur-date').value;
                 occuredTime = document.getElementById('occur-time').value;
-                if (localStorage.getItem('sel-file').startsWith('data') || localStorage.getItem('sel-file').startsWith('/9j/')) {
+                if (localStorage.getItem('sel-file')?.startsWith('data') || localStorage.getItem('sel-file')?.startsWith('/9j/')) {
                     file = localStorage.getItem('sel-file')
+                    localStorage.removeItem('sel-file')
                 }
                 else {
                     file = ''
@@ -151,16 +174,16 @@ export async function createReportSwal (
                             author,
                             occuredDate,
                             occuredTime,
-                            "",
-                            "",
+                            0,
                             //`${resp}-${occuredDate}-${occuredTime}`,
                             resp,
-                            newSelectedObject
+                            newSelectedObject,
+                            `${new Date().getTime()}`
                         );
-                        successToastSwal.fire().then( localStorage.removeItem('sel-file') )
+                        successToastSwal.fire()
                     }
-                    catch {
-                        errorToastSwal.fire()
+                    catch (error) {
+                        errorToastSwal.fire().then(console.log(error))
                     }
                 })                
             }
@@ -173,6 +196,7 @@ export async function createReportSwal (
                 {
                     document.getElementById('p-file').textContent = (event.target.value).slice(12);
                     convertImg(event.target.files[0], function(base64Result) {
+                        localStorage.removeItem('sel-file');
                         localStorage.setItem('sel-file', base64Result);
                     });
                 }
@@ -344,25 +368,54 @@ async function updateReportSwal (
                     }
                 }
                 if (resp.title) {
+                    if (document.getElementById('status').value == 'green') {
+                        initializeApp(firebaseConfig);
+                        onAuthStateChanged(getAuth(), (user) => {
+                            setExcludingWeb(
+                                reportID, 
+                                user.uid, 
+                                new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime()
+                            )
+                            setConcluded(
+                                reportID,
+                                new Date().getTime()
+                            )
+                        })
+                    }
+
                     updateWebReportData(
                         author,
                         reportID,
                         document.getElementById('main-p').value,
                         document.getElementById('main-t').value,
                         file,
-                        document.getElementById('status').value
+                        document.getElementById('status').value, 
+                        resp.timestamp
                     ).then(() => successToastSwal.fire().then(localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
                 else
                 {
+                    if (document.getElementById('status').value == 'green') {
+                        initializeApp(firebaseConfig);
+                        onAuthStateChanged(getAuth(), (user) => {
+                            setExcludingMobile(
+                                reportID, 
+                                user.uid, 
+                                new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime()
+                            )
+                        })
+                    }
+
                     updateMobileReportData(
                         reportID,
                         document.getElementById('main-t').value,
                         file,
                         document.getElementById('local').value,
                         document.getElementById('status').value,
-                        author   
+                        author,
+                        resp.category,
+                        resp.timestamp
                     ).then(() => successToastSwal.fire().then(console.log(file) ,localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
@@ -410,15 +463,18 @@ export async function swalFireLookForOcurrence (
             imageElement = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
         }
     
-            if (resp.selected_obj) {
-                readObjects(resp.selected_obj.sel_obj_id, 'class-type').then(classType => {
-                    const swalLook =
-                    reControleSwal.mixin({
-                        title: `${resp.content?.title}`,
-                        imageUrl: `${imageElement}`,
-                        cancelButtonText: 'Ok',
-                        confirmButtonText: 'Alterar',
-                        html: `
+        if (resp.selected_obj) {
+            readObjects(resp.selected_obj.sel_obj_id, 'class-type').then(classType => {
+                const date = `${resp.dates.posted_date.posted_day}T${resp.dates.posted_date.posted_time}`;
+                const swalLook =
+                reControleSwal.mixin({
+                    title: `${resp.content?.title}`,
+                    imageUrl: `${imageElement}`,
+                    cancelButtonText: 'Ok',
+                    confirmButtonText: 'Alterar',
+                    showDenyButton: true,
+                    denyButtonText: 'Apagar ocorrência',
+                    html: `
                         <div class='swal2-html-container' id='swal2-html-container'>
                             <label for='object-description' style='font-weight:bold;'> Descrição </label>
                             <center>
@@ -477,7 +533,7 @@ export async function swalFireLookForOcurrence (
                             </center>
                         </div>
                         <div class='swal2-html-container' id='swal2-html-container'>
-                            <label for='date-time' style='font-weight:bold;'> Data e Hora </label>
+                            <label for='date-time' style='font-weight:bold;'> Data de criação </label>
                             <center>
                                 <p id='date-time' style='
                                         width:55vw;
@@ -486,47 +542,45 @@ export async function swalFireLookForOcurrence (
                                         border-color: #D3D3D3;
                                         background-color: #f5f5f5;'
                                 >
-                                    Data: ${resp.dates.posted_date.posted_day} - Hora: ${resp.dates.posted_date.posted_time}
+                                    ${new Date(date).toUTCString().slice(0, -4).slice(5)}
                                 </p>
                             </center>
                         </div>
-                        `,
-                        preConfirm: async () => updateReportSwal(reportID, userUID)
-                    })
-                    if (localStorage.getItem('rank') == 3) {
-                        swalLook.fire()
-                    }
-                    else {
-                        swalLook.fire({
-                            showConfirmButton: false
+                    `,
+                    preConfirm: async () => updateReportSwal(reportID, userUID),
+                    preDeny: async () => {
+                        initializeApp(firebaseConfig);
+                        onAuthStateChanged(getAuth(), (user) => {
+                            setExcludingWeb(
+                                reportID, 
+                                user.uid, 
+                                new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime()
+                            ).then(successToastSwal.fire({title: 'Ocorrência data para ser excluída em 1 mês'}))
                         })
                     }
-                });
-            }
-            else
-            {
-                const swalLook =
-                reControleSwal.mixin({
-                    title: 'Ocorrência',
-                    imageUrl: `${imageElement}`,
-                    cancelButtonText: 'Ok',
-                    confirmButtonText: 'Alterar',
-                    html: `
-                    <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='local' style='font-weight:bold;'> Local </label>
-                        <center>
-                            <p id='local' style=' 
-                                    height: 20vh;
-                                    width:55vw;
-                                    border:1px solid black;
-                                    border-radius:15px;
-                                    border-color: #D3D3D3;
-                                    background-color: #f5f5f5;'
-                            >
-                                ${resp.content?.local}
-                            </p>
-                        </center>
-                    </div>
+                })
+                if (localStorage.getItem('rank') == 3) {
+                    swalLook.fire()
+                }
+                else {
+                    swalLook.fire({
+                        showConfirmButton: false,
+                        showDenyButton: false
+                    })
+                }
+            });
+        }
+        else
+        {
+            const swalLook =
+            reControleSwal.mixin({
+                title: 'Ocorrência',
+                imageUrl: `${imageElement}`,
+                cancelButtonText: 'Ok',
+                confirmButtonText: 'Alterar',
+                showDenyButton: true,
+                denyButtonText: 'Apagar ocorrência',
+                html: `
                     <div class='swal2-html-container' id='swal2-html-container'>
                         <label for='report-desc' style='font-weight:bold;'> Descrição </label>
                         <center>
@@ -542,20 +596,74 @@ export async function swalFireLookForOcurrence (
                             </p>
                         </center>
                     </div>
-                    `,
-                    preConfirm: async () => updateReportSwal(reportID, userUID)
-                })
-                if (localStorage.getItem('rank') == 3) {
-                    swalLook.fire()
-                }
-                else {
-                    swalLook.fire({
-                        showConfirmButton: false
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='class' style='font-weight:bold;'> Classe </label>
+                        <center>
+                            <p id='class' style=' 
+                                    height: 4vh;
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${resp.content?.category}
+                            </p>
+                        </center>
+                    </div>
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='local' style='font-weight:bold;'> Local selecionado </label>
+                        <center>
+                            <p id='local' style=' 
+                                    height: 4vh;
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${resp.content?.local}
+                            </p>
+                        </center>
+                    </div>
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='date' style='font-weight:bold;'> Data de criação </label>
+                        <center>
+                            <p id='date' style=' 
+                                    height: 4vh;
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${new Date(resp.content?.timestamp).toUTCString().slice(0, -4).slice(5)}
+                            </p>
+                        </center>
+                    </div>
+                `,
+                preConfirm: async () => updateReportSwal(reportID, userUID),
+                preDeny: async () => {
+                    initializeApp(firebaseConfig);
+                    onAuthStateChanged(getAuth(), (user) => {
+                        setExcludingMobile(
+                            reportID, 
+                            user.uid, 
+                            new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime()
+                        ).then(successToastSwal.fire({title: 'Ocorrência data para ser excluída em 1 mês'}))
                     })
                 }
+            })
+            if (localStorage.getItem('rank') == 3) {
+                swalLook.fire()
             }
-            
-        
+            else {
+                swalLook.fire({
+                    showConfirmButton: false,
+                    showDenyButton: false
+                })
+            }
+        }
     })    
 }
 
@@ -1046,7 +1154,7 @@ export async function swalFireLookForLaboratory (
     })
 }
 
-export async function updateUserSwal(
+async function updateUserSwal(
     userId,
     name
 ) {

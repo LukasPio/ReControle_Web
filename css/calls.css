@@ -138,6 +138,10 @@ main {
   flex-wrap: wrap;
 }
 
+#red h2,#yellow h2,#green h2 {
+  width: 100%;
+}
+
 .chamado-card {
   flex: 1;
   min-width: 250px;
@@ -176,12 +180,6 @@ main {
   box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2); /* Glow mais intenso */
 }
 
-.chamado-card a {
-  color: #2f5cf3;
-  font-size: 0.9rem;
-  text-decoration: underline;
-  transition: color 0.2s ease;
-}
 
 .chamado-card a:hover {
   color: #1e40af; /* Escurece insano */
@@ -317,54 +315,7 @@ input[type="search"]:focus {
   box-shadow: 0 0 0 3px rgba(47, 92, 243, 0.1);
 }
 
-/* Upload de arquivo (clean: form corporativo com hover) */
-#file-upload {
-  display: flex;
-  max-width: 55vw;
-  flex-direction: column;
-  align-items: center;
-  border: 1px solid #d1d5db; /* Borda mais clean */
-  padding: 20px;
-  border-radius: 12px; /* Arredondado consistente */
-  margin: 24px auto; /* Espaçamento clean */
-  font-family: inherit; /* Herda font corporativa */
-  background-color: #f9fafb; /* Fundo sutil */
-  transition: box-shadow 0.2s ease;
-}
 
-#file-upload:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Hover insano */
-}
-
-#file-upload input[type="file"] {
-  display: none;
-}
-
-#file-upload label {
-  background: linear-gradient(
-    135deg,
-    #2f5cf3,
-    #3b82f6
-  ); /* Gradiente corporativo */
-  color: #ffffff;
-  padding: 10px 20px;
-  border-radius: 8px; /* Arredondado clean */
-  cursor: pointer;
-  margin-bottom: 10px;
-  font-weight: 500;
-  transition: all 0.2s ease; /* Transição insana */
-}
-
-#file-upload label:hover {
-  transform: scale(1.02); /* Escala sutil */
-  box-shadow: 0 2px 8px rgba(47, 92, 243, 0.3);
-}
-
-#file-upload p {
-  font-size: 14px;
-  color: #6b7280; /* Cinza corporativo */
-  text-align: center;
-}
 
 /* Responsividade (clean em mobile) */
 @media (max-width: 768px) {

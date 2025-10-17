@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chamados | ReControle</title>
+    <title>Banco de Dados | ReControle</title>
     <link rel="icon" href="../assets/recontrole_logo_icon.png" />
-    <link rel="stylesheet" href="../css/calls.css" />
+    <link rel="stylesheet" href="../css/institution.css" />
     <link rel="stylesheet" href="../css/main.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_back" />
     <!-- Chart.js e SweetAlert -->
@@ -14,15 +14,16 @@
     <!-- Módulos de serviço e autenticação -->
     <script type="module" src="../js/services.js" defer></script>
     <script type="module" src="../js/main_services.js" defer></script>
-    <script type="module" src="../js/calls.js" defer></script>
+    <script type="module" src="../js/laboratory.js" defer></script>
   </head>
   <body>
     <aside class="sidebar">
       <h2 class="logo"><span style="color: #2f5cf3">Re</span>Controle</h2>
+      
       <nav>
         <ul id="link-side">
           <li id="home">Visão Geral</li>
-          <li id="calls" class="active">Chamados</li>
+          <li id="calls">Chamados</li>
           <li id="institution">Instituição</li>
         </ul>
       </nav>
@@ -51,16 +52,15 @@
       </header>
 
       <section class="dashboard" id="main">
-        <h1>Chamados</h1>
-        <div id="chamados">
-          <div id="red" class="chamados"></div>
-          <div id="yellow" class="chamados"></div>
-          <div id="green" class="chamados"></div>
+        
+        <h1>Chamados do(a) <span id="selected-lab"></span></h1><br>
+        <ul  align="right" ><a href="./institution.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></a></ul>
+        <div id="pending" class="labs"> 
         </div>
+        <div id="in-progress" class="labs"> 
+        </div>
+        
       </section>
-      <div class="report-changes">
-        <button class="btn-create-rep" id="reportButton">Criar Ocorrência</button>
-      </div>
     </main>
   </body>
 </html>

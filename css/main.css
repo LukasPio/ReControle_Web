@@ -422,3 +422,52 @@ main {
 .account-menu li a:hover {
   background: #f0f0f0;
 }
+
+/* Upload de arquivo (clean: form corporativo com hover) */
+#file-upload {
+  display: flex;
+  max-width: 55vw;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #d1d5db; /* Borda mais clean */
+  padding: 20px;
+  border-radius: 12px; /* Arredondado consistente */
+  margin: 24px auto; /* Espaçamento clean */
+  font-family: inherit; /* Herda font corporativa */
+  background-color: #f9fafb; /* Fundo sutil */
+  transition: box-shadow 0.2s ease;
+}
+
+#file-upload:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Hover insano */
+}
+
+#file-upload input[type="file"] {
+  display: none;
+}
+
+#file-upload label {
+  background: linear-gradient(
+    135deg,
+    #2f5cf3,
+    #3b82f6
+  ); /* Gradiente corporativo */
+  color: #ffffff;
+  padding: 10px 20px;
+  border-radius: 8px; /* Arredondado clean */
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-weight: 500;
+  transition: all 0.2s ease; /* Transição insana */
+}
+
+#file-upload label:hover {
+  transform: scale(1.02); /* Escala sutil */
+  box-shadow: 0 2px 8px rgba(47, 92, 243, 0.3);
+}
+
+#file-upload p {
+  font-size: 14px;
+  color: #6b7280; /* Cinza corporativo */
+  text-align: center;
+}

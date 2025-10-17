@@ -6,7 +6,7 @@ import {
   updateProfile,
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { firebaseConfig, hrefsConfig } from "./js_config/Config.js";
-import {readAll, readUsers} from './js_functions/realtime_db.js';
+import {excludeReports, readAll, readUsers} from './js_functions/realtime_db.js';
 import {searchFor, swalFireLookForLaboratory, swalFireLookForObject, swalFireLookForOcurrence, swalFireLookForUser} from './js_functions/swal_db_fires.js';
 // Inicializa Firebase
 toString;
@@ -114,6 +114,7 @@ async function search (value) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+  //Barra de pesquisa geral
   const searchE = document.getElementById('search-anyt');
   if (searchE) {
     searchE.addEventListener('change', (e) => {
@@ -165,13 +166,13 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  
+  excludeReports();
 
   const containerR = document.getElementById('chamados');
   if (containerR) {
     containerR.addEventListener('click', function (e) {
-      if (e.target.className != 'chamados') {
-        swalFireLookForOcurrence(e.target.closest('div').attributes.data_id.value)
+      if (e.target.className != 'chamados' && e.target.id != 'chamados' && e.target.className != 'h2-calls') {
+        swalFireLookForOcurrence(e.target.closest('.chamado-card').attributes.data_id.value)
       }
     })
   }

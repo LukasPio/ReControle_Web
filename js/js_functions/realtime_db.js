@@ -6,6 +6,7 @@ import {
   child,
   get,
   onValue,
+  update
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 import { errorSwalResponse } from "../js_functions/swal_fire_errors.js";
 
@@ -94,30 +95,26 @@ export function writeReportsData(
   author,
   postedDay,
   postedTime,
-  solvedDay,
-  solvedTime,
-  //reportID,
+  solvedDate,
   selectedLaboratoryID,
-  selectedObjectID
+  selectedObjectID,
+  timestamp
 ) {
   set(push(ref(getDatabase(), `reports/`)), {
-    //${reportID}
     content: {
       img_url: imageUrl,
       text: text,
       title: title,
       status: status,
       autor: author,
+      timestamp: timestamp
     },
     dates: {
       posted_date: {
         posted_day: postedDay,
         posted_time: postedTime,
       },
-      solved_date: {
-        solved_day: solvedDay,
-        solved_time: solvedTime,
-      },
+      solved_date: solvedDate,
     },
     selected_obj: {
       sel_lab_id: selectedLaboratoryID,
@@ -133,7 +130,8 @@ export async function updateWebReportData(
   newTitle,
   newText,
   newURL,
-  newStatus
+  newStatus,
+  timestamp,
 ) {
   set(ref(getDatabase(), `reports/${reportID}/content/`), {
     autor: author,
@@ -141,6 +139,7 @@ export async function updateWebReportData(
     text: newText,
     img_url: newURL,
     status: newStatus,
+    timestamp: timestamp,
   });
 }
 
@@ -151,7 +150,9 @@ export async function updateMobileReportData(
   imageUrl,
   local,
   status,
-  author
+  author,
+  category,
+  timestamp
 ) {
   set(ref(getDatabase(), `reports/${reportID}/content/`), {
     img_url: imageUrl,
@@ -159,6 +160,8 @@ export async function updateMobileReportData(
     local: local,
     status: status,
     autor: author,
+    category: category,
+    timestamp: timestamp
   });
 }
 
@@ -346,111 +349,87 @@ export async function readReports(reportID, contentType) {
       // trará todos os chamados com o conteúdo e o seu ID
       case "general":
         if (reference.exists()) {
-          document.getElementById("chamados").innerHTML = "";
+          var iRed = 0, iYellow = 0, iGreen = 0;
+          const red = document.getElementById('red');
+          red.innerHTML = "";
+          const yellow = document.getElementById('yellow');
+          yellow.innerHTML = "";
+          const green = document.getElementById('green');
+          green.innerHTML = "";
           for (const repID in reportRef) {
+            if (iGreen == 3 && iYellow == 3 && iRed == 3) break;
             const report = document.createElement("div");
             report.className = "chamado-card";
             report.setAttribute('data_id', repID);
-
-            const imageElement = document.createElement("img");
-            imageElement.className = "image-report";
 
             const statusAuthorDiv = document.createElement("div");
             statusAuthorDiv.style = "padding-top: 3px;";
             const statusElement = document.createElement("p");
 
-            switch (reportRef[repID].content.status) {
-              case "red":
-                statusElement.innerHTML = "<center>Pendente</center>";
-                statusElement.className = 'status-pendente';
-                break;
+            if (!reportRef[repID].content.deleted && !reportRef[repID].deleted) {
+              switch (reportRef[repID].content.status) {
+                case "red":
+                  statusElement.innerHTML = "<center>Pendente</center>";
+                  statusElement.className = 'status-pendente';
+                  if (iRed == 0 ) {
+                    red.innerHTML = `
+                      <h2 class='h2-calls'>Pendentes</h2>
+                    `;
+                    iRed++;
+                  }
+                  break;
 
-              case "yellow":
-                statusElement.innerHTML = "<center>Em andamento</center>";
-                statusElement.className = 'status-andamento';
-                break;
+                case "yellow":
+                  statusElement.innerHTML = "<center>Em andamento</center>";
+                  statusElement.className = 'status-andamento';
+                  if (iYellow == 0 ) {
+                    yellow.innerHTML = `
+                      <h2 class='h2-calls'>Em andamento</h2>
+                    `;
+                    iYellow++;
+                  }
+                  break;
 
-              case "green":
-                statusElement.innerHTML = "<center>Concluído</center>";
-                statusElement.className = 'status-concluido';
-                break;
+                case "green":
+                  statusElement.innerHTML = "<center>Concluído</center>";
+                  statusElement.className = 'status-concluido';
+                  if (iGreen == 0 ) {
+                    green.innerHTML = `
+                      <h2 class='h2-calls'>Concluídos</h2>
+                    `;
+                    iGreen++;
+                  }
+                  break;
+              }
             }
 
             const userElement = document.createElement("p");
             userElement.className = 'autor';
             readUsers(reportRef[repID].content.autor, "user-name").then(
-              (resp) => (userElement.innerHTML = `<center>${resp}</center>`)
+              (resp) => (userElement.innerHTML = `<center>${resp}</center>` || '<center>Autor não disponível</center>')
             );
 
-            if (reportRef[repID].content.img_url != undefined) {
-              imageElement.src =
-                reportRef[repID].content.img_url === ""
-                  ? "../../assets/default_occur.jpg"
-                  : reportRef[repID].content.img_url;
-              var image = `${reportRef[repID].content.img_url}`;
-              if (!image.startsWith("data:image/png;base64,")) {
-                imageElement.src =
-                  reportRef[repID].content.img_url === ""
-                    ? "../../assets/default_occur.jpg"
-                    : "data:image/png;base64, " + image;
+            reportContents[repID] = reportRef[repID].content?.title || reportRef[repID].content?.text || "Sem Título para exibir";
+            const repIDElement = document.createElement("p");
+            repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> `;
+
+            const localAndData = document.createElement("p");
+            localAndData.innerHTML = `
+              ${reportRef[repID].selected_obj?.sel_lab_id || reportRef[repID].content?.local}
+            `;
+            if (!reportRef[repID]?.deleted && !report.content?.deletedBy == true) {
+              if (!reportRef[repID]?.content?.deletedBy) {
+                report.appendChild(repIDElement);
+                report.appendChild(localAndData);
+                report.appendChild(statusElement);
+                report.appendChild(userElement);
+                report.appendChild(statusAuthorDiv);
+                if (reportRef[repID].content.status) {
+                  if (reportRef[repID].content.status == 'red') red.appendChild(report);
+                  if (reportRef[repID].content.status == 'yellow') green.appendChild(report);
+                  if (reportRef[repID].content.status == 'green') yellow.appendChild(report);    
+                }
               }
-            }
-            imageElement.style.maxHeight = "30vh";
-
-            if (reportRef[repID].dates) {
-              if (reportRef[repID].content?.title) {
-                reportContents[repID] = reportRef[repID].content?.title;
-              } else {
-                reportContents[repID] = "Sem Título para exibir";
-              }
-
-              const repIDElement = document.createElement("p");
-              repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> `;
-
-              const localAndData = document.createElement("p");
-              localAndData.innerHTML = `
-                ${reportRef[repID].selected_obj?.sel_lab_id}
-                <p style="
-                    height: 2px;
-                    background: linear-gradient(to right, #ccc);
-                    margin: 15px 0;
-                  "></p>
-              `; //  - ${reportRef[repID]?.dates?.posted_date?.posted_day}
-
-              report.appendChild(repIDElement);
-              report.appendChild(localAndData);
-              report.appendChild(imageElement);
-              report.appendChild(statusElement);
-              report.appendChild(userElement);
-              report.appendChild(statusAuthorDiv);
-              document.getElementById("chamados").appendChild(report);
-            } else if (!reportRef[repID].content?.deleted){
-              if (reportRef[repID].content?.text) {
-                reportContents[repID] = reportRef[repID].content?.text;
-              } else {
-                reportContents[repID] = "Sem Título para exibir";
-              }
-
-              const repIDElement = document.createElement("p");
-              repIDElement.innerHTML = `<strong> ${reportContents[repID]}</strong><br>`;
-
-              const localAndData = document.createElement("p");
-              if (reportRef[repID].content?.local)
-                (localAndData.innerHTML = `
-                ${reportRef[repID].content?.local}
-                <p style="
-                  height: 2px;
-                  background: #ccc;
-                  margin: 15px 0;
-                "></p>
-              `),
-                  report.appendChild(repIDElement);
-                  report.appendChild(localAndData);
-                  report.appendChild(imageElement);
-                  report.appendChild(statusElement);
-                  report.appendChild(userElement);
-                  report.appendChild(statusAuthorDiv);
-                  document.getElementById("chamados").appendChild(report);
             }
           }
         }
@@ -461,19 +440,15 @@ export async function readReports(reportID, contentType) {
       case 'general-home':
         if (reference.exists()) {
           const dates = {};
-
+          
           for (const repID in reportRef) {
-            if (reportRef[repID].dates) {
-              dates[repID] = new Date(`${reportRef[repID].dates.posted_date.posted_day}T${reportRef[repID].dates.posted_date.posted_time}`)
-            }
-            else if (!reportRef[repID].content.deleted) {
-              dates[repID] = new Date(reportRef[repID].content.timestamp)
+            if (!reportRef[repID].content.deleted && !reportRef[repID].deleted) {
+              dates[repID] = new Date(Number(reportRef[repID].content.timestamp))
             }
           }
-          
           const recentes = Object.entries(dates)
           .map(([id]) => {
-            const datetime = new Date(`${dates[id]}`);
+            const datetime = new Date(dates[id]);
             return { id, datetime };
           })
           .filter(
@@ -775,7 +750,7 @@ export async function readLaboratories(labID, contentType) {
         if (reference.exists()) {
           document.getElementById("labs").innerHTML = "";
           for (const labID in labRef) {
-            labURLDesc[labID] = [
+            labURLDesc = [
               labRef[labID].content.lab_img_url,
               labRef[labID].content.desc,
             ];
@@ -796,14 +771,14 @@ export async function readLaboratories(labID, contentType) {
 
             //Imagem do laboratório
             const img = document.createElement("p");
-            img.innerHTML = `<img src="${labURLDesc[labID][0]}" style="width: 50vw; height: 30vh;"><br>`;
-            if (!labURLDesc[labID][0]) {
+            img.innerHTML = `<img src="${labURLDesc[0]}" style="width: 50vw; height: 30vh;"><br>`;
+            if (!labURLDesc[0]) {
               img.innerHTML = `<img src="../assets/default_classroom.avif" style="width: 50vw; height: 30vh;"><br>`;
             }
 
             //Descrição
             const desc = document.createElement("p");
-            desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`;
+            desc.innerHTML = `<strong>${labURLDesc[1]}</strong>`;
 
             //Verificação da existência de ocorrências relacionadas ao laboratório referente.
             readReports(null, "data").then((resp) => {
@@ -838,6 +813,8 @@ export async function readLaboratories(labID, contentType) {
 
                 progressElement.textContent = `Em andamento: ${int2}`;
                 pendingElement.textContent = `Pendente: ${int1}`;
+
+                const labsOcurrences = document.createElement('a')
 
                 pendingProgressElement.appendChild(pendingElement);
                 pendingProgressElement.appendChild(progressElement);
@@ -943,15 +920,11 @@ export async function countReportsByMonth() {
   if (repBMRef.exists()) {
     for (const repID in repBMRef.val()) {
       const report = repBMRef.val()[repID];
-      const data = report?.dates?.posted_date?.posted_day || report?.content.timestamp;
-      var month = `${data}`;
+      const data = report?.content.timestamp;
+      var month;
       
-      if (data) { 
-        if (!month.includes('-') ) {
-          month = new Date(data).getMonth() + 1
-        } else {
-          month = data.substring(5, 7)
-        }
+      if (data && !report?.deleted && !report.content?.deleted) { 
+        month = new Date(Number(data)).getMonth() + 1;
         
         if (report.content.status == "red") {
           cbmWeb[month] = (cbmWeb[month] || 0) + 1;
@@ -1034,4 +1007,70 @@ export async function conutReportsByLab() {
   }
   return counts
 
+}
+
+export async function setExcludingWeb(
+  Id,
+  author,
+  date
+) {
+  set(ref(getDatabase(), `reports/${Id}/deleted/`), {
+      deletedBy: author,
+      deletedAt: date
+  });
+}
+
+export async function setExcludingMobile(
+  Id,
+  author,
+  date
+) {
+  readReports(Id, 'general').then(resp => {
+    set(ref(getDatabase(), `reports/${Id}/content/`), {
+      img_url: resp.content.img_url,
+      text: resp.content.text,
+      local: resp.content.local,
+      status: resp.content.status,
+      autor: resp.content.autor,
+      category: resp.content.category,
+      timestamp: resp.content.timestamp,
+      deleted: true,
+      deletedBy: author,
+      deletedAt: date
+    });
+  })
+}
+
+export async function setConcluded (
+  Id,
+  date
+) {
+  set(ref(getDatabase(), `reports/${Id}/dates/`), {
+    solved_date: date
+  });
+}
+
+export async function excludeReports() {
+  const reportRef = ref(getDatabase(), 'reports');
+  get(reportRef).then(report => {
+    if (report.exists()) {
+      const updates = {};
+      report.forEach(child => {
+        const data = child.val();
+        if (data?.deleted) {
+          if (new Date(data.deleted?.deletedAt) <= new Date()) {
+            updates[child.key] = null
+          }
+        } else if (data.content?.deleted) {
+          if (new Date(data.content?.deletedAt) <= new Date()) {
+            updates[child.key] = null
+          }
+        }
+      });
+
+      if (Object.keys(updates).length > 0) {
+        update(reportRef, updates)
+      }
+    }
+  })
 }
