@@ -98,7 +98,8 @@ export function writeReportsData(
   solvedDate,
   selectedLaboratoryID,
   selectedObjectID,
-  timestamp
+  timestamp,
+  comments
 ) {
   set(push(ref(getDatabase(), `reports/`)), {
     content: {
@@ -107,7 +108,8 @@ export function writeReportsData(
       title: title,
       status: status,
       autor: author,
-      timestamp: timestamp
+      timestamp: timestamp,
+      comments: comments
     },
     dates: {
       posted_date: {
@@ -132,6 +134,7 @@ export async function updateWebReportData(
   newURL,
   newStatus,
   timestamp,
+  comments
 ) {
   set(ref(getDatabase(), `reports/${reportID}/content/`), {
     autor: author,
@@ -140,6 +143,7 @@ export async function updateWebReportData(
     img_url: newURL,
     status: newStatus,
     timestamp: timestamp,
+    comments: comments
   });
 }
 
@@ -152,7 +156,8 @@ export async function updateMobileReportData(
   status,
   author,
   category,
-  timestamp
+  timestamp,
+  comments
 ) {
   set(ref(getDatabase(), `reports/${reportID}/content/`), {
     img_url: imageUrl,
@@ -161,7 +166,8 @@ export async function updateMobileReportData(
     status: status,
     autor: author,
     category: category,
-    timestamp: timestamp
+    timestamp: timestamp,
+    comments: comments
   });
 }
 
@@ -367,6 +373,7 @@ export async function readReports(reportID, contentType) {
             const statusElement = document.createElement("p");
 
             if (!reportRef[repID].content.deleted && !reportRef[repID].deleted) {
+              // Pega o estado (red - yellow - green)
               switch (reportRef[repID].content.status) {
                 case "red":
                   statusElement.innerHTML = "<center>Pendente</center>";
@@ -374,6 +381,7 @@ export async function readReports(reportID, contentType) {
                   if (iRed == 0 ) {
                     red.innerHTML = `
                       <h2 class='h2-calls'>Pendentes</h2>
+                      <!--<ul  align="right" ><a href="./laboratory.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg></a></ul>-->
                     `;
                     iRed++;
                   }
@@ -385,6 +393,7 @@ export async function readReports(reportID, contentType) {
                   if (iYellow == 0 ) {
                     yellow.innerHTML = `
                       <h2 class='h2-calls'>Em andamento</h2>
+                      <!--<ul  align="right" ><a href="./laboratory.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg></a></ul>-->
                     `;
                     iYellow++;
                   }
@@ -396,6 +405,7 @@ export async function readReports(reportID, contentType) {
                   if (iGreen == 0 ) {
                     green.innerHTML = `
                       <h2 class='h2-calls'>Concluídos</h2>
+                      <!--<ul  align="right" ><a href="./laboratory.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg></a></ul>-->
                     `;
                     iGreen++;
                   }
@@ -435,8 +445,7 @@ export async function readReports(reportID, contentType) {
         }
         break;
 
-      // Aterar para assim que tiver a data de criação
-      // trará todos os chamados com o conteúdo e o seu ID para os três primeiros (a ser alterado)
+      // trará todos os chamados com o conteúdo e o seu ID para os três primeiros
       case 'general-home':
         if (reference.exists()) {
           const dates = {};
@@ -750,7 +759,7 @@ export async function readLaboratories(labID, contentType) {
         if (reference.exists()) {
           document.getElementById("labs").innerHTML = "";
           for (const labID in labRef) {
-            labURLDesc = [
+            const labURLDesc = [
               labRef[labID].content.lab_img_url,
               labRef[labID].content.desc,
             ];
@@ -785,11 +794,13 @@ export async function readLaboratories(labID, contentType) {
               var int1 = 0,
                 int2 = 0;
               for (const ID in resp) {
-                if (resp[ID].selected_obj?.sel_lab_id == labID) {
-                  if (resp[ID].content.status == "red") {
-                    int1++;
-                  } else if (resp[ID].content.status == "yellow") {
-                    int2++;
+                if (!resp[ID]?.content.deleted && !resp[ID]?.deleted) {
+                  if (resp[ID].selected_obj?.sel_lab_id == labID) {
+                    if (resp[ID].content.status == "red") {
+                      int1++;
+                    } else if (resp[ID].content.status == "yellow") {
+                      int2++;
+                    }
                   }
                 }
               }
@@ -814,10 +825,18 @@ export async function readLaboratories(labID, contentType) {
                 progressElement.textContent = `Em andamento: ${int2}`;
                 pendingElement.textContent = `Pendente: ${int1}`;
 
-                const labsOcurrences = document.createElement('a')
+                const labOccurences = document.createElement('ul');
+                labOccurences.id = labID;
+                labOccurences.style.cursor = 'pointer';
 
-                pendingProgressElement.appendChild(pendingElement);
-                pendingProgressElement.appendChild(progressElement);
+                labOccurences.appendChild(pendingElement);
+                labOccurences.appendChild(progressElement);
+                
+                labOccurences.innerHTML += `<br><br>
+                  Ver os chamados relacionados
+                `;
+
+                pendingProgressElement.appendChild(labOccurences);
                 laboratory.appendChild(transition);
                 laboratory.appendChild(text);
                 laboratory.appendChild(pendingProgressElement);
@@ -923,16 +942,18 @@ export async function countReportsByMonth() {
       const data = report?.content.timestamp;
       var month;
       
-      if (data && !report?.deleted && !report.content?.deleted) { 
+      if (data) { 
         month = new Date(Number(data)).getMonth() + 1;
         
-        if (report.content.status == "red") {
-          cbmWeb[month] = (cbmWeb[month] || 0) + 1;
-        } 
-        
-        if (report.content.status == "yellow") {
-          cbmInProgress[month] = (cbmInProgress[month] || 0) + 1;
-        } 
+        if (!report?.deleted && !report.content?.deleted){
+          if (report.content.status == "red") {
+            cbmWeb[month] = (cbmWeb[month] || 0) + 1;
+          } 
+          
+          if (report.content.status == "yellow") {
+            cbmInProgress[month] = (cbmInProgress[month] || 0) + 1;
+          } 
+        }
         if (report.content.status == "green") {
           cbmConcluded[month] = (cbmConcluded[month] || 0) + 1;
         }
@@ -964,7 +985,7 @@ export async function conutReportsByLab() {
   
   for (const rId in reps.val()) {
     const rep = reps.val()[rId];
-    const data = rep?.dates?.posted_date?.posted_day || rep?.content.timestamp;
+    const data = rep.content.timestamp;
     var month = `${data}`;
       
     if (data) { 

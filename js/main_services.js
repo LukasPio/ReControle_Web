@@ -183,6 +183,10 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target.tagName == 'A') {
         swalFireLookForLaboratory(e.target.id)
       }
+      if (e.target.tagName == 'UL') {
+        localStorage.setItem('sel-lab', e.target.id);
+        window.location.href = 'calls_by_lab.html';
+      }
     })
   }
 

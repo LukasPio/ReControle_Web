@@ -47,7 +47,6 @@ export async function createReportSwal (
     newSelectedObject, 
     occuredDate, 
     occuredTime, 
-    mainProblem, 
     file,
     selectData;
 
@@ -178,7 +177,8 @@ export async function createReportSwal (
                             //`${resp}-${occuredDate}-${occuredTime}`,
                             resp,
                             newSelectedObject,
-                            `${new Date().getTime()}`
+                            `${new Date().getTime()}`,
+                            ''
                         );
                         successToastSwal.fire()
                     }
@@ -212,7 +212,7 @@ async function updateReportSwal (
 ) {
     var file;
     readReports(reportID, 'text-content').then(resp => {
-        var text;
+        var text, comment;
         if (resp.title) {
             text = `
                 <div class="swal2-html-container">
@@ -259,7 +259,7 @@ async function updateReportSwal (
                         <p id="p-file"> Nenhum arquivo selecionado </p>
                     </div>
                 </div>
-                <div class="swal2-html-container">
+                <div class="swal2-html-container" id="status-div">
                     <label for="status" class="swal2=html-text">Progresso da Ocorrência</label>
                     <select
                         id="status"
@@ -367,6 +367,9 @@ async function updateReportSwal (
                         file = resp.img_url
                     }
                 }
+
+                comment = localStorage.getItem('comments') || 'Sem comentários';
+
                 if (resp.title) {
                     if (document.getElementById('status').value == 'green') {
                         initializeApp(firebaseConfig);
@@ -390,7 +393,8 @@ async function updateReportSwal (
                         document.getElementById('main-t').value,
                         file,
                         document.getElementById('status').value, 
-                        resp.timestamp
+                        resp.timestamp,
+                        comment
                     ).then(() => successToastSwal.fire().then(localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
@@ -415,7 +419,8 @@ async function updateReportSwal (
                         document.getElementById('status').value,
                         author,
                         resp.category,
-                        resp.timestamp
+                        resp.timestamp,
+                        comment
                     ).then(() => successToastSwal.fire().then(console.log(file) ,localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
@@ -434,6 +439,41 @@ async function updateReportSwal (
                 }
             }) 
         }
+
+        const status = document.getElementById('status');
+        const comments = document.createElement('div');
+        comments.className = 'swal2-html-container';
+        comments.innerHTML = `
+            <label for="comments" class="swal2=html-text">Adicione um comentário</label><br>
+            <input 
+                type="text" 
+                class="swal2-input"
+                style=" 
+                    height: 20vh;
+                    width: 55vw;
+                    border-radius:15px;
+                    border-color: #D3D3D3;
+                    background-color: #f5f5f5;
+                "
+                id="main-p" 
+            >
+        `;
+        if (status) {
+            status.addEventListener('change', (e) => {
+                if (resp.status != e.target.value) {
+                    document.getElementById('status-div').appendChild(comments);
+                }
+                else {
+                    document.getElementById('status-div').removeChild(comments);
+                }
+            })
+        }
+        if (comments) {
+            comments.addEventListener('input', (e) => {
+                localStorage.setItem('comments', e.target.value)
+            })
+        }
+
         switch (resp.status) {
             case 'red':
                 document.getElementById('status').selectedIndex = 0
@@ -555,7 +595,7 @@ export async function swalFireLookForOcurrence (
                                 reportID, 
                                 user.uid, 
                                 new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime()
-                            ).then(successToastSwal.fire({title: 'Ocorrência data para ser excluída em 1 mês'}))
+                            ).then(successToastSwal.fire({title: 'Ocorrência datada para ser excluída em 1 mês'}))
                         })
                     }
                 })
@@ -650,7 +690,7 @@ export async function swalFireLookForOcurrence (
                             reportID, 
                             user.uid, 
                             new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime()
-                        ).then(successToastSwal.fire({title: 'Ocorrência data para ser excluída em 1 mês'}))
+                        ).then(successToastSwal.fire({title: 'Ocorrência datada para ser excluída em 1 mês'}))
                     })
                 }
             })

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Banco de Dados | ReControle</title>
+    <title id="title">Chamados | ReControle</title>
     <link rel="icon" href="../assets/recontrole_logo_icon.png" />
     <link rel="stylesheet" href="../css/institution.css" />
     <link rel="stylesheet" href="../css/main.css" />
@@ -14,7 +14,7 @@
     <!-- Módulos de serviço e autenticação -->
     <script type="module" src="../js/services.js" defer></script>
     <script type="module" src="../js/main_services.js" defer></script>
-    <script type="module" src="../js/laboratory.js" defer></script>
+    <script type="module" src="../js/call_by_lab.js" defer></script>
   </head>
   <body>
     <aside class="sidebar">
@@ -55,10 +55,13 @@
         
         <h1>Chamados do(a) <span id="selected-lab"></span></h1><br>
         <ul  align="right" ><a href="./institution.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></a></ul>
-        <div id="pending" class="labs"> 
+        <section class="dashboard" id="main">
+        <div id="chamados">
+          <div id="red" class="chamados"></div>
+          <div id="yellow" class="chamados"></div>
+          <div id="green" class="chamados"></div>
         </div>
-        <div id="in-progress" class="labs"> 
-        </div>
+      </section>
         
       </section>
     </main>

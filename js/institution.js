@@ -77,11 +77,13 @@ document.addEventListener("DOMContentLoaded", () => {
         var int1 = 0,
           int2 = 0;
         for (const ID in resp) {
-          if (resp[ID].selected_obj?.sel_lab_id == labID) {
-            if (resp[ID].content.status == "red") {
-              int1++;
-            } else if (resp[ID].content.status == "yellow") {
-              int2++;
+          if (!resp[ID]?.content.deleted && !resp[ID]?.deleted) {
+            if (resp[ID].selected_obj?.sel_lab_id == labID) {
+              if (resp[ID].content.status == "red") {
+                int1++;
+              } else if (resp[ID].content.status == "yellow") {
+                int2++;
+              }
             }
           }
         }
@@ -89,12 +91,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (int1 != 0 || int2 != 0) {
           const transition = document.createElement("p");
           transition.innerHTML = `
-                        <p style="
-                            height: 2px;
-                            background: linear-gradient(to right, #ccc);
-                            margin: 15px 0;
-                        "></p>
-                    `;
+            <p style="
+              height: 2px;
+              background: linear-gradient(to right, #ccc);
+              margin: 15px 0;
+            "></p>
+          `;
           const pendingProgressElement = document.createElement("div");
           const text = document.createElement("b");
           text.innerHTML = "Ocorrências<br><br>";
@@ -106,8 +108,18 @@ document.addEventListener("DOMContentLoaded", () => {
           progressElement.textContent = `Em andamento: ${int2}`;
           pendingElement.textContent = `Pendente: ${int1}`;
 
-          pendingProgressElement.appendChild(pendingElement);
-          pendingProgressElement.appendChild(progressElement);
+          const labOccurences = document.createElement('ul');
+          labOccurences.id = labID;
+          labOccurences.style.cursor = 'pointer';
+
+          labOccurences.appendChild(pendingElement);
+          labOccurences.appendChild(progressElement);
+          
+          labOccurences.innerHTML += `<br><br>
+            Ver os chamados relacionados
+          `; 
+
+          pendingProgressElement.appendChild(labOccurences);
           laboratory.appendChild(transition);
           laboratory.appendChild(text);
           laboratory.appendChild(pendingProgressElement);
