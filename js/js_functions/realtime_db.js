@@ -93,8 +93,7 @@ export function writeReportsData(
   title,
   status,
   author,
-  postedDay,
-  postedTime,
+  postedDate,
   solvedDate,
   selectedLaboratoryID,
   selectedObjectID,
@@ -112,15 +111,12 @@ export function writeReportsData(
       comments: comments
     },
     dates: {
-      posted_date: {
-        posted_day: postedDay,
-        posted_time: postedTime,
-      },
-      solved_date: solvedDate,
+      posted_date: postedDate,
+      solved_date: solvedDate
     },
     selected_obj: {
       sel_lab_id: selectedLaboratoryID,
-      sel_obj_id: selectedObjectID,
+      sel_obj_id: selectedObjectID
     },
   });
 }
@@ -372,7 +368,7 @@ export async function readReports(reportID, contentType) {
             statusAuthorDiv.style = "padding-top: 3px;";
             const statusElement = document.createElement("p");
 
-            if (!reportRef[repID].content.deleted && !reportRef[repID].deleted) {
+            if (!reportRef[repID].content.deleted && !reportRef[repID].deleted || reportRef[repID].content.status == 'green') {
               // Pega o estado (red - yellow - green)
               switch (reportRef[repID].content.status) {
                 case "red":
@@ -436,10 +432,17 @@ export async function readReports(reportID, contentType) {
                 report.appendChild(statusAuthorDiv);
                 if (reportRef[repID].content.status) {
                   if (reportRef[repID].content.status == 'red') red.appendChild(report);
-                  if (reportRef[repID].content.status == 'yellow') green.appendChild(report);
-                  if (reportRef[repID].content.status == 'green') yellow.appendChild(report);    
+                  if (reportRef[repID].content.status == 'yellow') yellow.appendChild(report);  
                 }
               }
+            }
+            else if (reportRef[repID].content.status == 'green'){
+              report.appendChild(repIDElement);
+              report.appendChild(localAndData);
+              report.appendChild(statusElement);
+              report.appendChild(userElement);
+              report.appendChild(statusAuthorDiv);
+              green.appendChild(report);    
             }
           }
         }
@@ -1066,8 +1069,8 @@ export async function setConcluded (
   Id,
   date
 ) {
-  set(ref(getDatabase(), `reports/${Id}/dates/`), {
-    solved_date: date
+  set(ref(getDatabase(), `reports/${Id}/dates/solved_date`), {
+    date
   });
 }
 

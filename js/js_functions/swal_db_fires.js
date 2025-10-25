@@ -153,8 +153,7 @@ export async function createReportSwal (
                 newMainTitle = document.getElementById('main-title').value;
                 newMainProblem = document.getElementById('main-problem').value;
                 newSelectedObject = document.getElementById('selected-obj').value;
-                occuredDate = document.getElementById('occur-date').value;
-                occuredTime = document.getElementById('occur-time').value;
+                occuredDate = new Date(`${document.getElementById('occur-date').value}T${document.getElementById('occur-time').value}`).getTime();
                 if (localStorage.getItem('sel-file')?.startsWith('data') || localStorage.getItem('sel-file')?.startsWith('/9j/')) {
                     file = localStorage.getItem('sel-file')
                     localStorage.removeItem('sel-file')
@@ -172,7 +171,6 @@ export async function createReportSwal (
                             'red',
                             author,
                             occuredDate,
-                            occuredTime,
                             0,
                             //`${resp}-${occuredDate}-${occuredTime}`,
                             resp,
@@ -210,7 +208,7 @@ async function updateReportSwal (
     reportID,
     author
 ) {
-    var file;
+    var file, oldComments;
     readReports(reportID, 'text-content').then(resp => {
         var text, comment;
         if (resp.title) {
@@ -348,6 +346,8 @@ async function updateReportSwal (
                 </div>
             `
         }
+
+        if (resp.content?.comments) oldComments = resp.content.comments;
         reControleSwal.fire({
             title: 'Editar Ocorrência',
             html: text,
@@ -368,7 +368,16 @@ async function updateReportSwal (
                     }
                 }
 
+                if (resp.content?.comments && resp.content.status != document.getElementById('status').value) {
+                    oldComments = `${resp.content.comments} <br><br> `
+                }
+                var statusComment;
+                if (document.getElementById('status').value == 'green') statusComment = 'concluído';
+                if (document.getElementById('status').value == 'yellow') statusComment = 'em andamento';
+                if (document.getElementById('status').value == 'red') statusComment = 'pendente';
                 comment = localStorage.getItem('comments') || 'Sem comentários';
+
+                oldComments += ` Data do comentário (${statusComment}) - ${new Date().toUTCString().slice(5).slice(0, -13)}: <br> ${comment} `;
 
                 if (resp.title) {
                     if (document.getElementById('status').value == 'green') {
@@ -386,6 +395,8 @@ async function updateReportSwal (
                         })
                     }
 
+                    
+
                     updateWebReportData(
                         author,
                         reportID,
@@ -394,7 +405,7 @@ async function updateReportSwal (
                         file,
                         document.getElementById('status').value, 
                         resp.timestamp,
-                        comment
+                        oldComments
                     ).then(() => successToastSwal.fire().then(localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
@@ -408,6 +419,10 @@ async function updateReportSwal (
                                 user.uid, 
                                 new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime()
                             )
+                            setConcluded(
+                                reportID,
+                                new Date().getTime()
+                            )
                         })
                     }
 
@@ -420,7 +435,7 @@ async function updateReportSwal (
                         author,
                         resp.category,
                         resp.timestamp,
-                        comment
+                        oldComments
                     ).then(() => successToastSwal.fire().then(console.log(file) ,localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
@@ -496,135 +511,47 @@ export async function swalFireLookForOcurrence (
 ) {
 
     readReports(reportID, 'general').then(resp => {
+        var text = '';
         const userUID = resp.content.autor;
         var imageElement = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : resp.content.img_url;
         var image = `${resp.content.img_url}`;
         if (!image.startsWith('data:image/png;base64,') ) {
             imageElement = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
         }
-    
+        if (resp.content?.comments) {
+            text = `
+                <div class='swal2-html-container' id='swal2-html-container'>
+                <label for='comment' style='font-weight:bold;'> Comentários adicionais </label>
+                    <center>
+                        <p id='comment' style=' 
+                                height: 20vh;
+                                width:55vw;
+                                border:1px solid black;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;'
+                        >
+                            ${resp.content?.comments}
+                        </p>
+                    </center>
+                </div>`;
+        }
+        const swalLook = reControleSwal.mixin({
+            title: 'Ocorrência',
+            imageUrl: `${imageElement}`,
+            cancelButtonText: 'Ok',
+            confirmButtonText: 'Alterar',
+            showDenyButton: true,
+            denyButtonText: 'Apagar ocorrência',
+            preConfirm: async () => updateReportSwal(reportID, userUID),
+        });
         if (resp.selected_obj) {
             readObjects(resp.selected_obj.sel_obj_id, 'class-type').then(classType => {
-                const date = `${resp.dates.posted_date.posted_day}T${resp.dates.posted_date.posted_time}`;
-                const swalLook =
-                reControleSwal.mixin({
-                    title: `${resp.content?.title}`,
-                    imageUrl: `${imageElement}`,
-                    cancelButtonText: 'Ok',
-                    confirmButtonText: 'Alterar',
-                    showDenyButton: true,
-                    denyButtonText: 'Apagar ocorrência',
-                    html: `
-                        <div class='swal2-html-container' id='swal2-html-container'>
-                            <label for='object-description' style='font-weight:bold;'> Descrição </label>
-                            <center>
-                                <p id='object-description' style=' 
-                                        height: 20vh;
-                                        width:55vw;
-                                        border:1px solid black;
-                                        border-radius:15px;
-                                        border-color: #D3D3D3;
-                                        background-color: #f5f5f5;'
-                                >
-                                    ${resp.content?.text}
-                                </p>
-                            </center>
-                        </div>
-                        <div class='swal2-html-container' id='swal2-html-container'>
-                            <label for='object-class' style='font-weight:bold;'> Classe do objeto </label>
-                            <center>
-                                <p id='object-class' style='
-                                        width:55vw;
-                                        border:1px solid black;
-                                        border-radius:15px;
-                                        border-color: #D3D3D3;
-                                        background-color: #f5f5f5;'
-                                >
-                                ${classType[0]}
-                                </p>
-                            </center>
-                        </div>
-                        <div class='swal2-html-container' id='swal2-html-container'>
-                            <label for='object-type' style='font-weight:bold;'> Tipo do objeto </label>
-                            <center>
-                                <p id='object-type' style='
-                                        width:55vw;
-                                        border:1px solid black;
-                                        border-radius:15px;
-                                        border-color: #D3D3D3;
-                                        background-color: #f5f5f5;'
-                                >
-                                    ${classType[1]}
-                                </p>
-                            </center>
-                        </div>
-                        <div class='swal2-html-container' id='swal2-html-container'>
-                            <label for='selected-local' style='font-weight:bold;'> Sala selecionada </label>
-                            <center>
-                                <p id='selected-local' style='
-                                        width:55vw;
-                                        border:1px solid black;
-                                        border-radius:15px;
-                                        border-color: #D3D3D3;
-                                        background-color: #f5f5f5;'
-                                >
-                                    ${resp.selected_obj.sel_lab_id}
-                                </p>
-                            </center>
-                        </div>
-                        <div class='swal2-html-container' id='swal2-html-container'>
-                            <label for='date-time' style='font-weight:bold;'> Data de criação </label>
-                            <center>
-                                <p id='date-time' style='
-                                        width:55vw;
-                                        border:1px solid black;
-                                        border-radius:15px;
-                                        border-color: #D3D3D3;
-                                        background-color: #f5f5f5;'
-                                >
-                                    ${new Date(date).toUTCString().slice(0, -4).slice(5)}
-                                </p>
-                            </center>
-                        </div>
-                    `,
-                    preConfirm: async () => updateReportSwal(reportID, userUID),
-                    preDeny: async () => {
-                        initializeApp(firebaseConfig);
-                        onAuthStateChanged(getAuth(), (user) => {
-                            setExcludingWeb(
-                                reportID, 
-                                user.uid, 
-                                new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime()
-                            ).then(successToastSwal.fire({title: 'Ocorrência datada para ser excluída em 1 mês'}))
-                        })
-                    }
-                })
-                if (localStorage.getItem('rank') == 3) {
-                    swalLook.fire()
-                }
-                else {
-                    swalLook.fire({
-                        showConfirmButton: false,
-                        showDenyButton: false
-                    })
-                }
-            });
-        }
-        else
-        {
-            const swalLook =
-            reControleSwal.mixin({
-                title: 'Ocorrência',
-                imageUrl: `${imageElement}`,
-                cancelButtonText: 'Ok',
-                confirmButtonText: 'Alterar',
-                showDenyButton: true,
-                denyButtonText: 'Apagar ocorrência',
-                html: `
+                text = `
                     <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='report-desc' style='font-weight:bold;'> Descrição </label>
+                        <label for='object-description' style='font-weight:bold;'> Descrição </label>
                         <center>
-                            <p id='report-desc' style=' 
+                            <p id='object-description' style=' 
                                     height: 20vh;
                                     width:55vw;
                                     border:1px solid black;
@@ -637,52 +564,145 @@ export async function swalFireLookForOcurrence (
                         </center>
                     </div>
                     <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='class' style='font-weight:bold;'> Classe </label>
+                        <label for='object-class' style='font-weight:bold;'> Classe do objeto </label>
                         <center>
-                            <p id='class' style=' 
-                                    height: 4vh;
+                            <p id='object-class' style='
                                     width:55vw;
                                     border:1px solid black;
                                     border-radius:15px;
                                     border-color: #D3D3D3;
                                     background-color: #f5f5f5;'
                             >
-                                ${resp.content?.category}
+                                ${classType[0]}
                             </p>
                         </center>
                     </div>
                     <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='local' style='font-weight:bold;'> Local selecionado </label>
+                        <label for='object-type' style='font-weight:bold;'> Tipo do objeto </label>
                         <center>
-                            <p id='local' style=' 
-                                    height: 4vh;
+                            <p id='object-type' style='
                                     width:55vw;
                                     border:1px solid black;
                                     border-radius:15px;
                                     border-color: #D3D3D3;
                                     background-color: #f5f5f5;'
                             >
-                                ${resp.content?.local}
+                                ${classType[1]}
                             </p>
                         </center>
                     </div>
                     <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='date' style='font-weight:bold;'> Data de criação </label>
+                        <label for='selected-local' style='font-weight:bold;'> Sala selecionada </label>
                         <center>
-                            <p id='date' style=' 
-                                    height: 4vh;
+                            <p id='selected-local' style='
                                     width:55vw;
                                     border:1px solid black;
                                     border-radius:15px;
                                     border-color: #D3D3D3;
                                     background-color: #f5f5f5;'
                             >
-                                ${new Date(resp.content?.timestamp).toUTCString().slice(0, -4).slice(5)}
+                                ${resp.selected_obj.sel_lab_id}
                             </p>
                         </center>
                     </div>
-                `,
-                preConfirm: async () => updateReportSwal(reportID, userUID),
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='date-time' style='font-weight:bold;'> Data de criação </label>
+                            <center>
+                            <p id='date-time' style='
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${new Date(Number(resp.content.timestamp)).toUTCString().slice(0, -4).slice(5)}
+                            </p>
+                        </center>
+                    </div>
+                ` + text;
+                swalLook.update({
+                    title: resp.content?.title,
+                    html: text,
+                    preDeny: async () => {
+                        initializeApp(firebaseConfig);
+                        onAuthStateChanged(getAuth(), (user) => {
+                            setExcludingWeb(
+                                reportID, 
+                                user.uid, 
+                                new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime()
+                            ).then(successToastSwal.fire({title: 'Ocorrência datada para ser excluída em 1 mês'}))
+                        })
+                    }
+                })
+                
+            });
+        }
+        else
+        {
+            text = `
+                <div class='swal2-html-container' id='swal2-html-container'>
+                    <label for='report-desc' style='font-weight:bold;'> Descrição </label>
+                    <center>
+                        <p id='report-desc' style=' 
+                                height: 20vh;
+                                width:55vw;
+                                border:1px solid black;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;'
+                        >
+                            ${resp.content?.text}
+                        </p>
+                    </center>
+                </div>
+                <div class='swal2-html-container' id='swal2-html-container'>
+                    <label for='class' style='font-weight:bold;'> Classe </label>
+                    <center>
+                        <p id='class' style=' 
+                                height: 4vh;
+                                width:55vw;
+                                border:1px solid black;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;'
+                        >
+                            ${resp.content?.category}
+                        </p>
+                    </center>
+                </div>
+                <div class='swal2-html-container' id='swal2-html-container'>
+                    <label for='local' style='font-weight:bold;'> Local selecionado </label>
+                    <center>
+                        <p id='local' style=' 
+                                height: 4vh;
+                                width:55vw;
+                                border:1px solid black;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;'
+                        >
+                            ${resp.content?.local}
+                        </p>
+                    </center>
+                </div>
+                <div class='swal2-html-container' id='swal2-html-container'>
+                    <label for='date' style='font-weight:bold;'> Data de criação </label>
+                    <center>
+                        <p id='date' style=' 
+                                height: 4vh;
+                                width:55vw;
+                                border:1px solid black;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;'
+                        >
+                            ${new Date(resp.content?.timestamp).toUTCString().slice(0, -4).slice(5)}
+                        </p>
+                    </center>
+                </div>
+            ` + text;
+            swalLook.update({
+                html: text,
                 preDeny: async () => {
                     initializeApp(firebaseConfig);
                     onAuthStateChanged(getAuth(), (user) => {
@@ -694,15 +714,15 @@ export async function swalFireLookForOcurrence (
                     })
                 }
             })
-            if (localStorage.getItem('rank') == 3) {
-                swalLook.fire()
-            }
-            else {
-                swalLook.fire({
-                    showConfirmButton: false,
-                    showDenyButton: false
-                })
-            }
+        }
+        if (localStorage.getItem('rank') == 3) {
+            swalLook.fire()                
+        }
+        else {
+            swalLook.fire({
+                showConfirmButton: false,
+                showDenyButton: false
+            })
         }
     })    
 }
