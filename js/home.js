@@ -48,10 +48,10 @@ countReportsByMonth().then(resp => {
         }
     });
 
-    document.getElementById('by-year').textContent = `${resp[3]}`;
-    document.getElementById('pending').textContent = `${resp[0][new Date().getMonth() + 1]}`;
-    document.getElementById('in-progress').textContent = `${resp[1][new Date().getMonth() + 1]}`;
-    document.getElementById('concluded').textContent = `${resp[2][new Date().getMonth() + 1]}`;
+    document.getElementById('by-year').textContent = `${resp[3]} chamados`;
+    document.getElementById('pending').textContent = `${resp[0][new Date().getMonth() + 1]} chamados`;
+    document.getElementById('in-progress').textContent = `${resp[1][new Date().getMonth() + 1]} chamados`;
+    document.getElementById('concluded').textContent = `${resp[2][new Date().getMonth() + 1]} chamados`;
     conutReportsByLab().then(labs => {
         const data = {};
         for (const lab in labs) {
@@ -63,7 +63,6 @@ countReportsByMonth().then(resp => {
             return { id, repsByMonth };
           })
           .sort((a, b) => b.repsByMonth - a.repsByMonth).slice(0, 1);
-        console.log(latest, labs, data)
         document.getElementById('most').textContent = `${latest[0].id} (${latest[0].repsByMonth} chamados)`;
     })
 

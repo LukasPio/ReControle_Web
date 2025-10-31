@@ -65,8 +65,7 @@ export async function writeLaboratoryData(
 // Cadastrar ou editar o objeto
 export async function writeObjectData(
   name,
-  gotDay,
-  gotTime,
+  gotDate,
   description,
   objectClass,
   objectType,
@@ -78,10 +77,7 @@ export async function writeObjectData(
     name: name,
     obj_class: objectClass,
     obj_type: objectType,
-    delivered_date: {
-      del_day: gotDay,
-      del_time: gotTime,
-    },
+    delivered_date: gotDate,
     lab_id: selectedLab,
   });
 }
@@ -98,7 +94,9 @@ export function writeReportsData(
   selectedLaboratoryID,
   selectedObjectID,
   timestamp,
-  comments
+  comments,             // Comentários depois da criação da ocorrência
+  priority,             // Prioridade da ocorrência
+  spectedDate           // Data de reparo previsto
 ) {
   set(push(ref(getDatabase(), `reports/`)), {
     content: {
@@ -108,11 +106,13 @@ export function writeReportsData(
       status: status,
       autor: author,
       timestamp: timestamp,
-      comments: comments
+      comments: comments,
+      priority: priority
     },
     dates: {
       posted_date: postedDate,
-      solved_date: solvedDate
+      solved_date: solvedDate,
+      spected_date: spectedDate
     },
     selected_obj: {
       sel_lab_id: selectedLaboratoryID,
@@ -130,7 +130,8 @@ export async function updateWebReportData(
   newURL,
   newStatus,
   timestamp,
-  comments
+  comments,
+  priority
 ) {
   set(ref(getDatabase(), `reports/${reportID}/content/`), {
     autor: author,
@@ -139,7 +140,8 @@ export async function updateWebReportData(
     img_url: newURL,
     status: newStatus,
     timestamp: timestamp,
-    comments: comments
+    comments: comments,
+    priority: priority
   });
 }
 
@@ -153,7 +155,8 @@ export async function updateMobileReportData(
   author,
   category,
   timestamp,
-  comments
+  comments,
+  priority
 ) {
   set(ref(getDatabase(), `reports/${reportID}/content/`), {
     img_url: imageUrl,
@@ -163,7 +166,8 @@ export async function updateMobileReportData(
     autor: author,
     category: category,
     timestamp: timestamp,
-    comments: comments
+    comments: comments,
+    priority: priority
   });
 }
 
@@ -610,15 +614,10 @@ export async function readObjects(objectID, contentType) {
       // Trará a classe e o tipo do objeto selecionado
       case "class-type":
         if (objectPRef.exists()) {
-          const data = [ObjValue.obj_class, ObjValue.obj_type];
-          return data;
+          return [ObjValue.obj_class, ObjValue.obj_type]
         } else {
-          return "No data avaiable";
+          return "No data avaiable"
         }
-
-      // Trará a classe do objeto selecionado
-      case "class":
-        break;
 
       // Trará o ID do laboratório do objeto selecionado
       case "lab-id":
@@ -663,52 +662,60 @@ export async function readObjects(objectID, contentType) {
         }
         break;
 
-      // Fará a lista no "gerenciar BD"
+      // Fará a lista de objetos no "Instituição"
       case "content":
         if (reference.exists()) {
           document.getElementById("other").innerHTML = "";
           document.getElementById("eletronics").innerHTML = "";
           document.getElementById("furniture").innerHTML = "";
+          
           for (const ID in objectRef) {
-            const object = document.createElement("div");
-            object.className = "object-card";
-            readReports(null, "data").then((resp) => {
-              for (const Id in resp) {
-                if (resp[Id].selected_obj.sel_obj_id == ID) {
-                  switch (resp[Id].content.status) {
-                    case "red":
-                      object.className = "object-card red";
-                      break;
+            if (!objectRef[ID]?.deleted) {
+              const object = document.createElement("div");
+              object.className = "object-card";
+              
+              //status da ocorrência no objeto (última criada)
+              readReports(null, "data").then((resp) => {
+                for (const Id in resp) {
+                  if (resp[Id].selected_obj.sel_obj_id == ID) {
+                    switch (resp[Id].content.status) {
+                      case "red":
+                        object.className = "object-card red";
+                        break;
 
-                    case "yellow":
-                      object.className = "object-card yellow";
-                      break;
+                      case "yellow":
+                        object.className = "object-card yellow";
+                        break;
+                    }
                   }
                 }
+              });
+              object.id = ID;
+
+              //Link de abertura do objeto
+              const link = document.createElement("a");
+              link.id = ID;
+              link.innerHTML = `Ver mais`;
+              link.style = "cursor: pointer;";
+
+              //Nome do objeto
+              const objIDElement = document.createElement("p");
+              objIDElement.innerHTML = `<strong>${objectRef[ID].name}</strong><br> <p style="margin: 15px;"> ${objectRef[ID].desc} <br><br> ${objectRef[ID].lab_id} </p>`;
+
+              //Acoplação ao elemento pai (entre Eletrônico, Móvel ou Diversos)
+              object.appendChild(objIDElement);
+              object.appendChild(link);
+              if (objectRef[ID].obj_class == "Eletrônico") {
+                document.getElementById("eletronics").appendChild(object);
+                document.getElementById("remove-h2-1").textContent =
+                  "Eletrônicos";
+              } else if (objectRef[ID].obj_class == "Móvel") {
+                document.getElementById("furniture").appendChild(object);
+                document.getElementById("remove-h2-2").textContent = "Móveis";
+              } else {
+                document.getElementById("other").appendChild(object);
+                document.getElementById("remove-h2-3").textContent = "Diversos";
               }
-            });
-            object.id = ID;
-
-            const link = document.createElement("a");
-            link.id = ID;
-            link.innerHTML = `Ver mais`;
-            link.style = "cursor: pointer;";
-
-            const objIDElement = document.createElement("p");
-            objIDElement.innerHTML = `<strong>${objectRef[ID].name}</strong><br> <p style="margin: 15px;"> ${objectRef[ID].desc} <br><br> ${objectRef[ID].lab_id} </p>`;
-
-            object.appendChild(objIDElement);
-            object.appendChild(link);
-            if (objectRef[ID].obj_class == "Eletrônico") {
-              document.getElementById("eletronics").appendChild(object);
-              document.getElementById("remove-h2-1").textContent =
-                "Eletrônicos";
-            } else if (objectRef[ID].obj_class == "Móvel") {
-              document.getElementById("furniture").appendChild(object);
-              document.getElementById("remove-h2-2").textContent = "Móveis";
-            } else {
-              document.getElementById("other").appendChild(object);
-              document.getElementById("remove-h2-3").textContent = "Diversos";
             }
           }
         }
@@ -726,7 +733,6 @@ export async function readLaboratories(labID, contentType) {
   const reference = await get(child(dbRef, "laboratory"));
   const labRef = reference.val();
   const labClasses = {};
-  const labURLDesc = {};
   const laboratoryRef = await get(
     child(ref(getDatabase()), `laboratory/${labID}`)
   );
@@ -742,9 +748,6 @@ export async function readLaboratories(labID, contentType) {
           errorSwalResponse(error);
           return null;
         }
-        break;
-
-      case "class":
         break;
 
       default:
@@ -988,19 +991,16 @@ export async function conutReportsByLab() {
   
   for (const rId in reps.val()) {
     const rep = reps.val()[rId];
+  
     const data = rep.content.timestamp;
-    var month = `${data}`;
       
     if (data) { 
-      if (!month.includes('-') ) {
-        month = new Date(data).getMonth() + 1
-      } else {
-        month = data.substring(5, 7)
-      }
+      var month = new Date(Number(data)).getMonth() + 1
+      //console.log(new Date(Number(data)), month)
 
-      if (rep.content.status != 'green') {
-        repsByMonth[month].q = (repsByMonth[month].q || 0) + 1;
-        (repsByMonth[month].id).push(rep.selected_obj?.sel_lab_id || rep.content.local)
+      if (rep.content.status !== 'green') {
+        repsByMonth[month].q = (repsByMonth[month]?.q || 0) + 1,
+        (repsByMonth[month].id).push(rep.selected_obj?.sel_lab_id || rep.content?.local)
       }    
     }
   }
@@ -1036,9 +1036,11 @@ export async function conutReportsByLab() {
 export async function setExcludingWeb(
   Id,
   author,
-  date
+  date,
+  fatherPath
 ) {
-  set(ref(getDatabase(), `reports/${Id}/deleted/`), {
+  if (!fatherPath) fatherPath = 'reports';
+  set(ref(getDatabase(), `${fatherPath}/${Id}/deleted/`), {
       deletedBy: author,
       deletedAt: date
   });
@@ -1047,22 +1049,33 @@ export async function setExcludingWeb(
 export async function setExcludingMobile(
   Id,
   author,
-  date
+  date,
+  fatherPath
 ) {
-  readReports(Id, 'general').then(resp => {
-    set(ref(getDatabase(), `reports/${Id}/content/`), {
-      img_url: resp.content.img_url,
-      text: resp.content.text,
-      local: resp.content.local,
-      status: resp.content.status,
-      autor: resp.content.autor,
-      category: resp.content.category,
-      timestamp: resp.content.timestamp,
-      deleted: true,
+  if (!fatherPath) fatherPath = 'reports';
+  if (fatherPath == 'reports') {
+    readReports(Id, 'general').then(resp => {
+      set(ref(getDatabase(), `${fatherPath}/${Id}/content/`), {
+        img_url: resp.content.img_url,
+        text: resp.content.text,
+        local: resp.content.local,
+        status: resp.content.status,
+        autor: resp.content.autor,
+        category: resp.content.category,
+        timestamp: resp.content.timestamp,
+        deleted: true,
+        deletedBy: author,
+        deletedAt: date
+      });
+    })
+  }
+  else if (fatherPath == 'object') {
+    set(ref(getDatabase(), `${fatherPath}/${Id}/deleted/`), {
       deletedBy: author,
       deletedAt: date
     });
-  })
+  }
+
 }
 
 export async function setConcluded (
@@ -1074,7 +1087,7 @@ export async function setConcluded (
   });
 }
 
-export async function excludeReports() {
+export async function excludeReports() {
   const reportRef = ref(getDatabase(), 'reports');
   get(reportRef).then(report => {
     if (report.exists()) {
@@ -1097,4 +1110,29 @@ export async function excludeReports() {
       }
     }
   })
+}
+
+export async function excludeObjects() {
+  const objectRef = ref(getDatabase(), 'object');
+  get(objectRef).then(obj => {
+    if (obj.exists()) {
+      const updates = {};
+      obj.forEach(child => {
+        const data = child.val();
+        if (data?.deleted) {
+          if (new Date(data.deleted?.deletedAt) <= new Date()) {
+            updates[child.key] = null
+          }
+        }/* else if (data.content?.deleted) {
+          if (new Date(data.content?.deletedAt) <= new Date()) {
+            updates[child.key] = null
+          }
+        }*/
+      });
+
+      if (Object.keys(updates).length > 0) {
+        update(objectRef, updates)
+      }
+    }
+  })
 }

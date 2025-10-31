@@ -39,25 +39,50 @@ import { firebaseConfig } from "../js_config/Config.js";
 
 export async function createReportSwal (
     title,
-    author
+    author,
+    priority
 ) {
 
     var newMainProblem, 
     newMainTitle, 
     newSelectedObject, 
     occuredDate, 
-    occuredTime, 
     file,
-    selectData;
+    selectData,
+    spectedDate = 0;
 
     // Todos os problemas previsíveis possíveis
-    
+
     readObjects(null, 'general').then(resp => {
         selectData = '<option value="none"></option>';
-        for (const ID in resp) {
-            selectData += `<option value="${ID}"> ${ID} </option>`
+        for (const id in resp) {
+            selectData += `<option value="${id}"> ${id} </option>`
         }
 
+        var text = '';
+        if (!priority) {
+            text = `
+                <div class="swal2-html-container">
+                    <label for="priority" class="swal2-html-text">Indique a prioridade</label><br>
+                    <select 
+                        class="swal2-input"
+                        id="priority" 
+                        style="
+                            width: 55vw;
+                            border-radius:15px;
+                            border-color: #D3D3D3;
+                            background-color: #f5f5f5;
+                        " 
+                    >
+                        <option value='high'>Alta</option>
+                        <option value='medium'>Média</option>
+                        <option value='low'>Baixa</option>
+                        <option value='null'>Nula</option>
+                    </select>
+                </div>
+            `
+        }
+        
         reControleSwal.fire({
             title: 'Só mais uns passos...',
             html: `
@@ -146,7 +171,7 @@ export async function createReportSwal (
                         value="${new Date().toTimeString().slice(0, 5)}"
                     >
                 </div>
-            `,
+            ` + text,
             confirmButtonText: 'Enviar Ocorrência',
             confirmButtonColor: '#2f5cf3',
             preConfirm: async () => {
@@ -162,7 +187,25 @@ export async function createReportSwal (
                     file = ''
                 }
 
+                /*if (!priority) priority = document.getElementById('priority').value;
+                else {
+                    readReports(null, 'data').then(resp => {
+                        var data;
+                        //var verif = 0;
+                        for (const id in resp) {
+                            const respTitle = `${resp[id].content.title}`
+                            if (respTitle.startsWith(title) && resp[id].content.priority == priority && resp[id].content.status != 'red') {
+                                data = Math.abs(resp[id].dates.spected_date + occuredDate)
+                                break;
+                            }
+                        }
+                        localStorage.setItem('media', data)
+                    })
+                    spectedDate = new Date(Number(localStorage.getItem('media'))).getTime()
+                }*/
+
                 readObjects(newSelectedObject, 'lab-id').then(resp => {
+
                     try {
                         writeReportsData(
                             file,
@@ -172,11 +215,12 @@ export async function createReportSwal (
                             author,
                             occuredDate,
                             0,
-                            //`${resp}-${occuredDate}-${occuredTime}`,
                             resp,
                             newSelectedObject,
                             `${new Date().getTime()}`,
-                            ''
+                            '',
+                            priority,
+                            spectedDate
                         );
                         successToastSwal.fire()
                     }
@@ -208,7 +252,7 @@ async function updateReportSwal (
     reportID,
     author
 ) {
-    var file, oldComments;
+    var file, oldComments = '';
     readReports(reportID, 'text-content').then(resp => {
         var text, comment;
         if (resp.title) {
@@ -347,7 +391,24 @@ async function updateReportSwal (
             `
         }
 
-        if (resp.content?.comments) oldComments = resp.content.comments;
+        if (resp.content?.comments){ 
+            oldComments = resp.content.comments;
+            text += `
+                <label for="comments" class="swal2=html-text">Outros comentários</label><br>
+                <input 
+                    type="text" 
+                    class="swal2-input"
+                    style=" 
+                        height: 20vh;
+                        width: 55vw;
+                        border-radius:15px;
+                        border-color: #D3D3D3;
+                        background-color: #f5f5f5;
+                    "
+                    id="main-comment" 
+                >
+            `
+        }
         reControleSwal.fire({
             title: 'Editar Ocorrência',
             html: text,
@@ -368,8 +429,8 @@ async function updateReportSwal (
                     }
                 }
 
-                if (resp.content?.comments && resp.content.status != document.getElementById('status').value) {
-                    oldComments = `${resp.content.comments} <br><br> `
+                if (resp?.comments && resp.status != document.getElementById('status').value) {
+                    oldComments = `${resp.comments} <br><br> `
                 }
                 var statusComment;
                 if (document.getElementById('status').value == 'green') statusComment = 'concluído';
@@ -377,22 +438,28 @@ async function updateReportSwal (
                 if (document.getElementById('status').value == 'red') statusComment = 'pendente';
                 comment = localStorage.getItem('comments') || 'Sem comentários';
 
-                oldComments += ` Data do comentário (${statusComment}) - ${new Date().toUTCString().slice(5).slice(0, -13)}: <br> ${comment} `;
-
+                onAuthStateChanged(getAuth(), (user) => {
+                    readUsers(user.uid, 'general').then(resp => {
+                        localStorage.setItem('useruid', resp.user_name)
+                    })
+                    
+                })
+                oldComments += ` Data do comentário (${statusComment}) - ${new Date().toUTCString().slice(5).slice(0, -13)} <br> Feito por ${localStorage.getItem('useruid')}: <br> ${comment} `;
                 if (resp.title) {
                     if (document.getElementById('status').value == 'green') {
                         initializeApp(firebaseConfig);
-                        onAuthStateChanged(getAuth(), (user) => {
-                            setExcludingWeb(
-                                reportID, 
-                                user.uid, 
-                                new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime()
-                            )
-                            setConcluded(
-                                reportID,
-                                new Date().getTime()
-                            )
-                        })
+                        setExcludingWeb(
+                            reportID, 
+                            localStorage.getItem('useruid'), 
+                            new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime()
+                        )
+                        setConcluded(
+                            reportID,
+                            new Date().getTime()
+                        )
+                    }
+                    else if (document.getElementById('status').value == 'yellow') {
+
                     }
 
                     
@@ -405,7 +472,8 @@ async function updateReportSwal (
                         file,
                         document.getElementById('status').value, 
                         resp.timestamp,
-                        oldComments
+                        oldComments, 
+                        resp.priority
                     ).then(() => successToastSwal.fire().then(localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
@@ -413,17 +481,15 @@ async function updateReportSwal (
                 {
                     if (document.getElementById('status').value == 'green') {
                         initializeApp(firebaseConfig);
-                        onAuthStateChanged(getAuth(), (user) => {
-                            setExcludingMobile(
-                                reportID, 
-                                user.uid, 
-                                new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime()
-                            )
-                            setConcluded(
-                                reportID,
-                                new Date().getTime()
-                            )
-                        })
+                        setExcludingMobile(
+                            reportID, 
+                            localStorage.getItem('useruid'), 
+                            new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime()
+                        )
+                        setConcluded(
+                            reportID,
+                            new Date().getTime()
+                        )
                     }
 
                     updateMobileReportData(
@@ -435,7 +501,8 @@ async function updateReportSwal (
                         author,
                         resp.category,
                         resp.timestamp,
-                        oldComments
+                        oldComments, 
+                        resp.priority
                     ).then(() => successToastSwal.fire().then(console.log(file) ,localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
@@ -458,36 +525,76 @@ async function updateReportSwal (
         const status = document.getElementById('status');
         const comments = document.createElement('div');
         comments.className = 'swal2-html-container';
+        comments.id = 'comment-div';
         comments.innerHTML = `
             <label for="comments" class="swal2=html-text">Adicione um comentário</label><br>
-            <input 
-                type="text" 
-                class="swal2-input"
-                style=" 
-                    height: 20vh;
-                    width: 55vw;
-                    border-radius:15px;
-                    border-color: #D3D3D3;
-                    background-color: #f5f5f5;
-                "
-                id="main-p" 
-            >
         `;
+        const commentInput = document.createElement('input');
+        commentInput.className = 'swal2-input';
+        commentInput.id = 'comment';
+        commentInput.type = 'text';
+        commentInput.style = `
+            height: 20vh;
+            width: 55vw;
+            border-radius:15px;
+            border-color: #D3D3D3;
+            background-color: #f5f5f5;
+        `;
+        comments.appendChild(commentInput)
+
+        
+       /*const spectedDiv = document.createElement('div');
+        spectedDiv.className = 'swal2-html-container';
+        spectedDiv.id = 'spected-div';
+        spectedDiv.innerHTML = `
+            <label for="spected" class="swal2=html-text">Adicione um comentário</label><br>
+        `;
+        const spectedElement = document.createElement('input');
+        spectedElement.className = 'swal2-input';
+        spectedElement.id = 'spected';
+        spectedElement.type = 'datetime-local';
+        spectedElement.style = `
+            width: 55vw;
+            border-radius:15px;
+            border-color: #D3D3D3;
+            background-color: #f5f5f5;
+        `;
+        spectedDiv.appendChild(spectedElement);*/
+
         if (status) {
             status.addEventListener('change', (e) => {
                 if (resp.status != e.target.value) {
                     document.getElementById('status-div').appendChild(comments);
+                    /*if (e.target.value == 'yellow')
+                        document.getElementById('status-div').appendChild(spectedDiv);*/
                 }
                 else {
                     document.getElementById('status-div').removeChild(comments);
                 }
             })
         }
-        if (comments) {
-            comments.addEventListener('input', (e) => {
+        if (commentInput) {
+            commentInput.addEventListener('input', (e) => {
                 localStorage.setItem('comments', e.target.value)
             })
         }
+        /*if (spectedElement) {
+            var spectedDate = 0;
+            readReports(null, 'data').then(resp => {
+                const data = {};
+                for (const id in resp) {
+                    const respTitle = `${resp[id].content.title}`
+                    if (respTitle.startsWith(title) && resp[id].content.priority == priority && resp[id].content.status == 'yellow') {
+                        data[id] = ;//Math.abs(resp[id].dates.spected_date) - data 
+                    }
+                    
+                }
+                const media = Object.values(data).reduce((acc, value) => acc + value, 0) / Object.values(data).length;
+                localStorage.setItem('media', media)
+            })
+            spectedDate = new Date(Number(localStorage.getItem('media'))).getTime();
+            spectedElement.value = spectedDate;
+        }*/
 
         switch (resp.status) {
             case 'red':
@@ -511,7 +618,13 @@ export async function swalFireLookForOcurrence (
 ) {
 
     readReports(reportID, 'general').then(resp => {
-        var text = '';
+        var text = '', priority;
+        switch (resp.content.priority) {
+            case 'high':    priority = 'Alta'; break;
+            case 'medium':  priority = 'Média'; break;
+            case 'low':     priority = 'Baixa'; break;
+            case 'null':    priority = 'Nula'; break;
+        }
         const userUID = resp.content.autor;
         var imageElement = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : resp.content.img_url;
         var image = `${resp.content.img_url}`;
@@ -524,7 +637,7 @@ export async function swalFireLookForOcurrence (
                 <label for='comment' style='font-weight:bold;'> Comentários adicionais </label>
                     <center>
                         <p id='comment' style=' 
-                                height: 20vh;
+                                height: auto;
                                 width:55vw;
                                 border:1px solid black;
                                 border-radius:15px;
@@ -547,82 +660,95 @@ export async function swalFireLookForOcurrence (
         });
         if (resp.selected_obj) {
             readObjects(resp.selected_obj.sel_obj_id, 'class-type').then(classType => {
-                text = `
-                    <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='object-description' style='font-weight:bold;'> Descrição </label>
-                        <center>
-                            <p id='object-description' style=' 
-                                    height: 20vh;
-                                    width:55vw;
-                                    border:1px solid black;
-                                    border-radius:15px;
-                                    border-color: #D3D3D3;
-                                    background-color: #f5f5f5;'
-                            >
-                                ${resp.content?.text}
-                            </p>
-                        </center>
-                    </div>
-                    <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='object-class' style='font-weight:bold;'> Classe do objeto </label>
-                        <center>
-                            <p id='object-class' style='
-                                    width:55vw;
-                                    border:1px solid black;
-                                    border-radius:15px;
-                                    border-color: #D3D3D3;
-                                    background-color: #f5f5f5;'
-                            >
-                                ${classType[0]}
-                            </p>
-                        </center>
-                    </div>
-                    <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='object-type' style='font-weight:bold;'> Tipo do objeto </label>
-                        <center>
-                            <p id='object-type' style='
-                                    width:55vw;
-                                    border:1px solid black;
-                                    border-radius:15px;
-                                    border-color: #D3D3D3;
-                                    background-color: #f5f5f5;'
-                            >
-                                ${classType[1]}
-                            </p>
-                        </center>
-                    </div>
-                    <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='selected-local' style='font-weight:bold;'> Sala selecionada </label>
-                        <center>
-                            <p id='selected-local' style='
-                                    width:55vw;
-                                    border:1px solid black;
-                                    border-radius:15px;
-                                    border-color: #D3D3D3;
-                                    background-color: #f5f5f5;'
-                            >
-                                ${resp.selected_obj.sel_lab_id}
-                            </p>
-                        </center>
-                    </div>
-                    <div class='swal2-html-container' id='swal2-html-container'>
-                        <label for='date-time' style='font-weight:bold;'> Data de criação </label>
-                            <center>
-                            <p id='date-time' style='
-                                    width:55vw;
-                                    border:1px solid black;
-                                    border-radius:15px;
-                                    border-color: #D3D3D3;
-                                    background-color: #f5f5f5;'
-                            >
-                                ${new Date(Number(resp.content.timestamp)).toUTCString().slice(0, -4).slice(5)}
-                            </p>
-                        </center>
-                    </div>
-                ` + text;
                 swalLook.update({
                     title: resp.content?.title,
-                    html: text,
+                    html: `
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='object-description' style='font-weight:bold;'> Descrição </label>
+                            <center>
+                                <p id='object-description' style=' 
+                                        height: 20vh;
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${resp.content?.text}
+                                </p>
+                            </center>
+                        </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='object-class' style='font-weight:bold;'> Classe do objeto </label>
+                            <center>
+                                <p id='object-class' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${classType[0]}
+                                </p>
+                            </center>
+                        </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='object-type' style='font-weight:bold;'> Tipo do objeto </label>
+                            <center>
+                                <p id='object-type' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${classType[1]}
+                                </p>
+                            </center>
+                        </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='priority' style='font-weight:bold;'> Prioridade da ocorrência </label>
+                                <center>
+                                <p id='priority' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${priority}
+                                </p>
+                            </center>
+                        </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='selected-local' style='font-weight:bold;'> Sala selecionada </label>
+                            <center>
+                                <p id='selected-local' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${resp.selected_obj.sel_lab_id}
+                                </p>
+                            </center>
+                        </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='date-time' style='font-weight:bold;'> Data de criação </label>
+                                <center>
+                                <p id='date-time' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${new Date(Number(resp.content.timestamp)).toUTCString().slice(0, -4).slice(5)}
+                                </p>
+                            </center>
+                        </div>
+                    ` + text,
                     preDeny: async () => {
                         initializeApp(firebaseConfig);
                         onAuthStateChanged(getAuth(), (user) => {
@@ -1468,8 +1594,7 @@ export async function createObjectSwal () {
                                 var objType = document.getElementById('obj-type').selectedIndex !== 0 || document.getElementById('text-type-option').value ? localStorage.getItem('type') : '';
                                 writeObjectData(
                                     document.getElementById('obj-name').value,
-                                    new Date().toISOString().split('T')[0],
-                                    new Date().toTimeString().slice(0, 5),
+                                    new Date().getTime(),
                                     document.getElementById('desc').value,
                                     objClass,
                                     objType,
@@ -1772,8 +1897,7 @@ async function updateObjectSwal(
                     var objType = document.getElementById('obj-type').selectedIndex !== 0 || document.getElementById('text-type-option').value ? localStorage.getItem('type') : '';
                     writeObjectData(
                         resp[objectId].name,
-                        resp[objectId].delivered_date.del_day,
-                        resp[objectId].delivered_date.del_time,
+                        resp[objectId].delivered_date.delivered_date,
                         document.getElementById('desc').value,
                         resp[objectId].obj_class,
                         objType,
@@ -1880,8 +2004,20 @@ export async function swalFireLookForObject (
             `,
             confirmButtonText: 'Alterar',
             cancelButtonText: 'Ok',
+            showDenyButton: true,
+            denyButtonText: 'Excluir objeto',
             preConfirm: async () => {
                 updateObjectSwal(objectId)
+            },
+            preDeny: async () => {
+                onAuthStateChanged(getAuth(), (user) => {
+                    setExcludingWeb(
+                        objectId,
+                        user.uid, 
+                        new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime(),
+                        'object'
+                    ).then(successToastSwal.fire({title: 'objeto datado para ser excluído em 1 mês'}))
+                })
             }
         })
     })

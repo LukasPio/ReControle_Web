@@ -16,10 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (writeReportBtn) {
         writeReportBtn.addEventListener('click', () => {
             readReports(null, 'data').then(resp => {
-                const data = {};
+                const data = {},
+                priorityData = {};
                 for (const id in resp ) {
                     if (localStorage.getItem('call-type') != resp[id].content.title) {
-                        data[resp[id].content.title] = resp[id].content.title
+                        data[resp[id].content.title] = resp[id].content.title;
+                        priorityData[resp[id].content.title] = resp[id].content.priority;
                     }
                     localStorage.setItem('call-type', resp[id].content.title);
                 }
@@ -48,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         else
                         {
                             usualChoice = Swal.getInput().options[Swal.getInput().selectedIndex].text;
-                            createReportSwal(usualChoice, localStorage.getItem('userUID'));
+                            createReportSwal(usualChoice, localStorage.getItem('userUID'), priorityData[Swal.getInput().options[Swal.getInput().selectedIndex].value] || null);
                         }
                     }
                 }) 

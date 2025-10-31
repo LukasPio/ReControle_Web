@@ -138,42 +138,51 @@ document.addEventListener("DOMContentLoaded", () => {
     var i = 0;
     document.getElementById("objs").innerHTML = "";
     for (const ID in objectRef) {
-      const object = document.createElement("div");
-      object.className = "object-card";
-      readReports(null, "data").then((resp) => {
-        for (const Id in resp) {
-          if (resp[Id].dates) {
-            if (resp[Id].selected_obj.sel_obj_id == ID) {
-              switch (resp[Id].content.status) {
-                case "red":
-                  object.className = "object-card red";
-                  break;
+      if (!objectRef[ID]?.deleted) {
+        const object = document.createElement("div");
+        object.className = "object-card";
 
-                case "yellow":
-                  object.className = "object-card yellow";
-                  break;
+        //status da ocorrência no objeto (última criada)
+        readReports(null, "data").then((resp) => {
+          for (const Id in resp) {
+            if (resp[Id].dates) {
+              if (resp[Id].selected_obj.sel_obj_id == ID) {
+                switch (resp[Id].content.status) {
+                  case "red":
+                    object.className = "object-card red";
+                    break;
+
+                  case "yellow":
+                    object.className = "object-card yellow";
+                    break;
+                }
               }
             }
+            
           }
+          
+        });
+
+        object.id = ID;
+
+        //Link de abertura do objeto
+        const link = document.createElement("a");
+        link.id = ID;
+        link.innerHTML = `Ver mais`;
+        link.style = "cursor: pointer;";
+
+        //Nome do objeto
+        const objIDElement = document.createElement("p");
+        objIDElement.innerHTML = `<strong>${objectRef[ID].name}</strong><br> <p style="margin: 15px;"> ${objectRef[ID].desc} <br><br> ${objectRef[ID].lab_id} </p>`;
+
+        //Acoplação ao elemento pai
+        object.appendChild(objIDElement);
+        object.appendChild(link);
+        document.getElementById("objs").appendChild(object);
+        i++;
+        if (i > 2) {
+          break;
         }
-      });
-
-      object.id = ID;
-
-      const link = document.createElement("a");
-      link.id = ID;
-      link.innerHTML = `Ver mais`;
-      link.style = "cursor: pointer;";
-
-      const objIDElement = document.createElement("p");
-      objIDElement.innerHTML = `<strong>${objectRef[ID].name}</strong><br> <p style="margin: 15px;"> ${objectRef[ID].desc} <br><br> ${objectRef[ID].lab_id} </p>`;
-
-      object.appendChild(objIDElement);
-      object.appendChild(link);
-      document.getElementById("objs").appendChild(object);
-      i++;
-      if (i > 2) {
-        break;
       }
     }
   });
