@@ -36,6 +36,7 @@ import {
     onAuthStateChanged 
 } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import { firebaseConfig } from "../js_config/Config.js";
+import { errorSwalResponse } from './swal_fire_errors.js';
 
 export async function createReportSwal (
     title,
@@ -49,7 +50,7 @@ export async function createReportSwal (
     occuredDate, 
     file,
     selectData,
-    spectedDate = 0;
+    timestamp;
 
     // Todos os problemas previsíveis possíveis
 
@@ -61,6 +62,7 @@ export async function createReportSwal (
 
         var text = '';
         if (!priority) {
+            localStorage.setItem('data_e', 0)
             text = `
                 <div class="swal2-html-container">
                     <label for="priority" class="swal2-html-text">Indique a prioridade</label><br>
@@ -186,23 +188,31 @@ export async function createReportSwal (
                 else {
                     file = ''
                 }
+                timestamp = new Date().getTime();
 
-                /*if (!priority) priority = document.getElementById('priority').value;
-                else {
-                    readReports(null, 'data').then(resp => {
-                        var data;
-                        //var verif = 0;
-                        for (const id in resp) {
-                            const respTitle = `${resp[id].content.title}`
-                            if (respTitle.startsWith(title) && resp[id].content.priority == priority && resp[id].content.status != 'red') {
-                                data = Math.abs(resp[id].dates.spected_date + occuredDate)
-                                break;
+                if (priority) {
+                    readReports(null, 'data').then(response => {
+                        const data = {};
+                        if (Object.values(response).length > 0) {
+                            for (const id in response) {
+                                const contTitle = `${response[id].content.title}`
+                                if (contTitle.startsWith(title) && response[id].content.priority == priority && response[id].content.status == 'yellow') {
+                                    data[id] = new Date(response[id].dates.spected_date) - new Date(response[id].dates.posted_date) 
+                                }   
+                            }
+                            if (Object.values(data).length > 0 ) {
+                                const media = 
+                                    new Date(
+                                        Object.values(data).reduce((acc, value) => acc + value, 0) / Object.values(data).length
+                                    ).getTime() + timestamp;
+                                localStorage.setItem('data_e', media);
                             }
                         }
-                        localStorage.setItem('media', data)
                     })
-                    spectedDate = new Date(Number(localStorage.getItem('media'))).getTime()
-                }*/
+                }
+                else {
+                    priority = 'low'
+                }
 
                 readObjects(newSelectedObject, 'lab-id').then(resp => {
 
@@ -214,15 +224,15 @@ export async function createReportSwal (
                             'red',
                             author,
                             occuredDate,
-                            0,
                             resp,
                             newSelectedObject,
-                            `${new Date().getTime()}`,
+                            timestamp,
                             '',
                             priority,
-                            spectedDate
+                            Number(localStorage.getItem('data_e'))
                         );
-                        successToastSwal.fire()
+                        localStorage.removeItem('data_e');
+                        successToastSwal.fire();
                     }
                     catch (error) {
                         errorToastSwal.fire().then(console.log(error))
@@ -250,8 +260,10 @@ export async function createReportSwal (
 
 async function updateReportSwal (
     reportID,
-    author
+    author,
+    priority
 ) {
+    var spectedDate = 0;
     var file, oldComments = '';
     readReports(reportID, 'text-content').then(resp => {
         var text, comment;
@@ -409,6 +421,44 @@ async function updateReportSwal (
                 >
             `
         }
+
+        const comments = document.createElement('div');
+        comments.className = 'swal2-html-container';
+        comments.id = 'comment-div';
+        comments.innerHTML = `
+            <label for="comments" class="swal2=html-text">Adicione um comentário</label><br>
+        `;
+        const commentInput = document.createElement('input');
+        commentInput.className = 'swal2-input';
+        commentInput.id = 'comment';
+        commentInput.type = 'text';
+        commentInput.style = `
+            height: 20vh;
+            width: 55vw;
+            border-radius:15px;
+            border-color: #D3D3D3;
+            background-color: #f5f5f5;
+        `;
+        comments.appendChild(commentInput)
+        
+        const spectedDiv = document.createElement('div');
+        spectedDiv.className = 'swal2-html-container';
+        spectedDiv.id = 'spected-div';
+        spectedDiv.innerHTML = `
+            <label for="spected" class="swal2=html-text">Adicione um comentário</label><br>
+        `;
+        const spectedElement = document.createElement('input');
+        spectedElement.className = 'swal2-input';
+        spectedElement.id = 'spected';
+        spectedElement.type = 'datetime-local';
+        spectedElement.style = `
+            width: 55vw;
+            border-radius:15px;
+            border-color: #D3D3D3;
+            background-color: #f5f5f5;
+        `;
+        spectedDiv.appendChild(spectedElement);
+
         reControleSwal.fire({
             title: 'Editar Ocorrência',
             html: text,
@@ -444,7 +494,10 @@ async function updateReportSwal (
                     })
                     
                 })
-                oldComments += ` Data do comentário (${statusComment}) - ${new Date().toUTCString().slice(5).slice(0, -13)} <br> Feito por ${localStorage.getItem('useruid')}: <br> ${comment} `;
+                readReports(reportID, 'data').then(data => {
+                    localStorage.setItem('changed-date', data.changed_date || 0)
+                })
+                oldComments += ` Data do comentário (${statusComment}) - ${localStorage.getItem('changed-date')? new Date().toUTCString().slice(5).slice(0, -13) : new Date(localStorage.getItem('changed-date')).toUTCString().slice(5).slice(0, -13)} <br> Feito por ${localStorage.getItem('useruid')}: <br> ${comment} `;
                 if (resp.title) {
                     if (document.getElementById('status').value == 'green') {
                         initializeApp(firebaseConfig);
@@ -458,24 +511,25 @@ async function updateReportSwal (
                             new Date().getTime()
                         )
                     }
-                    else if (document.getElementById('status').value == 'yellow') {
 
+                    if (document.getElementById('status').value == 'yellow'){
+                        spectedDate = localStorage.getItem('data-e');
                     }
-
-                    
 
                     updateWebReportData(
                         author,
                         reportID,
                         document.getElementById('main-p').value,
                         document.getElementById('main-t').value,
-                        file,
+                        file || "",
                         document.getElementById('status').value, 
                         resp.timestamp,
                         oldComments, 
-                        resp.priority
-                    ).then(() => successToastSwal.fire().then(localStorage.removeItem('sel-file')))
-                    .catch(() => errorToastSwal.fire())
+                        resp.priority,
+                        Number(spectedDate),
+                        new Date().getTime()
+                    ).then(() => successToastSwal.fire().then(localStorage.removeItem('sel-file'), localStorage.removeItem('data-e')))
+                    .catch((error) => console.log(error))
                 }
                 else
                 {
@@ -502,7 +556,9 @@ async function updateReportSwal (
                         resp.category,
                         resp.timestamp,
                         oldComments, 
-                        resp.priority
+                        resp.priority,
+                        spectedDate,
+                        new Date().getTime()
                     ).then(() => successToastSwal.fire().then(console.log(file) ,localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
@@ -523,53 +579,19 @@ async function updateReportSwal (
         }
 
         const status = document.getElementById('status');
-        const comments = document.createElement('div');
-        comments.className = 'swal2-html-container';
-        comments.id = 'comment-div';
-        comments.innerHTML = `
-            <label for="comments" class="swal2=html-text">Adicione um comentário</label><br>
-        `;
-        const commentInput = document.createElement('input');
-        commentInput.className = 'swal2-input';
-        commentInput.id = 'comment';
-        commentInput.type = 'text';
-        commentInput.style = `
-            height: 20vh;
-            width: 55vw;
-            border-radius:15px;
-            border-color: #D3D3D3;
-            background-color: #f5f5f5;
-        `;
-        comments.appendChild(commentInput)
 
-        
-       /*const spectedDiv = document.createElement('div');
-        spectedDiv.className = 'swal2-html-container';
-        spectedDiv.id = 'spected-div';
-        spectedDiv.innerHTML = `
-            <label for="spected" class="swal2=html-text">Adicione um comentário</label><br>
-        `;
-        const spectedElement = document.createElement('input');
-        spectedElement.className = 'swal2-input';
-        spectedElement.id = 'spected';
-        spectedElement.type = 'datetime-local';
-        spectedElement.style = `
-            width: 55vw;
-            border-radius:15px;
-            border-color: #D3D3D3;
-            background-color: #f5f5f5;
-        `;
-        spectedDiv.appendChild(spectedElement);*/
+        if (!priority) priority = document.getElementById('priority').value;
 
         if (status) {
             status.addEventListener('change', (e) => {
                 if (resp.status != e.target.value) {
-                    document.getElementById('status-div').appendChild(comments);
-                    /*if (e.target.value == 'yellow')
-                        document.getElementById('status-div').appendChild(spectedDiv);*/
+                    document.getElementById('status-div').appendChild(comments)
+                    if (e.target.value == 'yellow')
+                        document.getElementById('status-div').appendChild(spectedDiv);
+                        
                 }
                 else {
-                    document.getElementById('status-div').removeChild(comments);
+                    document.getElementById('status-div').removeChild(comments)
                 }
             })
         }
@@ -578,36 +600,29 @@ async function updateReportSwal (
                 localStorage.setItem('comments', e.target.value)
             })
         }
-        /*if (spectedElement) {
-            var spectedDate = 0;
-            readReports(null, 'data').then(resp => {
-                const data = {};
-                for (const id in resp) {
-                    const respTitle = `${resp[id].content.title}`
-                    if (respTitle.startsWith(title) && resp[id].content.priority == priority && resp[id].content.status == 'yellow') {
-                        data[id] = ;//Math.abs(resp[id].dates.spected_date) - data 
-                    }
-                    
-                }
-                const media = Object.values(data).reduce((acc, value) => acc + value, 0) / Object.values(data).length;
-                localStorage.setItem('media', media)
+        if (spectedElement) {
+            if (spectedDate == 0) {
+                readReports(reportID, 'general').then(resp => {
+                    spectedElement.value = new Date(resp?.dates?.spected_date).toISOString().slice(0, 16) || new Date().toISOString().slice(0, 16);
+                    localStorage.setItem('data-e', resp?.dates?.spected_date)
+                })
+                spectedDate = localStorage.getItem('data-e');
+            }
+
+            spectedElement.addEventListener('change', (e) => {
+                localStorage.setItem('data-e', new Date(e.target.value).getTime())
             })
-            spectedDate = new Date(Number(localStorage.getItem('media'))).getTime();
-            spectedElement.value = spectedDate;
-        }*/
+        }
 
         switch (resp.status) {
             case 'red':
-                document.getElementById('status').selectedIndex = 0
-            ;
+                document.getElementById('status').selectedIndex = 0;
             break;
             case 'yellow':
-                document.getElementById('status').selectedIndex = 1
-            ;
+                document.getElementById('status').selectedIndex = 1;
             break;
             case 'green':
-                document.getElementById('status').selectedIndex = 2
-            ;
+                document.getElementById('status').selectedIndex = 2;
             break;
         }
     })
@@ -656,7 +671,7 @@ export async function swalFireLookForOcurrence (
             confirmButtonText: 'Alterar',
             showDenyButton: true,
             denyButtonText: 'Apagar ocorrência',
-            preConfirm: async () => updateReportSwal(reportID, userUID),
+            preConfirm: async () => updateReportSwal(reportID, userUID, priority),
         });
         if (resp.selected_obj) {
             readObjects(resp.selected_obj.sel_obj_id, 'class-type').then(classType => {
@@ -748,6 +763,20 @@ export async function swalFireLookForOcurrence (
                                 </p>
                             </center>
                         </div>
+                        <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='date-time' style='font-weight:bold;'> Data prevista para ser concluída </label>
+                                <center>
+                                <p id='date-time' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${resp.dates.spected_date == 0? 'Sem data' : new Date(Number(resp.dates.spected_date)).toUTCString().slice(0, -4).slice(5)}
+                                </p>
+                            </center>
+                        </div>
                     ` + text,
                     preDeny: async () => {
                         initializeApp(firebaseConfig);
@@ -826,6 +855,20 @@ export async function swalFireLookForOcurrence (
                         </p>
                     </center>
                 </div>
+                <div class='swal2-html-container' id='swal2-html-container'>
+                            <label for='date-time' style='font-weight:bold;'> Data prevista para ser concluída </label>
+                                <center>
+                                <p id='date-time' style='
+                                        width:55vw;
+                                        border:1px solid black;
+                                        border-radius:15px;
+                                        border-color: #D3D3D3;
+                                        background-color: #f5f5f5;'
+                                >
+                                    ${resp.dates.spected_date == 0? 'Sem data' : new Date(Number(resp.dates.spected_date)).toUTCString().slice(0, -4).slice(5)}
+                                </p>
+                            </center>
+                        </div>
             ` + text;
             swalLook.update({
                 html: text,

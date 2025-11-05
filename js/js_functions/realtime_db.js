@@ -90,13 +90,12 @@ export function writeReportsData(
   status,
   author,
   postedDate,
-  solvedDate,
   selectedLaboratoryID,
   selectedObjectID,
   timestamp,
   comments,             // Comentários depois da criação da ocorrência
   priority,             // Prioridade da ocorrência
-  spectedDate           // Data de reparo previsto
+  spectedDate,          // Data de reparo previsto
 ) {
   set(push(ref(getDatabase(), `reports/`)), {
     content: {
@@ -110,8 +109,9 @@ export function writeReportsData(
       priority: priority
     },
     dates: {
-      posted_date: postedDate,
-      solved_date: solvedDate,
+      posted_date:  postedDate,
+      solved_date:  0,
+      changed_date: 0,
       spected_date: spectedDate
     },
     selected_obj: {
@@ -124,16 +124,18 @@ export function writeReportsData(
 // Atualizar a ocorrência da Web
 export async function updateWebReportData(
   author,
-  reportID,
+  reportId,
   newTitle,
   newText,
   newURL,
   newStatus,
   timestamp,
   comments,
-  priority
+  priority,
+  spected_date,        // Data de reparo previsto
+  changed_date         // Data de alterção mínima
 ) {
-  set(ref(getDatabase(), `reports/${reportID}/content/`), {
+  set(ref(getDatabase(), `reports/${reportId}/content/`), {
     autor: author,
     title: newTitle,
     text: newText,
@@ -143,6 +145,8 @@ export async function updateWebReportData(
     comments: comments,
     priority: priority
   });
+  set(ref(getDatabase(), `reports/${reportId}/dates/changed_date`), changed_date );
+  set(ref(getDatabase(), `reports/${reportId}/dates/spected_date`), spected_date );
 }
 
 // Atualizar a ocorrência do Mobile
@@ -156,7 +160,9 @@ export async function updateMobileReportData(
   category,
   timestamp,
   comments,
-  priority
+  priority,
+  spectedDate,           // Data de reparo previsto
+  changedDate            // Data de alterção mínima
 ) {
   set(ref(getDatabase(), `reports/${reportID}/content/`), {
     img_url: imageUrl,
@@ -167,7 +173,9 @@ export async function updateMobileReportData(
     category: category,
     timestamp: timestamp,
     comments: comments,
-    priority: priority
+    priority: priority,
+    spected_date: spectedDate,
+    changed_date: changedDate
   });
 }
 
@@ -310,7 +318,7 @@ export async function readReports(reportID, contentType) {
         try {
           const reportRef = await get(child(dbRef, `reports/${reportID}`));
           if (reportRef.exists()) {
-            return reportRef.val().dates?.posted_date?.posted_day;
+            return reportRef.val().dates?.posted_date;
           } else {
             return "Lucas Pio";
           }
