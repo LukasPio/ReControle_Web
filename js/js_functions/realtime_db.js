@@ -919,8 +919,8 @@ export async function countReportsByMonth() {
     10: 0,
     11: 0,
     12: 0
-  };
-  const cbmInProgress = {
+  },
+  cbmInProgress = {
     1: 0,
     2: 0,
     3: 0,
@@ -933,8 +933,64 @@ export async function countReportsByMonth() {
     10: 0,
     11: 0,
     12: 0
-  };
-  const cbmConcluded = {
+  },
+  cbmConcluded = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+    10: 0,
+    11: 0,
+    12: 0
+  },
+  cbmSpected = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+    10: 0,
+    11: 0,
+    12: 0
+  },
+  cmbDelayed = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+    10: 0,
+    11: 0,
+    12: 0
+  },
+  cmbOnTime = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+    8: 0,
+    9: 0,
+    10: 0,
+    11: 0,
+    12: 0
+  }, 
+  cmbOnDel = {
     1: 0,
     2: 0,
     3: 0,
@@ -954,9 +1010,10 @@ export async function countReportsByMonth() {
     for (const repID in repBMRef.val()) {
       const report = repBMRef.val()[repID];
       const data = report?.content.timestamp;
+      const spectedData = report?.dates?.spected_date;
       var month;
       
-      if (data) { 
+      if (data && new Date(Number(data)).getFullYear() == new Date().getFullYear()) { 
         month = new Date(Number(data)).getMonth() + 1;
         
         if (!report?.deleted && !report.content?.deleted){
@@ -971,11 +1028,25 @@ export async function countReportsByMonth() {
         if (report.content.status == "green") {
           cbmConcluded[month] = (cbmConcluded[month] || 0) + 1;
         }
+        if (spectedData && new Date(Number(spectedData)).getFullYear() == new Date().getFullYear()) {
+          if (!report?.deleted && !report.content?.deleted) {
+            cbmSpected[month] = (cbmSpected[month] || 0) + 1;
+            if (spectedData < new Date().getTime()) {
+              cmbDelayed[month] = (cmbDelayed[month] || 0) + 1;
+            }
+          }
+          else if (spectedData > new Date().getTime()) {
+            cmbOnTime[month] = (cmbOnTime[month] || 0) + 1;
+          }
+          else {
+            cmbOnDel[month] = (cmbOnDel[month] || 0) + 1;
+          }
+        }
         allByYear++;
-      }
+      }  
     }
   }
-  return [cbmWeb, cbmInProgress, cbmConcluded, allByYear];
+  return [allByYear, cbmWeb, cbmInProgress, cbmConcluded, cbmSpected, cmbDelayed, cmbOnTime, cmbOnDel];
 }
 
 export async function conutReportsByLab() {
@@ -994,13 +1065,29 @@ export async function conutReportsByLab() {
     10: {q: 0, id: []},
     11: {q: 0, id: []},
     12: {q: 0, id: []},
-  };
-  const counts = {};
+  },
+  delayedByMonth = {
+    1:  {q: 0, id: []},
+    2:  {q: 0, id: []},
+    3:  {q: 0, id: []},
+    4:  {q: 0, id: []},
+    5:  {q: 0, id: []},
+    6:  {q: 0, id: []},
+    7:  {q: 0, id: []},
+    8:  {q: 0, id: []},
+    9:  {q: 0, id: []},
+    10: {q: 0, id: []},
+    11: {q: 0, id: []},
+    12: {q: 0, id: []},
+  },
+  counts = {},
+  delayCounts = {};
   
   for (const rId in reps.val()) {
     const rep = reps.val()[rId];
   
     const data = rep.content.timestamp;
+    const spectedData = rep.dates.stpected_date;
       
     if (data) { 
       var month = new Date(Number(data)).getMonth() + 1
@@ -1009,12 +1096,32 @@ export async function conutReportsByLab() {
       if (rep.content.status !== 'green') {
         repsByMonth[month].q = (repsByMonth[month]?.q || 0) + 1,
         (repsByMonth[month].id).push(rep.selected_obj?.sel_lab_id || rep.content?.local)
-      }    
+      }
+
+      if (rep?.dates?.solved_date) {
+        if (spectedData < rep.dates.solved_date) {
+          delayedByMonth[month].q = (delayedByMonth[month]?.q || 0) + 1,
+          (delayedByMonth[month].id).push(rep.selected_obj?.sel_lab_id || rep.content?.local)
+        }
+      }
     }
   }
   for (const lId in labs.val()) {
-    const lab = labs.val()[lId];
     counts[lId] = {
+      1:  0,
+      2:  0,
+      3:  0,
+      4:  0,
+      5:  0,
+      6:  0,
+      7:  0,
+      8:  0,
+      9:  0,
+      10: 0,
+      11: 0,
+      12: 0
+    }  
+    delayCounts[lId] = {
       1:  0,
       2:  0,
       3:  0,
@@ -1037,7 +1144,15 @@ export async function conutReportsByLab() {
       }
     }
   }
-  return counts
+  for (const id in delayedByMonth) {
+    const ids = delayedByMonth[id].id
+    if (ids.length > 0) {
+      for (const rId in ids) {   
+        delayCounts[ids[rId]][id]++
+      }
+    }
+  }
+  return [counts, delayCounts]
 
 }
 

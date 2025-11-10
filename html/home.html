@@ -65,21 +65,53 @@
         
 
         <div class="chamados" id="chamados">
-        </div>
-        <div class="grafico-box">
-          <h2>Chamados Resolvidos</h2>
-          <canvas id="graficoLinha"></canvas>
+        </div><h2>Chamados Resolvidos</h2><br>
+        <div class="grafico-box">        
+          <canvas id="grafico1"></canvas>
+          <div id="actions" class="graphic-actions">
+            <button id="info-download-btn" class="btn-download">Baixar</button>
+          </div>
           <div id="infos-element" class="infos-element">
-            <div id="graphic-data" class="f-graphic"><br><br>
-              <p class="graphic-data">Total de chamados criados durante o <br>ano: <span id="by-year"></span></p><br>
-              <p class="graphic-data">Total de chamados pendentes no mês: <span id="pending"></span><br></p><br>
-              <p class="graphic-data">Total de chamados em andamento no mês: <span id="in-progress"></span><br></p>
-              <p class="graphic-data" >Total de chamados concluídos no mês: <span id="concluded"></span><br></p><br>
-              <p class="graphic-data" id="end">Local com maior quantidade de criação de chamados neste mês: <span id="most"></span><br></p><br>
+            <div id="graphic-data" class="f-graphic">
+              <div class="graphic-data">Total de chamados criados durante o ano: <span id="by-year"></span></div>
+              <div class="graphic-data">Total de chamados pendentes no mês: <span id="pending"></span></div>
+              <div class="graphic-data">Total de chamados em andamento no mês: <span id="in-progress"></span></div>
+              <div class="graphic-data" >Total de chamados concluídos no mês: <span id="concluded"></span></div>
+              <div class="graphic-data" id="end">Local com maior quantidade de criação de chamados neste mês: <span id="most"></span></div>
             </div>
-            <div id="actions" class="graphic-actions">
-              <button id="info-download-btn" class="btn-download">Baixar</button>
+          </div>
+        </div>
+        <br><h2>Situação dos chamados deste ano</h2><br>
+        <div class="grafico-box">
+          <canvas id="grafico2"></canvas>
+          <div id="actions" class="graphic-actions">
+            <button id="info-download-btn" class="btn-download">Baixar</button>
+          </div>
+          <div id="infos-element" class="infos-element">
+            <div id="graphic-data" class="f-graphic">
+              <div class="graphic-data">
+                Total de chamados datados para conluir este ano:        
+                <span id="in-year"></span>
+              </div>
+              <div class="graphic-data">
+                Total de chamados em andamento atrasados durante o ano:             
+                <span id="in-delay"></span>
+              </div>
+              <div class="graphic-data">
+                Total de chamados concluídos com adiantamento ano:                                
+                <span id="con-ontime"></span>
+              </div>
+              <div class="graphic-data">
+                Total de chamados concluídos com atraso durante o ano:                            
+                <span id="con-delay"></span>
+              </div>
+              <div class="graphic-data">
+                Local com maior quantidade de chamados concluídos com atraso esse ano:   
+                <span id="delay-lab"></span>
+              </div>
             </div>
+            
+            
           </div>
         </div>
       </section>

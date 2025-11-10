@@ -2,12 +2,16 @@ import {readReports, countReportsByMonth, readUsers, readAll, conutReportsByLab}
 import { swalFireLookForOcurrence } from './js_functions/swal_db_fires.js';
 import { loading } from './js_functions/swal_mixins.js';
 
-const ctx = document.getElementById("graficoLinha").getContext("2d");
+const ctx1 = document.getElementById("grafico1").getContext("2d");
 countReportsByMonth().then(resp => {
-    const webValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[0][mes] || 0);
-    const inProgressValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[1][mes] || 0);
-    const concludedValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[2][mes] || 0);
-    new Chart(ctx, {
+    const webValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[1][mes] || 0);
+    const inProgressValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[2][mes] || 0);
+    const concludedValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[3][mes] || 0);
+    const spectedValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[4][mes] || 0);
+    const delayedValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[5][mes] || 0);
+    const onTimeValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[6][mes] || 0);
+    const onDelValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9','10', '11', '12'].map(mes => resp[7][mes] || 0);
+    new Chart(ctx1, {
         type: "line",
         data: {
             labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dez'],
@@ -48,25 +52,102 @@ countReportsByMonth().then(resp => {
         }
     });
 
-    document.getElementById('by-year').textContent = `${resp[3]} chamados`;
-    document.getElementById('pending').textContent = `${resp[0][new Date().getMonth() + 1]} chamados`;
-    document.getElementById('in-progress').textContent = `${resp[1][new Date().getMonth() + 1]} chamados`;
-    document.getElementById('concluded').textContent = `${resp[2][new Date().getMonth() + 1]} chamados`;
-    conutReportsByLab().then(labs => {
-        const data = {};
-        for (const lab in labs) {
-            data[lab] = labs[lab][new Date().getMonth() + 1];
+    const ctx2 = document.getElementById("grafico2").getContext("2d");
+    new Chart(ctx2, {
+        type: "bar",
+        data: {
+            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Oct', 'Nov', 'Dez'],
+            datasets: [
+                {
+                    label: "Chamados datados para concluir",
+                    data: spectedValues,
+                    borderColor: "orange",
+                    backgroundColor: "orange",
+                    tension: 0.4,
+                    pointBackgroundColor: "orange",
+                }, {
+                    label: "Chamados atrasados não concluídos",
+                    data: delayedValues,
+                    borderColor: "#ce3a3aff",
+                    backgroundColor: "#ce3a3aff",
+                    tension: 0.4,
+                    pointBackgroundColor: "#ce3a3aff",
+                }, {
+                    label: "Chamados concluídos com adiantamento",
+                    data: onTimeValues,
+                    borderColor: "#61cf32ff",
+                    backgroundColor: "#61cf32ff",
+                    tension: 0.4,
+                    pointBackgroundColor: "#61cf32ff",
+                }, {
+                    label: "Chamados concluídos com atraso",
+                    data: onDelValues,
+                    borderColor: "#7d1414ff",
+                    backgroundColor: "#7d1414ff",
+                    tension: 0.4,
+                    pointBackgroundColor: "#7d1414ff",
+                }
+            ],
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10
+                }
+            },
         }
+    });
+    var inYear = [0, 0, 0, 0];
+    for (var i = 4; i < 8; i++){
+        Object.values(resp[i]).forEach(element => {
+            inYear[i - 4] += element;
+        });
+    }
+    document.getElementById('by-year').textContent = resp[0] > 1 || resp[0] == 0? `${resp[0]} chamados` : `${resp[0]} chamado`;
+    document.getElementById('pending').textContent = resp[1][new Date().getMonth() + 1] > 1 || resp[1][new Date().getMonth() + 1] == 0? `${resp[1][new Date().getMonth() + 1]} chamados` : `${resp[1][new Date().getMonth() + 1]} chamado`;
+    document.getElementById('in-progress').textContent = resp[2][new Date().getMonth() + 1] > 1 || resp[2][new Date().getMonth() + 1] == 0? `${resp[2][new Date().getMonth() + 1]} chamados` : `${resp[2][new Date().getMonth() + 1]} chamado`;
+    document.getElementById('concluded').textContent = resp[3][new Date().getMonth() + 1] > 1 || resp[3][new Date().getMonth() + 1] == 0? `${resp[3][new Date().getMonth() + 1]} chamados` : `${resp[3][new Date().getMonth() + 1]} chamado`;
+
+    document.getElementById('in-year').textContent = inYear[0] > 1 || inYear[0] == 0? `${inYear[0]} chamados` : `${inYear[0]} chamado`;
+    document.getElementById('in-delay').textContent = inYear[1] > 1 || inYear[1] == 0? `${inYear[1]} chamados` : `${inYear[1]} chamado`;
+    document.getElementById('con-ontime').textContent = inYear[2] > 1 || inYear[2] == 0? `${inYear[2]} chamados` : `${inYear[2]} chamado`;
+    document.getElementById('con-delay').textContent = inYear[3] > 1 || inYear[3] == 0? `${inYear[3]} chamados` : `${inYear[3]} chamado`;
+
+    conutReportsByLab().then(labs => {
+        const data = {}, 
+        delayData = {};
+
+        for (const lab in labs[0]) {
+            data[lab] = labs[0][lab][new Date().getMonth() + 1];
+        }
+
+        for (const lab in labs[1]) {
+            delayData[lab] = labs[1][lab][new Date().getMonth() + 1];
+        }
+
         const latest = Object.entries(data)
           .map(([id]) => {
             const repsByMonth = data[id];
             return { id, repsByMonth };
           })
           .sort((a, b) => b.repsByMonth - a.repsByMonth).slice(0, 1);
-        document.getElementById('most').textContent = `${latest[0].id} (${latest[0].repsByMonth} chamados)`;
+        
+        const delayLatest = Object.entries(delayData)
+          .map(([id]) => {
+            const repsByMonth = delayData[id];
+            return { id, repsByMonth };
+          })
+          .sort((a, b) => b.repsByMonth - a.repsByMonth).slice(0, 1);
+
+        document.getElementById('most').textContent = latest[0].repsByMonth > 1? `${latest[0].id} (${latest[0].repsByMonth} chamados)` : `${latest[0].id} (${latest[0].repsByMonth} chamado)`;
+        document.getElementById('delay-lab').textContent = latest[0].repsByMonth > 1? `${delayLatest[0].id} (${delayLatest[0].repsByMonth} chamados)` : `${delayLatest[0].id} (${delayLatest[0].repsByMonth} chamado)`;
     })
 
 });
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
 
