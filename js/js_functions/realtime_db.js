@@ -1011,6 +1011,7 @@ export async function countReportsByMonth() {
       const report = repBMRef.val()[repID];
       const data = report?.content.timestamp;
       const spectedData = report?.dates?.spected_date;
+      const solvedData = report?.dates?.solved_date;
       var month;
       
       if (data && new Date(Number(data)).getFullYear() == new Date().getFullYear()) { 
@@ -1035,7 +1036,7 @@ export async function countReportsByMonth() {
               cmbDelayed[month] = (cmbDelayed[month] || 0) + 1;
             }
           }
-          else if (spectedData > new Date().getTime()) {
+          else if (new Date(Number(spectedData)).getMonth() >= new Date(Number(solvedData)).getMonth() && new Date(Number(spectedData)).getDate() >= new Date(Number(solvedData)).getDate()) {
             cmbOnTime[month] = (cmbOnTime[month] || 0) + 1;
           }
           else {
@@ -1046,6 +1047,16 @@ export async function countReportsByMonth() {
       }  
     }
   }
+  /*
+    0 - Total de Ocorrências criadas ao ano
+    1 - Pendentes no mês
+    2 - Em andamento no mês
+    3 - Concluídos no mês
+    4 - Ainda não concluídos (total)
+    5 - Em andamento atrasados
+    6 - Concluídos a tempo ou adiantados
+    7 - Concluídos com atraso
+              0         1          2              3           4           5          6          7*/
   return [allByYear, cbmWeb, cbmInProgress, cbmConcluded, cbmSpected, cmbDelayed, cmbOnTime, cmbOnDel];
 }
 
@@ -1087,7 +1098,7 @@ export async function conutReportsByLab() {
     const rep = reps.val()[rId];
   
     const data = rep.content.timestamp;
-    const spectedData = rep.dates.stpected_date;
+    const spectedData = rep.dates.spected_date;
       
     if (data) { 
       var month = new Date(Number(data)).getMonth() + 1

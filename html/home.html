@@ -15,6 +15,8 @@
     <script type="module" src="../js/services.js" defer></script>
     <script type="module" src="../js/main_services.js" defer></script>
     <script type="module" src="../js/home.js" defer></script>
+
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   </head>
   <body>
     <aside class="sidebar">
@@ -85,7 +87,7 @@
         <div class="grafico-box">
           <canvas id="grafico2"></canvas>
           <div id="actions" class="graphic-actions">
-            <button id="info-download-btn" class="btn-download">Baixar</button>
+            <button id="info-download-btn2" class="btn-download">Baixar</button>
           </div>
           <div id="infos-element" class="infos-element">
             <div id="graphic-data" class="f-graphic">
@@ -98,7 +100,7 @@
                 <span id="in-delay"></span>
               </div>
               <div class="graphic-data">
-                Total de chamados concluídos com adiantamento ano:                                
+                Total de chamados concluídos sem atraso ou com adiantamento ano:                                
                 <span id="con-ontime"></span>
               </div>
               <div class="graphic-data">

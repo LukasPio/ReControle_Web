@@ -73,7 +73,7 @@ countReportsByMonth().then(resp => {
                     tension: 0.4,
                     pointBackgroundColor: "#ce3a3aff",
                 }, {
-                    label: "Chamados concluídos com adiantamento",
+                    label: "Chamados concluídos sem atraso ou  com adiantamento",
                     data: onTimeValues,
                     borderColor: "#61cf32ff",
                     backgroundColor: "#61cf32ff",
@@ -164,9 +164,9 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     }
 
-    const download = document.getElementById('info-download-btn');
-    if (download) {
-        download.addEventListener('click', () => {
+    const download1 = document.getElementById('info-download-btn');
+    if (download1) {
+        download1.addEventListener('click', () => {
             Swal.fire({
                 toast: true,
                 position: 'bottom-end',
@@ -213,9 +213,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     countReportsByMonth().then(resp => {
                         
-                        const pending = Object.values(resp[0]);
-                        const inProgress = Object.values(resp[1]);
-                        const concluded = Object.values(resp[2]);
+                        const pending = Object.values(resp[1]);
+                        const inProgress = Object.values(resp[2]);
+                        const concluded = Object.values(resp[3]);
 
                         pending.unshift("Pendente");
                         inProgress.unshift("In Progress");
@@ -226,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             pending,
                             inProgress,
                             concluded,
-                            ['Total', resp[3]]
+                            ['Total', resp[0]]
                         ];
                         function download (dados) {
                             if (xlsClass.endsWith('choose')) {
@@ -390,9 +390,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         conutReportsByLab().then(labs => {
                             if (checkButton) {
                                 dados[5] = ['', '', '', '', '', '', '', '', '', '', '', ''];
-                                var i = 6;
-                                for (const id in labs) {
-                                    const labReps = Object.values(labs[id]);
+                                dados[6] = ['Ocorrências', 'por', 'laboratório', '', '', '', '', '', '', '', '', ''];
+                                var i = 7;
+                                for (const id in labs[0]) {
+                                    const labReps = Object.values(labs[0][id]);
                                     labReps.unshift(id)
                                     dados[i] = labReps
                                     i++;
@@ -401,10 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             download(dados)
                         })
-
-                        
-
-                   })
+                    })
                 }
             });
 
@@ -420,6 +418,296 @@ document.addEventListener("DOMContentLoaded", () => {
                     name="checkbox"
                     class="checkbox"
                     id="checkbox"
+                />
+                <span class="checkmark"></span>
+                Adicionar dados de contagem
+            `;
+
+            if (xls) {
+                xls.addEventListener('click',  (e) => {
+                    infosDiv.innerHTML = infosLabel;
+                    const classX = `${e.target.className}`;
+                    if (classX.endsWith('choose')) {
+                        xls.className = 'sel-btn excel';
+                        return;
+                    }
+                    xls.className = 'sel-btn excel choose';
+                    csv.className = 'sel-btn excel';
+                    png.className = 'sel-btn img';
+                })
+            }
+
+            if (csv) {
+                csv.addEventListener('click',  (e) => {
+                    infosDiv.innerHTML = infosLabel;
+                    const classC = `${e.target.className}`;
+                    if (classC.endsWith('choose')) {
+                        csv.className = 'sel-btn excel';
+                        return;
+                    }
+                    csv.className = 'sel-btn excel choose';
+                    xls.className = 'sel-btn excel';
+                    png.className = 'sel-btn img';
+                })
+            }
+
+            if (png) {
+                png.addEventListener('click',  (e) => {
+                    infosDiv.innerHTML = '<p style="margin: 9px;"></p>';
+                    const classP = `${e.target.className}`;
+                    if (classP.endsWith('choose')) {
+                        png.className = 'sel-btn img';
+                        infosDiv.innerHTML = infosLabel;
+                        return;
+                    }
+                    png.className = 'sel-btn img choose';
+                    csv.className = 'sel-btn excel';
+                    xls.className = 'sel-btn excel';
+                })
+            }
+        })
+    }
+
+    const download2 = document.getElementById('info-download-btn2');
+    if (download2) {
+        download2.addEventListener('click', () => {
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                width: '35vw',
+                title: 'Baixar informações',
+                html: `
+                    <div class="swal2-html-container" id="extension-div">
+                        <label for="sel-format" class="swal2-html-text">Selecione o tipo de arquivo</label>
+                        <div class="checks-container"><br>
+                            <span class="sel-btn excel" id="xls2">XLS</span>
+                            <span class="sel-btn excel" id="csv2">CSV</span>
+                            <span class="sel-btn img" id="png2">PNG</span>
+                            <canvas id="canvas2" style="display:none;"></canvas>
+                        <div><br>
+                        <div class="swal2-html-container" id="add-infos-div">
+                            <label class="checkbox-container" id="infos-option2">
+                                <input
+                                    type="checkbox"
+                                    name="checkbox"
+                                    class="checkbox"
+                                    id="checkbox2"
+                                />
+                                <span class="checkmark"></span>
+                                Adicionar dados de contagem
+                            </label>
+                        </div>
+                        <div class="swal2-html-container" id="name-download-div">
+                            <input type="text" class="swal2-input" id="name-download2" placeholder="Nome do arquivo">
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Baixar',
+                confirmButtonColor: '#2f5cf3',
+                preConfirm: async () => {
+                    var xlsClass = `${document.getElementById('xls2').className}`;
+                    var csvClass = `${document.getElementById('csv2').className}`;
+                    var pngClass = `${document.getElementById('png2').className}`;
+                    var checkButton = null;
+                    if (!pngClass.endsWith('choose')) checkButton = document.getElementById('checkbox2').checked;
+                    const canvas = document.getElementById('canvas2');
+                    const nameValue = document.getElementById('name-download2').value;
+
+                    countReportsByMonth().then(resp => {
+                        
+                        const spected = Object.values(resp[4]);
+                        const delayed = Object.values(resp[5]);
+                        const onTime = Object.values(resp[6]);
+                        const inAdvance = Object.values(resp[7]);
+
+                        spected.unshift("Ainda não concluídos");
+                        delayed.unshift("Em andamento atrasados");
+                        onTime.unshift("Concluídos com adiantamento ou a tempo");
+                        inAdvance.unshift("Concluídos com atraso");
+                        
+                        const dados = [
+                            ['Status', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                            spected,
+                            delayed,
+                            onTime,
+                            inAdvance
+                        ];
+                        function download (dados) {
+                            if (xlsClass.endsWith('choose')) {
+                                function gerarXLSXml(rows) {
+                                    const cel = v => `<Cell><Data ss:Type="String">${String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</Data></Cell>`;
+                                    const linhas = rows.map(r => `<Row>${r.map(cel).join('')}</Row>`).join('');
+                                    const xml = `
+                                        <?xml version="1.0"?>
+                                        <?mso-application progid="Excel.Sheet"?>
+                                        <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+                                                    xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+                                            <Worksheet ss:Name="Planilha1">
+                                            <Table>${linhas}</Table>
+                                            </Worksheet>
+                                        </Workbook>
+                                    `;
+                                    return xml.trim();
+                                }
+
+                                const xml = gerarXLSXml(dados);
+                                const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `${nameValue}.xls`;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
+                                    
+                            } else if (csvClass.endsWith('choose')) {
+
+                                function arrayToCSV(rows, spacer = ';') {
+                                    return rows.map(row =>
+                                        row.map(cell => {
+                                        const s = String(cell ?? '');
+                                        if (s.includes('"') || s.includes(spacer) || s.includes('\n')) {
+                                            return '"' + s.replace(/"/g, '""') + '"';
+                                        }
+                                        return s;
+                                        }).join(spacer)
+                                    ).join('\r\n');
+                                }
+
+                                const BOM = '\uFEFF';
+                                const headerSep = 'sep=;\r\n';
+                                const csv = BOM + headerSep + arrayToCSV(dados, ';');
+                                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `${nameValue}.csv`;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
+
+
+                                    
+
+                            } else if (pngClass.endsWith('choose')) {
+                                const cellPaddingX = 10;
+                                const cellPaddingY = 8;
+                                const headerBg = '#1976d2';
+                                const headerColor = '#fff';
+                                const rowBg1 = '#ffffff';
+                                const rowBg2 = '#fafafa';
+                                const borderColor = '#ddd';
+                                const fontSpec = '16px Arial';
+                                const padding = 12;
+
+                                function calculateWidth(ctx, rows) {
+                                    const cols = rows[0].length;
+                                    const widths = new Array(cols).fill(0);
+                                    for (let r = 0; r < rows.length; r++) {
+                                        for (let c = 0; c < cols; c++) {
+                                        const text = String(rows[r][c] ?? '');
+                                        const w = ctx.measureText(text).width + cellPaddingX * 2;
+                                        if (w > widths[c]) widths[c] = w;
+                                        }
+                                    }
+                                    return widths;
+                                }
+
+                                function drawCanvasTable(rows) {
+                                    const dpr = window.devicePixelRatio || 1;
+                                    const sample = document.createElement('canvas');
+                                    const sctx = sample.getContext('2d');
+                                    sctx.font = fontSpec;
+                                    const colWidths = calculateWidth(sctx, rows);
+                                    const cols = colWidths.length;
+                                    const rowHeight = parseInt(fontSpec, 10) + cellPaddingY * 2;
+                                    const width = colWidths.reduce((a,b) => a + b, 0) + padding * 2;
+                                    const height = rows.length * rowHeight + padding * 2;
+
+                                    canvas.width = Math.round(width * dpr);
+                                    canvas.height = Math.round(height * dpr);
+                                    canvas.style.width = width + 'px';
+                                    canvas.style.height = height + 'px';
+
+                                    const ctx = canvas.getContext('2d');
+                                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                                    ctx.font = fontSpec;
+                                    ctx.textBaseline = 'middle';
+
+                                    ctx.fillStyle = '#fff';
+                                    ctx.fillRect(0, 0, width, height);
+
+                                    const xStart = padding;
+                                    const yStart = padding;
+                                    for (let r = 0; r < rows.length; r++) {
+                                        const y = yStart + r * rowHeight;
+                                        ctx.fillStyle = (r === 0) ? headerBg : ((r % 2 === 0) ? rowBg1 : rowBg2);
+                                        ctx.fillRect(xStart, y, colWidths.reduce((a,b) => a + b, 0), rowHeight);
+
+                                        let x = xStart;
+                                        for (let c = 0; c < cols; c++) {
+                                        ctx.strokeStyle = borderColor;
+                                        ctx.lineWidth = 1;
+                                        ctx.strokeRect(x, y, colWidths[c], rowHeight);
+
+                                        const text = String(rows[r][c] ?? '');
+                                        ctx.fillStyle = (r === 0) ? headerColor : '#000';
+                                        ctx.fillText(text, x + cellPaddingX, y + rowHeight / 2);
+
+                                        x += colWidths[c];
+                                        }
+                                    }
+                                    return canvas;
+                                }
+
+                                function downloadCanvasWithPNG(canvas, filename = 'tabela.png') {
+                                    if (canvas.toBlob) {
+                                        canvas.toBlob(function(blob) {
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = filename;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                        URL.revokeObjectURL(url);
+                                        }, 'image/png');
+                                    } else {
+                                        const dataUrl = canvas.toDataURL('image/png');
+                                        const a = document.createElement('a');
+                                        a.href = dataUrl;
+                                        a.download = filename;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        document.body.removeChild(a);
+                                    }
+                                }
+
+                                const canva = drawCanvasTable(dados);
+                                downloadCanvasWithPNG(canva, `${nameValue}.png`);
+                            }
+                        }
+                        download(dados)
+                   })
+                }
+            });
+
+            const xls = document.getElementById('xls2');
+            const csv = document.getElementById('csv2');
+            const png = document.getElementById('png2');
+
+            const infosDiv = document.getElementById('infos-option2');
+            //document.getElementById('infos-option');
+            const infosLabel = `
+                <input
+                    type="checkbox"
+                    name="checkbox"
+                    class="checkbox"
+                    id="checkbox2"
                 />
                 <span class="checkmark"></span>
                 Adicionar dados de contagem
