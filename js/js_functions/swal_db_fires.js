@@ -2241,7 +2241,8 @@ export async function searchFor (
             if (reference.exists()) {
                 
                 for(const repID in reportRef){
-                    if (repID.startsWith(content)) {
+                    const title = `${reportRef[repID]?.content?.title || reportRef[repID]?.content?.text}`
+                    if (title.startsWith(content)) {
                         const report = document.createElement('div')
                         report.className = 'chamado-card s-card'
                         report.id = repID
@@ -2271,16 +2272,10 @@ export async function searchFor (
                         readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp )
                        
                         if (reportRef[repID].dates) {
-                            if (reportRef[repID].content?.title) {
-                                reportContents[repID] = reportRef[repID].content?.title
-                            }
-                            else
-                            {
-                                reportContents[repID] = 'Sem Título para exibir'
-                            }
+                            reportContents[repID] = reportRef[repID].content?.title || 'Sem Título para exibir'
                 
                             const repIDElement = document.createElement('p')
-                            repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`
+                            repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> ${reportRef[repID].selected_obj.sel_lab_id}`
                                 
                             if (document.getElementById('response')) {
                                 document.getElementById('response').innerHTML = ''
@@ -2292,16 +2287,10 @@ export async function searchFor (
                         }
                         else
                         {
-                            if (reportRef[repID].content?.text) {
-                                reportContents[repID] = reportRef[repID].content?.text
-                            }
-                            else
-                            {
-                                reportContents[repID] = 'Sem Título para exibir'
-                            }
+                            reportContents[repID] = reportRef[repID].content?.text || 'Sem Título para exibir'
                 
                             const repIDElement = document.createElement('p')
-                            repIDElement.innerHTML = `<strong>${repID}</strong><br> ${reportContents[repID]}`
+                            repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> ${reportRef[repID].content.local}`
                 
                             if (document.getElementById('response')) {
                                 document.getElementById('response').innerHTML = ''

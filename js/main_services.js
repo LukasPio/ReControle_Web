@@ -63,8 +63,9 @@ async function search (value) {
         data.user++
       }
     }
-    for (const Id in calls) {
-      if (Id.startsWith(value)){
+    for (const id in calls) {
+      const call = `${calls[id]?.content?.title || calls[id]?.content?.text}`
+      if (call.startsWith(value)){
         data.report++
       }
     }

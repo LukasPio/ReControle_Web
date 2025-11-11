@@ -485,18 +485,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             <span class="sel-btn img" id="png2">PNG</span>
                             <canvas id="canvas2" style="display:none;"></canvas>
                         <div><br>
-                        <div class="swal2-html-container" id="add-infos-div">
-                            <label class="checkbox-container" id="infos-option2">
-                                <input
-                                    type="checkbox"
-                                    name="checkbox"
-                                    class="checkbox"
-                                    id="checkbox2"
-                                />
-                                <span class="checkmark"></span>
-                                Adicionar dados de contagem
-                            </label>
-                        </div>
                         <div class="swal2-html-container" id="name-download-div">
                             <input type="text" class="swal2-input" id="name-download2" placeholder="Nome do arquivo">
                         </div>
@@ -510,8 +498,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     var xlsClass = `${document.getElementById('xls2').className}`;
                     var csvClass = `${document.getElementById('csv2').className}`;
                     var pngClass = `${document.getElementById('png2').className}`;
-                    var checkButton = null;
-                    if (!pngClass.endsWith('choose')) checkButton = document.getElementById('checkbox2').checked;
                     const canvas = document.getElementById('canvas2');
                     const nameValue = document.getElementById('name-download2').value;
 
@@ -700,22 +686,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const csv = document.getElementById('csv2');
             const png = document.getElementById('png2');
 
-            const infosDiv = document.getElementById('infos-option2');
-            //document.getElementById('infos-option');
-            const infosLabel = `
-                <input
-                    type="checkbox"
-                    name="checkbox"
-                    class="checkbox"
-                    id="checkbox2"
-                />
-                <span class="checkmark"></span>
-                Adicionar dados de contagem
-            `;
 
             if (xls) {
                 xls.addEventListener('click',  (e) => {
-                    infosDiv.innerHTML = infosLabel;
                     const classX = `${e.target.className}`;
                     if (classX.endsWith('choose')) {
                         xls.className = 'sel-btn excel';
@@ -729,7 +702,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (csv) {
                 csv.addEventListener('click',  (e) => {
-                    infosDiv.innerHTML = infosLabel;
                     const classC = `${e.target.className}`;
                     if (classC.endsWith('choose')) {
                         csv.className = 'sel-btn excel';
@@ -747,7 +719,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     const classP = `${e.target.className}`;
                     if (classP.endsWith('choose')) {
                         png.className = 'sel-btn img';
-                        infosDiv.innerHTML = infosLabel;
                         return;
                     }
                     png.className = 'sel-btn img choose';
