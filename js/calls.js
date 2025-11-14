@@ -10,12 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loading.fire();
 
-    readReports(null, 'general');
+    readReports('general');
 
     const writeReportBtn = document.getElementById('reportButton');
     if (writeReportBtn) {
         writeReportBtn.addEventListener('click', () => {
-            readReports(null, 'data').then(resp => {
+            readReports('data').then(resp => {
                 const data = {},
                 priorityData = {};
                 for (const id in resp ) {
@@ -57,4 +57,34 @@ document.addEventListener('DOMContentLoaded', () => {
             })
         })            
     }
+
+    const redButton = document.getElementById('red-btn');
+    if (redButton) {
+        console.log('a')
+        redButton.addEventListener('click', () => {
+            localStorage.setItem('status-calls', 'red');
+            console.log(localStorage.getItem('status-calls'))
+            //window.location.href = './status.calls.html';
+        })
+    }
+
+    const yellowButton = document.getElementById('yellow-btn');
+    if (yellowButton) {
+        yellowButton.addEventListener('click', () => {
+            localStorage.setItem('status-calls', 'yellow');
+            console.log(localStorage.getItem('status-calls'))
+            //window.location.href = './status.calls.html';
+        })
+    }
+
+    const greenButton = document.getElementById('green-btn');
+    if (greenButton) {
+        console.log('a')
+        greenButton.addEventListener('click', () => {
+            localStorage.setItem('status-calls', 'green');
+            console.log(localStorage.getItem('status-calls'))
+            //window.location.href = './status.calls.html';
+        })
+    }
+
 })

@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('add-div').appendChild(button)
     }
 
-    readObjects(null, 'content');
+    readObjects('content');
 
     onAuthStateChanged(auth, (user) => {
         const addObj = document.getElementById('obj-add-btn');

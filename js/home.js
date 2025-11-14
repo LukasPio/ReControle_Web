@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loading.fire()
 
-    readReports(null, 'general-home');
+    readReports('general-home');
 
     const chamados = document.getElementById('chamados-home');
     if (chamados) {

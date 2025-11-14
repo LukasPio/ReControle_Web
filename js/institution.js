@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
       desc.innerHTML = `<strong>${labURLDesc[labID][1]}</strong>`;
 
       //Verificação da existência de ocorrências relacionadas ao laboratório referente.
-      readReports(null, "data").then((resp) => {
+      readReports("data").then((resp) => {
         var int1 = 0,
           int2 = 0;
         for (const ID in resp) {
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  readObjects(null, "general").then((objectRef) => {
+  readObjects("general").then((objectRef) => {
     var i = 0;
     document.getElementById("objs").innerHTML = "";
     for (const ID in objectRef) {
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
         object.className = "object-card";
 
         //status da ocorrência no objeto (última criada)
-        readReports(null, "data").then((resp) => {
+        readReports("data").then((resp) => {
           for (const Id in resp) {
             if (resp[Id].dates) {
               if (resp[Id].selected_obj.sel_obj_id == ID) {

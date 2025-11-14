@@ -6,7 +6,7 @@ import {
   //updateProfile,
 } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js";
 import { firebaseConfig, hrefsConfig } from "./js_config/Config.js";
-import {excludeObjects, excludeReports, readAll, readUsers} from './js_functions/realtime_db.js';
+import {excludeRamification, readAll, readUsers} from './js_functions/realtime_db.js';
 import {searchFor, swalFireLookForLaboratory, swalFireLookForObject, swalFireLookForOcurrence, swalFireLookForUser} from './js_functions/swal_db_fires.js';
 // Inicializa Firebase
 toString;
@@ -167,13 +167,12 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  excludeReports();
-  excludeObjects();
+  excludeRamification();
 
   const containerR = document.getElementById('chamados');
   if (containerR) {
     containerR.addEventListener('click', function (e) {
-      if (e.target.className != 'chamados' && e.target.id != 'chamados' && e.target.className != 'h2-calls') {
+      if (e.target.className != 'chamados' && e.target.id != 'chamados' && e.target.className != 'h2-calls' && e.target.tagName != 'UL') {
         swalFireLookForOcurrence(e.target.closest('.chamado-card').attributes.data_id.value)
       }
     })

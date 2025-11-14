@@ -10,8 +10,7 @@ import {
     verifyObject,
     writeObjectData,
     writeUserData,
-    setExcludingWeb,
-    setExcludingMobile,
+    setExcluding,
     setConcluded
 
 } from './realtime_db.js';
@@ -36,7 +35,7 @@ import {
     onAuthStateChanged 
 } from   'https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js';
 import { firebaseConfig } from "../js_config/Config.js";
-import { errorSwalResponse } from './swal_fire_errors.js';
+// import { errorSwalResponse } from './swal_fire_errors.js';
 
 export async function createReportSwal (
     title,
@@ -54,7 +53,7 @@ export async function createReportSwal (
 
     // Todos os problemas previsíveis possíveis
 
-    readObjects(null, 'general').then(resp => {
+    readObjects('general').then(resp => {
         selectData = '<option value="none"></option>';
         for (const id in resp) {
             selectData += `<option value="${id}"> ${id} </option>`
@@ -191,7 +190,7 @@ export async function createReportSwal (
                 timestamp = new Date().getTime();
 
                 if (priority) {
-                    readReports(null, 'data').then(response => {
+                    readReports('data').then(response => {
                         const data = {};
                         if (Object.values(response).length > 0) {
                             for (const id in response) {
@@ -211,10 +210,10 @@ export async function createReportSwal (
                     })
                 }
                 else {
-                    priority = 'low'
+                    priority = document.getElementById('priority').value || 'low'
                 }
 
-                readObjects(newSelectedObject, 'lab-id').then(resp => {
+                readObjects('lab-id', newSelectedObject).then(resp => {
 
                     try {
                         writeReportsData(
@@ -265,7 +264,7 @@ async function updateReportSwal (
 ) {
     var spectedDate = 0;
     var file, oldComments = '';
-    readReports(reportID, 'text-content').then(resp => {
+    readReports('text-content', reportID).then(resp => {
         var text, comment;
         if (resp.title) {
             text = `
@@ -382,7 +381,7 @@ async function updateReportSwal (
                         value="${resp.local}"
                     >
                 </div>
-                <div class="swal2-html-container">
+                <div class="swal2-html-container" id="status-div">
                     <label for="status" class="swal2=html-text">Progresso da Ocorrência</label>
                     <select
                         id="status"
@@ -445,7 +444,7 @@ async function updateReportSwal (
         spectedDiv.className = 'swal2-html-container';
         spectedDiv.id = 'spected-div';
         spectedDiv.innerHTML = `
-            <label for="spected" class="swal2=html-text">Adicione um comentário</label><br>
+            <label for="spected" class="swal2=html-text">Data esperada</label><br>
         `;
         const spectedElement = document.createElement('input');
         spectedElement.className = 'swal2-input';
@@ -494,17 +493,18 @@ async function updateReportSwal (
                     })
                     
                 })
-                readReports(reportID, 'data').then(data => {
-                    localStorage.setItem('changed-date', data.changed_date || 0)
+                readReports('data', reportID).then(data => {
+                    localStorage.setItem('changed-date', data?.changed_date || 0)
                 })
                 oldComments += ` Data do comentário (${statusComment}) - ${localStorage.getItem('changed-date')? new Date().toUTCString().slice(5).slice(0, -13) : new Date(localStorage.getItem('changed-date')).toUTCString().slice(5).slice(0, -13)} <br> Feito por ${localStorage.getItem('useruid')}: <br> ${comment} `;
                 if (resp.title) {
                     if (document.getElementById('status').value == 'green') {
                         initializeApp(firebaseConfig);
-                        setExcludingWeb(
+                        setExcluding(
                             reportID, 
                             localStorage.getItem('useruid'), 
-                            new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime()
+                            new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime(),
+                            'reports'
                         )
                         setConcluded(
                             reportID,
@@ -535,10 +535,12 @@ async function updateReportSwal (
                 {
                     if (document.getElementById('status').value == 'green') {
                         initializeApp(firebaseConfig);
-                        setExcludingMobile(
+                        setExcluding(
                             reportID, 
                             localStorage.getItem('useruid'), 
-                            new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime()
+                            new Date(new Date().setMonth(new Date().getMonth() + 3)).getTime(),
+                            'reports',
+                            false
                         )
                         setConcluded(
                             reportID,
@@ -580,12 +582,12 @@ async function updateReportSwal (
 
         const status = document.getElementById('status');
 
-        if (!priority) priority = document.getElementById('priority').value;
+        if (!priority) priority = document.getElementById('priority')?.value || '';
 
         if (status) {
             status.addEventListener('change', (e) => {
                 if (resp.status != e.target.value) {
-                    document.getElementById('status-div').appendChild(comments)
+                     document.getElementById('status-div').appendChild(comments);
                     if (e.target.value == 'yellow')
                         document.getElementById('status-div').appendChild(spectedDiv);
                         
@@ -602,8 +604,8 @@ async function updateReportSwal (
         }
         if (spectedElement) {
             if (spectedDate == 0) {
-                readReports(reportID, 'general').then(resp => {
-                    spectedElement.value = new Date(resp?.dates?.spected_date).toISOString().slice(0, 16) || new Date().toISOString().slice(0, 16);
+                readReports('general', reportID).then(resp => {
+                    spectedElement.value = new Date(Number(resp?.dates?.spected_date) == 0? null : Number(resp?.dates?.spected_date) || null).toISOString().slice(0, 16);
                     localStorage.setItem('data-e', resp?.dates?.spected_date)
                 })
                 spectedDate = localStorage.getItem('data-e');
@@ -632,7 +634,7 @@ export async function swalFireLookForOcurrence (
     reportID
 ) {
 
-    readReports(reportID, 'general').then(resp => {
+    readReports('general', reportID).then(resp => {
         var text = '', priority;
         switch (resp.content.priority) {
             case 'high':    priority = 'Alta'; break;
@@ -664,6 +666,13 @@ export async function swalFireLookForOcurrence (
                     </center>
                 </div>`;
         }
+        var spectedText = '';
+        if (resp?.dates?.spected_date) {
+            spectedText = resp.dates.spected_date == 0? 'Sem data' : new Date(Number(resp.dates.spected_date)).toUTCString().slice(0, -4).slice(5)
+        }
+        else {
+            spectedText = 'Sem data'
+        }
         const swalLook = reControleSwal.mixin({
             title: 'Ocorrência',
             imageUrl: `${imageElement}`,
@@ -674,7 +683,7 @@ export async function swalFireLookForOcurrence (
             preConfirm: async () => updateReportSwal(reportID, userUID, priority),
         });
         if (resp.selected_obj) {
-            readObjects(resp.selected_obj.sel_obj_id, 'class-type').then(classType => {
+            readObjects('class-type', resp.selected_obj.sel_obj_id).then(classType => {
                 swalLook.update({
                     title: resp.content?.title,
                     html: `
@@ -773,7 +782,7 @@ export async function swalFireLookForOcurrence (
                                         border-color: #D3D3D3;
                                         background-color: #f5f5f5;'
                                 >
-                                    ${resp.dates.spected_date == 0? 'Sem data' : new Date(Number(resp.dates.spected_date)).toUTCString().slice(0, -4).slice(5)}
+                                    ${spectedText}
                                 </p>
                             </center>
                         </div>
@@ -781,117 +790,127 @@ export async function swalFireLookForOcurrence (
                     preDeny: async () => {
                         initializeApp(firebaseConfig);
                         onAuthStateChanged(getAuth(), (user) => {
-                            setExcludingWeb(
+                            setExcluding(
                                 reportID, 
                                 user.uid, 
-                                new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime()
+                                new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime(),
+                                'reports'
                             ).then(successToastSwal.fire({title: 'Ocorrência datada para ser excluída em 1 mês'}))
                         })
                     }
                 })
-                
             });
+            if (localStorage.getItem('rank') == 3) {
+                swalLook.fire()                
+            }
+            else {
+                swalLook.fire({
+                    showConfirmButton: false,
+                    showDenyButton: false
+                })
+            }
         }
         else
         {
-            text = `
-                <div class='swal2-html-container' id='swal2-html-container'>
-                    <label for='report-desc' style='font-weight:bold;'> Descrição </label>
-                    <center>
-                        <p id='report-desc' style=' 
-                                height: 20vh;
+            const newSawlLook = swalLook.mixin({
+                html: `
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='report-desc' style='font-weight:bold;'> Descrição </label>
+                        <center>
+                            <p id='report-desc' style=' 
+                                    height: 20vh;
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${resp.content?.text}
+                            </p>
+                        </center>
+                    </div>
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='class' style='font-weight:bold;'> Classe </label>
+                        <center>
+                            <p id='class' style=' 
+                                    height: 4vh;
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${resp.content?.category}
+                            </p>
+                        </center>
+                    </div>
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='local' style='font-weight:bold;'> Local selecionado </label>
+                        <center>
+                            <p id='local' style=' 
+                                    height: 4vh;
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${resp.content?.local}
+                            </p>
+                        </center>
+                    </div>
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='date' style='font-weight:bold;'> Data de criação </label>
+                        <center>
+                            <p id='date' style=' 
+                                    height: 4vh;
+                                    width:55vw;
+                                    border:1px solid black;
+                                    border-radius:15px;
+                                    border-color: #D3D3D3;
+                                    background-color: #f5f5f5;'
+                            >
+                                ${new Date(resp.content?.timestamp).toUTCString().slice(0, -4).slice(5)}
+                            </p>
+                        </center>
+                    </div>
+                    <div class='swal2-html-container' id='swal2-html-container'>
+                        <label for='date-time' style='font-weight:bold;'> Data prevista para ser concluída </label>
+                        <center>
+                            <p id='date-time' style='
                                 width:55vw;
                                 border:1px solid black;
                                 border-radius:15px;
                                 border-color: #D3D3D3;
                                 background-color: #f5f5f5;'
-                        >
-                            ${resp.content?.text}
-                        </p>
-                    </center>
-                </div>
-                <div class='swal2-html-container' id='swal2-html-container'>
-                    <label for='class' style='font-weight:bold;'> Classe </label>
-                    <center>
-                        <p id='class' style=' 
-                                height: 4vh;
-                                width:55vw;
-                                border:1px solid black;
-                                border-radius:15px;
-                                border-color: #D3D3D3;
-                                background-color: #f5f5f5;'
-                        >
-                            ${resp.content?.category}
-                        </p>
-                    </center>
-                </div>
-                <div class='swal2-html-container' id='swal2-html-container'>
-                    <label for='local' style='font-weight:bold;'> Local selecionado </label>
-                    <center>
-                        <p id='local' style=' 
-                                height: 4vh;
-                                width:55vw;
-                                border:1px solid black;
-                                border-radius:15px;
-                                border-color: #D3D3D3;
-                                background-color: #f5f5f5;'
-                        >
-                            ${resp.content?.local}
-                        </p>
-                    </center>
-                </div>
-                <div class='swal2-html-container' id='swal2-html-container'>
-                    <label for='date' style='font-weight:bold;'> Data de criação </label>
-                    <center>
-                        <p id='date' style=' 
-                                height: 4vh;
-                                width:55vw;
-                                border:1px solid black;
-                                border-radius:15px;
-                                border-color: #D3D3D3;
-                                background-color: #f5f5f5;'
-                        >
-                            ${new Date(resp.content?.timestamp).toUTCString().slice(0, -4).slice(5)}
-                        </p>
-                    </center>
-                </div>
-                <div class='swal2-html-container' id='swal2-html-container'>
-                            <label for='date-time' style='font-weight:bold;'> Data prevista para ser concluída </label>
-                                <center>
-                                <p id='date-time' style='
-                                        width:55vw;
-                                        border:1px solid black;
-                                        border-radius:15px;
-                                        border-color: #D3D3D3;
-                                        background-color: #f5f5f5;'
-                                >
-                                    ${resp.dates.spected_date == 0? 'Sem data' : new Date(Number(resp.dates.spected_date)).toUTCString().slice(0, -4).slice(5)}
-                                </p>
-                            </center>
-                        </div>
-            ` + text;
-            swalLook.update({
-                html: text,
+                            >
+                                ${spectedText}
+                            </p>
+                        </center>
+                    </div>
+                ` + text,
                 preDeny: async () => {
                     initializeApp(firebaseConfig);
                     onAuthStateChanged(getAuth(), (user) => {
-                        setExcludingMobile(
+                        setExcluding(
                             reportID, 
                             user.uid, 
-                            new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime()
+                            new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime(),
+                            'reports',
+                            false
                         ).then(successToastSwal.fire({title: 'Ocorrência datada para ser excluída em 1 mês'}))
                     })
                 }
             })
-        }
-        if (localStorage.getItem('rank') == 3) {
-            swalLook.fire()                
-        }
-        else {
-            swalLook.fire({
-                showConfirmButton: false,
-                showDenyButton: false
-            })
+            if (localStorage.getItem('rank') == 3) {
+                newSawlLook.fire()                
+            }
+            else {
+                newSawlLook.fire({
+                    showConfirmButton: false,
+                    showDenyButton: false
+                })
+            }
         }
     })    
 }
@@ -1452,10 +1471,7 @@ export async function swalFireLookForUser (
 export async function createObjectSwal () {
 
     var objName,
-    objType,
-    desc,
     inputValue,
-    objClass,
     labData = '<option value="none"></option>',
     objClassData = '<option value="none"></option>',
     objTypeData = '<option value="none"></option>',
@@ -1465,7 +1481,7 @@ export async function createObjectSwal () {
         for(const Id in resp) {
             labData += `<option value="${Id}">${Id}</option>`;
         }
-        readObjects(null, 'general').then( objResp => {
+        readObjects('general').then( objResp => {
             const dataTypeE = {};
             const dataTypeM = {};
             const dataElse = {};
@@ -1678,7 +1694,7 @@ export async function createObjectSwal () {
                             })
                         }
                         if (verifyObject()){
-                            readObjects(null, 'general').then(object => {
+                            readObjects('general').then(object => {
                                 for (const Id in object) {
                                     if (object[Id].obj_class != localStorage.getItem('old-class')) {
                                         objClassData += `<option value="${object[Id].obj_class}">${object[Id].obj_class}</option>`
@@ -1846,7 +1862,7 @@ export async function createObjectSwal () {
 async function updateObjectSwal(
     objectId
 ) {
-    readObjects(null, 'general').then(resp => {
+    readObjects('general').then(resp => {
         var typeData = '<option value="none"></option>';
         for (const Id in resp) {
             if (localStorage.getItem('old-value') != resp[Id].obj_type)
@@ -1975,7 +1991,7 @@ async function updateObjectSwal(
 export async function swalFireLookForObject (
     objectId
 ) {
-    readObjects(objectId, 'general').then(resp => {
+    readObjects('general', objectId).then(resp => {
         reControleSwal.fire({
             title: resp.name,
             html: `
@@ -2054,7 +2070,7 @@ export async function swalFireLookForObject (
             },
             preDeny: async () => {
                 onAuthStateChanged(getAuth(), (user) => {
-                    setExcludingWeb(
+                    setExcluding(
                         objectId,
                         user.uid, 
                         new Date(new Date().setMonth(new Date().getMonth() + 1)).getTime(),
@@ -2132,7 +2148,7 @@ export async function searchFor (
 
                         const object = document.createElement('div')
                         object.className = 'object-card s-card'
-                        readReports(null, 'data').then(resp => {
+                        readReports('data').then(resp => {
                             for (const ID in resp) {
                                 if (resp[ID].selected_obj.sel_obj_id == Id) {
                                     switch (resp[ID].content.status) {

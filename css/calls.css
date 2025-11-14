@@ -352,3 +352,22 @@ input[type="search"]:focus {
     font-size: 14px;
   }
 }
+
+.status {
+  margin-top: 5vh;
+  margin-left: 5vh;
+}
+
+svg {
+  cursor: pointer;
+}
+
+svg:hover {
+  transform: scale(1.2);
+}
+
+.status-btn {
+  font-weight: 100;
+  cursor: pointer;
+  color: #374151;
+}

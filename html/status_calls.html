@@ -14,7 +14,7 @@
     <!-- Módulos de serviço e autenticação -->
     <script type="module" src="../js/services.js" defer></script>
     <script type="module" src="../js/main_services.js" defer></script>
-    <script type="module" src="../js/calls.js" defer></script>
+    <script type="module" src="../js/status_calls.js" defer></script>
   </head>
   <body>
     <aside class="sidebar">
@@ -50,17 +50,12 @@
         </div>
       </header>
 
-      <section class="dashboard" id="main">
-        <h1>Chamados</h1><br>
+      <a href="./calls.html"><svg class="link status" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></a>
+      <section class="dashboard">
         <div id="chamados">
-          <div id="red" class="chamados"></div>
-          <div id="yellow" class="chamados"></div>
-          <div id="green" class="chamados"></div>
+            
         </div>
       </section>
-      <div class="report-changes">
-        <button class="btn-create-rep" id="reportButton">Criar Ocorrência</button>
-      </div>
     </main>
   </body>
 </html>

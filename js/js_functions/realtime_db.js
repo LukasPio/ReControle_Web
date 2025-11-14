@@ -290,7 +290,7 @@ export async function readUsers(userID, contentType) {
 }
 
 // Função para realizar todas as tarefas de leitura de occorrências
-export async function readReports(reportID, contentType) {
+export async function readReports(contentType, reportID = null, statusCalls = 'red') {
   const dbRef = ref(getDatabase());
   const reference = await get(child(ref(getDatabase()), "reports"));
   const reportRef = reference.val();
@@ -388,8 +388,19 @@ export async function readReports(reportID, contentType) {
                   statusElement.className = 'status-pendente';
                   if (iRed == 0 ) {
                     red.innerHTML = `
-                      <h2 class='h2-calls'>Pendentes</h2>
-                      <!--<ul  align="right" ><a href="./laboratory.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg></a></ul>-->
+                      <h2 class='h2-calls'>
+                        Pendentes
+                        <ul 
+                          align="right" 
+                          onclick="
+                            localStorage.setItem('status-calls', 'red');
+                            window.location.href = './status_calls.html';" 
+                            id="red-btn"
+                            class="status-btn"
+                        >
+                          Ver mais
+                        </ul>
+                      </h2>
                     `;
                     iRed++;
                   }
@@ -400,8 +411,19 @@ export async function readReports(reportID, contentType) {
                   statusElement.className = 'status-andamento';
                   if (iYellow == 0 ) {
                     yellow.innerHTML = `
-                      <h2 class='h2-calls'>Em andamento</h2>
-                      <!--<ul  align="right" ><a href="./laboratory.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg></a></ul>-->
+                      <h2 class='h2-calls'>
+                        Em andamento
+                        <ul 
+                          align="right" 
+                          onclick="
+                            localStorage.setItem('status-calls', 'yellow');
+                            window.location.href = './status_calls.html';" 
+                            id="yellow-btn"
+                            class="status-btn"
+                        >
+                          Ver mais
+                        </ul>
+                      </h2>
                     `;
                     iYellow++;
                   }
@@ -412,8 +434,19 @@ export async function readReports(reportID, contentType) {
                   statusElement.className = 'status-concluido';
                   if (iGreen == 0 ) {
                     green.innerHTML = `
-                      <h2 class='h2-calls'>Concluídos</h2>
-                      <!--<ul  align="right" ><a href="./laboratory.html"><svg class="link" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#434343"><path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/></svg></a></ul>-->
+                      <h2 class='h2-calls'>
+                        Concluídos 
+                        <ul 
+                          align="right" 
+                          onclick="
+                            localStorage.setItem('status-calls', 'green');
+                            window.location.href = './status_calls.html';" 
+                            id="green-btn"
+                            class="status-btn"
+                        >
+                          Ver mais
+                        </ul>
+                      </h2>
                     `;
                     iGreen++;
                   }
@@ -460,6 +493,69 @@ export async function readReports(reportID, contentType) {
         }
         break;
 
+      // trará todos os chamados com o conteúdo e o seu ID
+      case "general-status":
+        if (reference.exists()) {
+          for (const repID in reportRef) {
+            if (reportRef[repID].content.status == statusCalls) {
+              const report = document.createElement("div");
+              report.className = "chamado-card";
+              report.setAttribute('data_id', repID);
+
+              const statusAuthorDiv = document.createElement("div");
+              statusAuthorDiv.style = "padding-top: 3px;";
+              const statusElement = document.createElement("p");
+
+              if (!reportRef[repID].content.deleted && !reportRef[repID].deleted || reportRef[repID].content.status == 'green') {
+                // Pega o estado (red - yellow - green)
+                switch (reportRef[repID].content.status) {
+                  case "red":
+                    statusElement.innerHTML = "<center>Pendente</center>";
+                    statusElement.className = 'status-pendente';
+                    document.getElementById('chamados').innerHTML = ` <h2 class='h2-calls'>Pendentes</h2><br> `;      
+                  break;
+
+                  case "yellow":
+                    statusElement.innerHTML = "<center>Em andamento</center>";
+                    statusElement.className = 'status-andamento';
+                    document.getElementById('chamados').innerHTML = ` <h2 class='h2-calls'>Em andamento</h2><br> `;      
+                  break;
+
+                  case "green":
+                    statusElement.innerHTML = "<center>Concluído</center>";
+                    statusElement.className = 'status-concluido';
+                    document.getElementById('chamados').innerHTML = ` <h2 class='h2-calls'>Concluídos</h2><br> `;      
+                  break;
+                }
+              }
+
+              const userElement = document.createElement("p");
+              userElement.className = 'autor';
+              readUsers(reportRef[repID].content.autor, "user-name").then(
+                (resp) => (userElement.innerHTML = `<center>${resp}</center>` || '<center>Autor não disponível</center>')
+              );
+
+              reportContents[repID] = reportRef[repID].content?.title || reportRef[repID].content?.text || "Sem Título para exibir";
+              const repIDElement = document.createElement("p");
+              repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> `;
+
+              const localAndData = document.createElement("p");
+              localAndData.innerHTML = `
+                ${reportRef[repID].selected_obj?.sel_lab_id || reportRef[repID].content?.local}
+              `;
+              report.appendChild(repIDElement);
+              report.appendChild(localAndData);
+              report.appendChild(statusElement);
+              report.appendChild(userElement);
+              report.appendChild(statusAuthorDiv);
+              if (reportRef[repID].content.status) {
+                document.getElementById('chamados').appendChild(report);
+              } 
+            }   
+          }
+        }
+        break;
+      
       // trará todos os chamados com o conteúdo e o seu ID para os três primeiros
       case 'general-home':
         if (reference.exists()) {
@@ -588,7 +684,7 @@ export async function readReports(reportID, contentType) {
 }
 
 // Função para realizar todas as tarefas de leitura dos objetos
-export async function readObjects(objectID, contentType) {
+export async function readObjects(contentType, objectID = null) {
   const dbRef = ref(getDatabase());
 
   const reference = await get(child(dbRef, "object"));
@@ -683,17 +779,19 @@ export async function readObjects(objectID, contentType) {
               object.className = "object-card";
               
               //status da ocorrência no objeto (última criada)
-              readReports(null, "data").then((resp) => {
+              readReports("data").then((resp) => {
                 for (const Id in resp) {
-                  if (resp[Id].selected_obj.sel_obj_id == ID) {
-                    switch (resp[Id].content.status) {
-                      case "red":
-                        object.className = "object-card red";
-                        break;
+                  if (resp[Id]?.selected_obj?.sel_obj_id) {
+                    if (resp[Id].selected_obj.sel_obj_id == ID) {
+                      switch (resp[Id].content.status) {
+                        case "red":
+                          object.className = "object-card red";
+                          break;
 
-                      case "yellow":
-                        object.className = "object-card yellow";
-                        break;
+                        case "yellow":
+                          object.className = "object-card yellow";
+                          break;
+                      }
                     }
                   }
                 }
@@ -804,7 +902,7 @@ export async function readLaboratories(labID, contentType) {
             desc.innerHTML = `<strong>${labURLDesc[1]}</strong>`;
 
             //Verificação da existência de ocorrências relacionadas ao laboratório referente.
-            readReports(null, "data").then((resp) => {
+            readReports("data").then((resp) => {
               var int1 = 0,
                 int2 = 0;
               for (const ID in resp) {
@@ -1060,6 +1158,8 @@ export async function countReportsByMonth() {
   return [allByYear, cbmWeb, cbmInProgress, cbmConcluded, cbmSpected, cmbDelayed, cmbOnTime, cmbOnDel];
 }
 
+// Função que faz a contagem para o local com maior quantidade de criação de chamados 
+// neste mês e local com maior quantidade de chamados concluídos com atraso esse ano
 export async function conutReportsByLab() {
   const labs = await get(child(ref(getDatabase()), "laboratory"));
   const reps = await get(child(ref(getDatabase()), "reports"));
@@ -1098,21 +1198,23 @@ export async function conutReportsByLab() {
     const rep = reps.val()[rId];
   
     const data = rep.content.timestamp;
-    const spectedData = rep.dates.spected_date;
+    const spectedData = rep?.dates?.spected_date;
       
     if (data) { 
       var month = new Date(Number(data)).getMonth() + 1
       //console.log(new Date(Number(data)), month)
 
-      if (rep.content.status !== 'green') {
-        repsByMonth[month].q = (repsByMonth[month]?.q || 0) + 1,
-        (repsByMonth[month].id).push(rep.selected_obj?.sel_lab_id || rep.content?.local)
-      }
+      // Aqui é onde, se quiser futuramente, fazer uma contagem para chamados concluídos ou outro por local
+      repsByMonth[month].q = (repsByMonth[month]?.q || 0) + 1,
+      (repsByMonth[month].id).push(rep.selected_obj?.sel_lab_id || rep.content?.local)
 
+      // O Mobile não terá no ensino médio a previsão
       if (rep?.dates?.solved_date) {
-        if (spectedData < rep.dates.solved_date) {
-          delayedByMonth[month].q = (delayedByMonth[month]?.q || 0) + 1,
-          (delayedByMonth[month].id).push(rep.selected_obj?.sel_lab_id || rep.content?.local)
+        if (spectedData) {
+          if (spectedData < rep.dates.solved_date) {
+            delayedByMonth[month].q = (delayedByMonth[month]?.q || 0) + 1,
+            (delayedByMonth[month].id).push(rep.selected_obj?.sel_lab_id || rep.content?.local)
+          }
         }
       }
     }
@@ -1150,8 +1252,8 @@ export async function conutReportsByLab() {
   for (const id in repsByMonth) {
     const ids = repsByMonth[id].id
     if (ids.length > 0) {
-      for (const rId in ids) {   
-        counts[ids[rId]][id]++
+      for (const rId in ids) {  
+       counts[ids[rId]][id]++
       }
     }
   }
@@ -1167,106 +1269,66 @@ export async function conutReportsByLab() {
 
 }
 
-export async function setExcludingWeb(
+// Função para marcar a exclusão de qualquer ramificação filha do firebase (entre objetos, ocorrências, etc.)
+export async function setExcluding(
   Id,
   author,
   date,
-  fatherPath
+  fatherPath,
+  isWeb = true
 ) {
-  if (!fatherPath) fatherPath = 'reports';
-  set(ref(getDatabase(), `${fatherPath}/${Id}/deleted/`), {
-      deletedBy: author,
-      deletedAt: date
-  });
-}
-
-export async function setExcludingMobile(
-  Id,
-  author,
-  date,
-  fatherPath
-) {
-  if (!fatherPath) fatherPath = 'reports';
-  if (fatherPath == 'reports') {
-    readReports(Id, 'general').then(resp => {
-      set(ref(getDatabase(), `${fatherPath}/${Id}/content/`), {
-        img_url: resp.content.img_url,
-        text: resp.content.text,
-        local: resp.content.local,
-        status: resp.content.status,
-        autor: resp.content.autor,
-        category: resp.content.category,
-        timestamp: resp.content.timestamp,
-        deleted: true,
+  if (isWeb) {
+    set(ref(getDatabase(), `${fatherPath}/${Id}/deleted/`), {
+        deletedBy: author,
+        deletedAt: date
+    });
+  } else {
+    if (fatherPath == 'reports') {
+      set(ref(getDatabase(), `${fatherPath}/${Id}/content/deletedAt/`), date);
+      set(ref(getDatabase(), `${fatherPath}/${Id}/content/deletedBy/`), author);
+      set(ref(getDatabase(), `${fatherPath}/${Id}/content/deleted/`), true);
+    }
+    else if (fatherPath == 'object') {
+      set(ref(getDatabase(), `${fatherPath}/${Id}/deleted/`), {
         deletedBy: author,
         deletedAt: date
       });
-    })
+    }
   }
-  else if (fatherPath == 'object') {
-    set(ref(getDatabase(), `${fatherPath}/${Id}/deleted/`), {
-      deletedBy: author,
-      deletedAt: date
-    });
-  }
-
 }
 
+// Função que deixa conclui uma ocrrência - Futuramente receberá edição da conclusão do mobile
 export async function setConcluded (
   Id,
   date
 ) {
-  set(ref(getDatabase(), `reports/${Id}/dates/solved_date`), {
-    date
-  });
+  set(ref(getDatabase(), `reports/${Id}/dates/solved_date/`), date );
 }
 
-export async function excludeReports() {
-  const reportRef = ref(getDatabase(), 'reports');
-  get(reportRef).then(report => {
-    if (report.exists()) {
-      const updates = {};
-      report.forEach(child => {
-        const data = child.val();
-        if (data?.deleted) {
-          if (new Date(data.deleted?.deletedAt) <= new Date()) {
-            updates[child.key] = null
+// Função de exclusão das ramificações das ocorrências no dia de exclusão
+export async function excludeRamification(
+  fatherPath = 'reports'
+) {
+  const ramRef = ref(getDatabase(), fatherPath);
+    get(ramRef).then(branch => {
+      if (branch.exists()) {
+        const updates = {};
+        branch.forEach(child => {
+          const data = child.val();
+          if (data?.deleted) {
+            if (new Date(data.deleted?.deletedAt) <= new Date()) {
+              updates[child.key] = null
+            }
+          } else if (data.content?.deleted) {
+            if (new Date(data.content?.deletedAt) <= new Date()) {
+              updates[child.key] = null
+            }
           }
-        } else if (data.content?.deleted) {
-          if (new Date(data.content?.deletedAt) <= new Date()) {
-            updates[child.key] = null
-          }
+        });
+
+        if (Object.keys(updates).length > 0) {
+          update(ramRef, updates)
         }
-      });
-
-      if (Object.keys(updates).length > 0) {
-        update(reportRef, updates)
       }
-    }
-  })
-}
-
-export async function excludeObjects() {
-  const objectRef = ref(getDatabase(), 'object');
-  get(objectRef).then(obj => {
-    if (obj.exists()) {
-      const updates = {};
-      obj.forEach(child => {
-        const data = child.val();
-        if (data?.deleted) {
-          if (new Date(data.deleted?.deletedAt) <= new Date()) {
-            updates[child.key] = null
-          }
-        }/* else if (data.content?.deleted) {
-          if (new Date(data.content?.deletedAt) <= new Date()) {
-            updates[child.key] = null
-          }
-        }*/
-      });
-
-      if (Object.keys(updates).length > 0) {
-        update(objectRef, updates)
-      }
-    }
-  })
+    })
 }

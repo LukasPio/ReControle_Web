@@ -1,6 +1,6 @@
 import { readReports, readUsers } from "./js_functions/realtime_db.js";
 
-readReports(null, 'data').then(reportRef => {
+readReports('data').then(reportRef => {
     document.getElementById('title').textContent = `${localStorage.getItem('sel-lab')} | ReControle`;
     document.getElementById('selected-lab').textContent = localStorage.getItem('sel-lab');
     var iRed = 0, iYellow = 0, iGreen = 0;
