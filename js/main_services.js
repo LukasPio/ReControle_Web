@@ -243,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Verifica autenticação e preenche usuário ou redireciona
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    readUsers(user.uid, 'general').then(resp => {
+    readUsers('general', user.uid).then(resp => {
       if (resp.user_img_url) {
         document.getElementById('user-img').src = resp.user_img_url
       }

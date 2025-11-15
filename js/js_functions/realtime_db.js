@@ -29,7 +29,13 @@ import { errorSwalResponse } from "../js_functions/swal_fire_errors.js";
 //Cadastro ou edição de dados
 
 // Cadastrar ou editar o usuário
-export async function writeUserData(userID, rank, imageUrl, name, email) {
+export async function writeUserData(
+  userID, 
+  rank, 
+  imageUrl, 
+  name, 
+  email
+) {
   set(ref(getDatabase(), `user/${userID}`), {
     rank: rank,
     user_img_url: imageUrl,
@@ -87,13 +93,11 @@ export function writeReportsData(
   imageUrl,
   text,
   title,
-  status,
   author,
   postedDate,
   selectedLaboratoryID,
   selectedObjectID,
-  timestamp,
-  comments,             // Comentários depois da criação da ocorrência
+  timestamp,           // Comentários depois da criação da ocorrência
   priority,             // Prioridade da ocorrência
   spectedDate,          // Data de reparo previsto
 ) {
@@ -102,17 +106,17 @@ export function writeReportsData(
       img_url: imageUrl,
       text: text,
       title: title,
-      status: status,
+      status: 'red',
       autor: author,
       timestamp: timestamp,
-      comments: comments,
+      comments: '',
       priority: priority
     },
     dates: {
       posted_date:  postedDate,
       solved_date:  0,
       changed_date: 0,
-      spected_date: spectedDate
+      spected_date: spectedDate || 0
     },
     selected_obj: {
       sel_lab_id: selectedLaboratoryID,
@@ -196,7 +200,7 @@ export async function readAll() {
   };
 }
 // Função para realizar todas as tarefas de leitura dos usuários
-export async function readUsers(userID, contentType) {
+export async function readUsers(contentType, userID = null) {
   const dbRef = ref(getDatabase());
   const userRef = await get(child(dbRef, `user/${userID}`));
   if (userID) {
@@ -452,42 +456,31 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
                   }
                   break;
               }
-            }
+            
+              const userElement = document.createElement("p");
+              userElement.className = 'autor';
+              readUsers("user-name", reportRef[repID].content.autor).then(
+                (resp) => (userElement.innerHTML = `<center>${resp}</center>` || '<center>Autor não disponível</center>')
+              );
 
-            const userElement = document.createElement("p");
-            userElement.className = 'autor';
-            readUsers(reportRef[repID].content.autor, "user-name").then(
-              (resp) => (userElement.innerHTML = `<center>${resp}</center>` || '<center>Autor não disponível</center>')
-            );
+              reportContents[repID] = reportRef[repID].content?.title || reportRef[repID].content?.text || "Sem Título para exibir";
+              const repIDElement = document.createElement("p");
+              repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> `;
 
-            reportContents[repID] = reportRef[repID].content?.title || reportRef[repID].content?.text || "Sem Título para exibir";
-            const repIDElement = document.createElement("p");
-            repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> `;
-
-            const localAndData = document.createElement("p");
-            localAndData.innerHTML = `
-              ${reportRef[repID].selected_obj?.sel_lab_id || reportRef[repID].content?.local}
-            `;
-            if (!reportRef[repID]?.deleted && !report.content?.deletedBy == true) {
-              if (!reportRef[repID]?.content?.deletedBy) {
-                report.appendChild(repIDElement);
-                report.appendChild(localAndData);
-                report.appendChild(statusElement);
-                report.appendChild(userElement);
-                report.appendChild(statusAuthorDiv);
-                if (reportRef[repID].content.status) {
-                  if (reportRef[repID].content.status == 'red') red.appendChild(report);
-                  if (reportRef[repID].content.status == 'yellow') yellow.appendChild(report);  
-                }
-              }
-            }
-            else if (reportRef[repID].content.status == 'green'){
+              const localAndData = document.createElement("p");
+              localAndData.innerHTML = `
+                ${reportRef[repID].selected_obj?.sel_lab_id || reportRef[repID].content?.local}
+              `;
               report.appendChild(repIDElement);
               report.appendChild(localAndData);
               report.appendChild(statusElement);
               report.appendChild(userElement);
               report.appendChild(statusAuthorDiv);
-              green.appendChild(report);    
+              if (reportRef[repID].content.status) {
+                if (reportRef[repID].content.status == 'red') red.appendChild(report);
+                if (reportRef[repID].content.status == 'yellow') yellow.appendChild(report);  
+                if (reportRef[repID].content.status == 'green') green.appendChild(report);  
+              }
             }
           }
         }
@@ -496,7 +489,9 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
       // trará todos os chamados com o conteúdo e o seu ID
       case "general-status":
         if (reference.exists()) {
+          const p = document.createElement('div');
           for (const repID in reportRef) {
+            
             if (reportRef[repID].content.status == statusCalls) {
               const report = document.createElement("div");
               report.className = "chamado-card";
@@ -527,29 +522,31 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
                     document.getElementById('chamados').innerHTML = ` <h2 class='h2-calls'>Concluídos</h2><br> `;      
                   break;
                 }
-              }
+              
 
-              const userElement = document.createElement("p");
-              userElement.className = 'autor';
-              readUsers(reportRef[repID].content.autor, "user-name").then(
-                (resp) => (userElement.innerHTML = `<center>${resp}</center>` || '<center>Autor não disponível</center>')
-              );
+                const userElement = document.createElement("p");
+                userElement.className = 'autor';
+                readUsers("user-name", reportRef[repID].content.autor).then(
+                  (resp) => (userElement.innerHTML = `<center>${resp}</center>` || '<center>Autor não disponível</center>')
+                );
 
-              reportContents[repID] = reportRef[repID].content?.title || reportRef[repID].content?.text || "Sem Título para exibir";
-              const repIDElement = document.createElement("p");
-              repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> `;
+                reportContents[repID] = reportRef[repID].content?.title || reportRef[repID].content?.text || "Sem Título para exibir";
+                const repIDElement = document.createElement("p");
+                repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> `;
 
-              const localAndData = document.createElement("p");
-              localAndData.innerHTML = `
-                ${reportRef[repID].selected_obj?.sel_lab_id || reportRef[repID].content?.local}
-              `;
-              report.appendChild(repIDElement);
-              report.appendChild(localAndData);
-              report.appendChild(statusElement);
-              report.appendChild(userElement);
-              report.appendChild(statusAuthorDiv);
-              if (reportRef[repID].content.status) {
-                document.getElementById('chamados').appendChild(report);
+                const localAndData = document.createElement("p");
+                localAndData.innerHTML = `
+                  ${reportRef[repID].selected_obj?.sel_lab_id || reportRef[repID].content?.local}
+                `;
+                report.appendChild(repIDElement);
+                report.appendChild(localAndData);
+                report.appendChild(statusElement);
+                report.appendChild(userElement);
+                report.appendChild(statusAuthorDiv);
+                if (reportRef[repID].content.status) {
+                  p.appendChild(report)
+                  document.getElementById('chamados').appendChild(p)
+                }
               } 
             }   
           }
@@ -620,7 +617,7 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
             // autor
             const userElement = document.createElement("p");
             userElement.className = "autor";
-            readUsers(resp.content.autor, "user-name").then(
+            readUsers("user-name", resp.content.autor).then(
               (respT) => (userElement.textContent = respT)
             );
 
@@ -834,7 +831,7 @@ export async function readObjects(contentType, objectID = null) {
 }
 
 // Função para realizar todas as tarefas de leitura dos laboratórios
-export async function readLaboratories(labID, contentType) {
+export async function readLaboratories(contentType, labID = null) {
   const dbRef = ref(getDatabase());
   const reference = await get(child(dbRef, "laboratory"));
   const labRef = reference.val();
@@ -1298,7 +1295,7 @@ export async function setExcluding(
 }
 
 // Função que deixa conclui uma ocrrência - Futuramente receberá edição da conclusão do mobile
-export async function setConcluded (
+export async function setConcluded(
   Id,
   date
 ) {

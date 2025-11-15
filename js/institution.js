@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
   }
 
-  readLaboratories(null, "general").then((labRef) => {
+  readLaboratories("general").then((labRef) => {
     const labURLDesc = {};
     document.getElementById("labs").innerHTML = "";
     for (const labID in labRef) {

@@ -5,7 +5,7 @@ import { loading } from './js_functions/swal_mixins.js';
 document.addEventListener('DOMContentLoaded', () => {
     loading.fire();
     
-    readUsers(null, 'acc-manage');
+    readUsers('acc-manage');
         
     const container = document.getElementById('users-account-list');
     if (container) {

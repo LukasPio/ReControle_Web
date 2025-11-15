@@ -11,7 +11,7 @@ readReports('data').then(reportRef => {
     const green = document.getElementById('green');
     green.innerHTML = "";
     for (const repID in reportRef) {
-        if (reportRef[repID].selected_obj.sel_lab_id == localStorage.getItem('sel-lab')) {
+        if (reportRef[repID]?.selected_obj?.sel_lab_id == localStorage.getItem('sel-lab')) {
             const report = document.createElement("div");
             report.className = "chamado-card";
             report.setAttribute('data_id', repID);
@@ -52,7 +52,7 @@ readReports('data').then(reportRef => {
 
             const userElement = document.createElement("p");
             userElement.className = 'autor';
-            readUsers(reportRef[repID].content.autor, "user-name").then(
+            readUsers("user-name", reportRef[repID].content.autor).then(
                 (resp) => (userElement.innerHTML = `<center>${resp}</center>` || '<center>Autor não disponível</center>')
             );
 

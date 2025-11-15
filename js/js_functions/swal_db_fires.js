@@ -220,13 +220,11 @@ export async function createReportSwal (
                             file,
                             newMainProblem,
                             newMainTitle,
-                            'red',
                             author,
                             occuredDate,
                             resp,
                             newSelectedObject,
                             timestamp,
-                            '',
                             priority,
                             Number(localStorage.getItem('data_e'))
                         );
@@ -488,7 +486,7 @@ async function updateReportSwal (
                 comment = localStorage.getItem('comments') || 'Sem comentários';
 
                 onAuthStateChanged(getAuth(), (user) => {
-                    readUsers(user.uid, 'general').then(resp => {
+                    readUsers('general', user.uid).then(resp => {
                         localStorage.setItem('useruid', resp.user_name)
                     })
                     
@@ -927,7 +925,7 @@ export async function createLaboratorySwal (
     status, //checked
     floor, //checked
     labClassData;
-    readLaboratories(null, 'class').then(labClasses => {
+    readLaboratories('class').then(labClasses => {
         labClassData = `<option value="none"></option>`;
         for (const labID in labClasses) {
             labClassData += `<option value="${labClasses[labID]}">${labClasses[labID]}</option>`
@@ -1165,11 +1163,11 @@ async function updateLaboratorySwal (
     var classes, 
     selectData,
     file;
-    readLaboratories(classroomID, 'general').then(resp => {
+    readLaboratories('general', classroomID).then(resp => {
         var imageURL = resp.content.lab_img_url;
 
         if (!imageURL) {imageURL = '../../assets/default_classroom.avif'}
-        readLaboratories(null, 'class').then(response => {
+        readLaboratories('class').then(response => {
             classes = `<option value="none"></option>`;
             for (const labID in response) {
                 classes += `<option value="${response[labID]}">${response[labID]}</option>`; 
@@ -1311,9 +1309,9 @@ async function updateLaboratorySwal (
 export async function swalFireLookForLaboratory (
     classroomID
 ) {
-    readLaboratories(classroomID, 'general').then(resp => {
+    readLaboratories('general', classroomID).then(resp => {
         const userUID = resp.author;
-        readUsers(userUID, 'user-name').then(name => localStorage.setItem('user-name', name));
+        readUsers('user-name', userUID).then(name => localStorage.setItem('user-name', name));
         const status = resp.status === 'open' ? 'Aberto' : 'Em manutenção';
         var imageURL = resp.content.lab_img_url;
         if (!imageURL) {imageURL = '../../assets/default_classroom.avif'}
@@ -1406,7 +1404,7 @@ async function updateUserSwal(
     userId,
     name
 ) {
-    readUsers(userId, 'general').then(resp => {
+    readUsers('general', userId).then(resp => {
         const rank = resp.rank;
         reControleSwal.fire({
             width: '40vw',
@@ -1434,7 +1432,7 @@ async function updateUserSwal(
 export async function swalFireLookForUser (
     userID
 ) {
-    readUsers(userID, 'general').then(resp => {
+    readUsers('general', userID).then(resp => {
         var imageURL = resp.user_img_url;
         if (!imageURL) {imageURL = '../../assets/avatar.png'}
         const swalLook = reControleSwal.mixin({
@@ -1477,7 +1475,7 @@ export async function createObjectSwal () {
     objTypeData = '<option value="none"></option>',
     objUsualType = '<option value="none"></option>';
 
-    readLaboratories(null, 'general').then(resp => {
+    readLaboratories('general').then(resp => {
         for(const Id in resp) {
             labData += `<option value="${Id}">${Id}</option>`;
         }
@@ -1870,7 +1868,7 @@ async function updateObjectSwal(
                 localStorage.setItem('old-value', resp[Id].obj_type)
         }
         localStorage.removeItem('old-value')
-        readLaboratories(null, 'count').then(labs => {
+        readLaboratories('count').then(labs => {
             reControleSwal.fire({
                 title: 'Editar objeto',
                 html: `
@@ -2285,7 +2283,7 @@ export async function searchFor (
                             
                         const userElement = document.createElement('p')
                         userElement.style = 'background-color: #D3D3D3; border-radius: 15px;'
-                        readUsers(reportRef[repID].content.autor, 'user-name').then(resp => userElement.textContent = resp )
+                        readUsers('user-name', reportRef[repID].content.autor).then(resp => userElement.textContent = resp )
                        
                         if (reportRef[repID].dates) {
                             reportContents[repID] = reportRef[repID].content?.title || 'Sem Título para exibir'

@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('add-div').appendChild(button)
     }
 
-    readLaboratories(null, 'content');
+    readLaboratories('content');
 
     onAuthStateChanged(auth, (user) => {
         const addObj = document.getElementById('lab-add-btn');

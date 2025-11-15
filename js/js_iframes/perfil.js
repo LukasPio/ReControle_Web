@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
           document.getElementById("in_name").value = C_name;
           document.getElementById("in_email").value = C_email;
           document.getElementById("in_pass").value = password;
-          readUsers(C_user.uid, 'general').then(resp => {
+          readUsers('general', C_user.uid).then(resp => {
             if (resp.user_img_url != '') currentImg.src = resp.user_img_url;
             if (selectImg) { 
               selectImg.addEventListener('change', (event) => {
