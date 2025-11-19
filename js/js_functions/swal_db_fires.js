@@ -56,7 +56,9 @@ export async function createReportSwal (
     readObjects('general').then(resp => {
         selectData = '<option value="none"></option>';
         for (const id in resp) {
-            selectData += `<option value="${id}"> ${id} </option>`
+            if (!resp[id]?.deleted) {
+                selectData += `<option value="${id}"> ${id} </option>`
+            }
         }
 
         var text = '';
@@ -556,10 +558,10 @@ async function updateReportSwal (
                         resp.category,
                         resp.timestamp,
                         oldComments, 
-                        resp.priority,
+                        resp.priority || 'null',
                         spectedDate,
                         new Date().getTime()
-                    ).then(() => successToastSwal.fire().then(console.log(file) ,localStorage.removeItem('sel-file')))
+                    ).then(() => successToastSwal.fire().then(localStorage.removeItem('sel-file')))
                     .catch(() => errorToastSwal.fire())
                 }
             }
@@ -1476,8 +1478,10 @@ export async function createObjectSwal () {
     objUsualType = '<option value="none"></option>';
 
     readLaboratories('general').then(resp => {
-        for(const Id in resp) {
-            labData += `<option value="${Id}">${Id}</option>`;
+        for(const id in resp) {
+            if (resp[id]?.deleted) {
+                labData += `<option value="${id}">${id}</option>`
+            }
         }
         readObjects('general').then( objResp => {
             const dataTypeE = {};

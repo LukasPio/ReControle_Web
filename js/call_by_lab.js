@@ -1,4 +1,7 @@
 import { readReports, readUsers } from "./js_functions/realtime_db.js";
+import { loading } from "./js_functions/swal_mixins.js";
+
+loading.fire();
 
 readReports('data').then(reportRef => {
     document.getElementById('title').textContent = `${localStorage.getItem('sel-lab')} | ReControle`;
