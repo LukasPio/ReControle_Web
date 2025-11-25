@@ -19,11 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = {},
                 priorityData = {};
                 for (const id in resp ) {
-                    if (localStorage.getItem('call-type') != resp[id].content.title) {
-                        data[resp[id].content.title] = resp[id].content.title;
-                        priorityData[resp[id].content.title] = resp[id].content.priority;
+                    if (localStorage.getItem('call-type') != resp[id]?.content?.title && localStorage.getItem('call-type') != resp[id]?.content?.text) {
+                        data[resp[id].content.title] = resp[id].content?.title? resp[id].content?.title : resp[id].content.text;
+                        priorityData[resp[id].content?.title? resp[id].content?.title : resp[id].content.text] = resp[id].content.priority;
                     }
-                    localStorage.setItem('call-type', resp[id].content.title);
+                    localStorage.setItem('call-type', resp[id].content?.title? resp[id].content?.title : resp[id].content.text);
                 }
                 localStorage.removeItem('call-type');
                 Swal.fire({

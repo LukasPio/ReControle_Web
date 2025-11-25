@@ -515,6 +515,12 @@ async function updateReportSwal (
                     if (document.getElementById('status').value == 'yellow'){
                         spectedDate = localStorage.getItem('data-e');
                     }
+                    else {
+                        readReports('general', reportID).then(resp => {
+                            localStorage.setItem('data-e', resp.dates.spected_date)
+                        })
+                        spectedDate = localStorage.getItem('data-e');
+                    }
 
                     updateWebReportData(
                         author,
@@ -648,8 +654,26 @@ export async function swalFireLookForOcurrence (
         if (!image.startsWith('data:image/png;base64,') ) {
             imageElement = resp.content.img_url === '' ? '../../assets/default_occur.jpg' : 'data:image/png;base64, ' + image;
         }
-        if (resp.content?.comments) {
+        if (resp.content.status == 'green') {
             text = `
+                <div class='swal2-html-container' id='swal2-html-container'>
+                    <label for='date-time' style='font-weight:bold;'> Data de conclusão </label>
+                        <center>
+                        <p id='date-time' style='
+                                width:55vw;
+                                border:1px solid black;
+                                border-radius:15px;
+                                border-color: #D3D3D3;
+                                background-color: #f5f5f5;'
+                        >
+                            ${new Date(Number(resp.content?.deletedAt || resp?.dates.solved_date)).toUTCString().slice(0, -4).slice(5)}
+                        </p>
+                    </center>
+                </div>
+            ` 
+        }
+        if (resp.content?.comments) {
+            text += `
                 <div class='swal2-html-container' id='swal2-html-container'>
                 <label for='comment' style='font-weight:bold;'> Comentários adicionais </label>
                     <center>
@@ -664,7 +688,7 @@ export async function swalFireLookForOcurrence (
                             ${resp.content?.comments}
                         </p>
                     </center>
-                </div>`;
+                </div>`
         }
         var spectedText = '';
         if (resp?.dates?.spected_date) {
@@ -1479,9 +1503,7 @@ export async function createObjectSwal () {
 
     readLaboratories('general').then(resp => {
         for(const id in resp) {
-            if (resp[id]?.deleted) {
-                labData += `<option value="${id}">${id}</option>`
-            }
+            labData += `<option value="${id}">${id}</option>`
         }
         readObjects('general').then( objResp => {
             const dataTypeE = {};
@@ -1653,6 +1675,7 @@ export async function createObjectSwal () {
                             preConfirm: async () => {
                                 var objClass = document.getElementById('obj-class').selectedIndex !== 0 || document.getElementById('text-class-option').value ? localStorage.getItem('class'): '' ;
                                 var objType = document.getElementById('obj-type').selectedIndex !== 0 || document.getElementById('text-type-option').value ? localStorage.getItem('type') : '';
+                                
                                 writeObjectData(
                                     document.getElementById('obj-name').value,
                                     new Date().getTime(),
@@ -1662,10 +1685,12 @@ export async function createObjectSwal () {
                                     `${document.getElementById('obj-name').value}-${document.getElementById('lab').value}`,
                                     document.getElementById('lab').value
                                 ).then(() => {successToastSwal.fire()});
+                                
                             }
                         });
 
                         document.getElementById('lab').innerHTML = labData;
+
                         const otherClassChoice = document.getElementById('obj-class');
                         const createdClassChoice = document.getElementById('text-class-option');
                         const otherTypeChoice = document.getElementById('obj-type');
@@ -1825,10 +1850,10 @@ export async function createObjectSwal () {
                                             if (name.startsWith(inputValue) && document.getElementById('lab').value == objResp[Id].lab_id) {i++}
                                         }
                                         objName = `${inputValue} ${i}`;
+                                        
                                         writeObjectData(
                                             objName,
-                                            new Date().toISOString().split('T')[0],
-                                            new Date().toTimeString().slice(0, 5),
+                                            new Date().getTime(),
                                             document.getElementById('desc').value,
                                             response.obj_class,
                                             localStorage.getItem('type'),
@@ -1861,7 +1886,7 @@ export async function createObjectSwal () {
     })
 }
 
-async function updateObjectSwal(
+async function updateObjectSwal( 
     objectId
 ) {
     readObjects('general').then(resp => {
@@ -1956,13 +1981,22 @@ async function updateObjectSwal(
                 `,
                 preConfirm: async () => {
                     var objType = document.getElementById('obj-type').selectedIndex !== 0 || document.getElementById('text-type-option').value ? localStorage.getItem('type') : '';
+                    /*var newId = `${resp[objectId].lab_id}`
+                    newId = objectId.slice(0, -newId.length) + document.getElementById('labs-swal').value
+                    for (const id in resp) {
+                        if (id == newId) {
+                            newId = `${resp[objectId].name}`
+                            newId = `${newId.replace(/\d+/g, '') + newId.match(/\d+/g) + 1} - ${document.getElementById('labs-swal').value}`;
+                            break;
+                        }
+                    }*/
                     writeObjectData(
                         resp[objectId].name,
-                        resp[objectId].delivered_date.delivered_date,
+                        resp[objectId].delivered_date,
                         document.getElementById('desc').value,
                         resp[objectId].obj_class,
                         objType,
-                        objectId,
+                        objectId, //newId,
                         document.getElementById('labs-swal').value
                     ).then(() => {successToastSwal.fire()});
                 }
@@ -2152,13 +2186,15 @@ export async function searchFor (
                         object.className = 'object-card s-card'
                         readReports('data').then(resp => {
                             for (const ID in resp) {
-                                if (resp[ID].selected_obj.sel_obj_id == Id) {
-                                    switch (resp[ID].content.status) {
-                                        case 'red': object.className = 'object-card s-card red'
-                                        break;
+                                if (resp[ID]?.selected_obj?.sel_obj_id) {
+                                    if (resp[ID].selected_obj.sel_obj_id == Id) {
+                                        switch (resp[ID].content.status) {
+                                            case 'red': object.className = 'object-card s-card red'
+                                            break;
 
-                                        case 'yellow': object.className = 'object-card s-card yellow'
-                                        break;
+                                            case 'yellow': object.className = 'object-card s-card yellow'
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -2261,62 +2297,64 @@ export async function searchFor (
                 for(const repID in reportRef){
                     const title = `${reportRef[repID]?.content?.title || reportRef[repID]?.content?.text}`
                     if (title.startsWith(content)) {
-                        const report = document.createElement('div')
-                        report.className = 'chamado-card s-card'
-                        report.id = repID
-                
-                        const link = document.createElement('a')
-                        link.id = repID
-                        link.innerHTML = `Ver mais`
-                        link.style = 'cursor: pointer;'
-                        link.className = 'manage-r'
-                            
-                        switch (reportRef[repID].content.status) {
-                            case 'red': 
-                                report.style = 'border-color: red; border: 2px solid red;'
-                            break;
+                        if (!reportRef[repID]?.deleted && !reportRef[repID].content?.deleted || reportRef[repID].content.status == 'green') {
+                            const report = document.createElement('div')
+                            report.className = 'chamado-card s-card'
+                            report.id = repID
                     
-                            case 'yellow': 
-                                report.style = 'border-color: yellow; border: 2px solid yellow;'
-                            break;
-                    
-                            case 'green': 
-                                report.style = 'border-color: green; border: 2px solid green;'
-                            break;
-                        }
-                            
-                        const userElement = document.createElement('p')
-                        userElement.style = 'background-color: #D3D3D3; border-radius: 15px;'
-                        readUsers('user-name', reportRef[repID].content.autor).then(resp => userElement.textContent = resp )
-                       
-                        if (reportRef[repID].dates) {
-                            reportContents[repID] = reportRef[repID].content?.title || 'Sem Título para exibir'
-                
-                            const repIDElement = document.createElement('p')
-                            repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> ${reportRef[repID].selected_obj.sel_lab_id}`
+                            const link = document.createElement('a')
+                            link.id = repID
+                            link.innerHTML = `Ver mais`
+                            link.style = 'cursor: pointer;'
+                            link.className = 'manage-r'
                                 
-                            if (document.getElementById('response')) {
-                                document.getElementById('response').innerHTML = ''
+                            switch (reportRef[repID].content.status) {
+                                case 'red': 
+                                    report.style = 'border-color: red; border: 2px solid red;'
+                                break;
+                        
+                                case 'yellow': 
+                                    report.style = 'border-color: yellow; border: 2px solid yellow;'
+                                break;
+                        
+                                case 'green': 
+                                    report.style = 'border-color: green; border: 2px solid green;'
+                                break;
                             }
-                            report.appendChild(repIDElement)
-                            report.appendChild(link)
-                            document.getElementById('main').appendChild(report)
-                                            
-                        }
-                        else
-                        {
-                            reportContents[repID] = reportRef[repID].content?.text || 'Sem Título para exibir'
-                
-                            const repIDElement = document.createElement('p')
-                            repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> ${reportRef[repID].content.local}`
-                
-                            if (document.getElementById('response')) {
-                                document.getElementById('response').innerHTML = ''
-                            }
-                            report.appendChild(repIDElement)
-                            report.appendChild(link)
-                            if (!document.getElementById(`${repID}`)) {
+                                
+                            const userElement = document.createElement('p')
+                            userElement.style = 'background-color: #D3D3D3; border-radius: 15px;'
+                            readUsers('user-name', reportRef[repID].content.autor).then(resp => userElement.textContent = resp )
+                        
+                            if (reportRef[repID].dates) {
+                                reportContents[repID] = reportRef[repID].content?.title || 'Sem Título para exibir'
+                    
+                                const repIDElement = document.createElement('p')
+                                repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> ${reportRef[repID].selected_obj.sel_lab_id}`
+                                    
+                                if (document.getElementById('response')) {
+                                    document.getElementById('response').innerHTML = ''
+                                }
+                                report.appendChild(repIDElement)
+                                report.appendChild(link)
                                 document.getElementById('main').appendChild(report)
+                                                
+                            }
+                            else
+                            {
+                                reportContents[repID] = reportRef[repID].content?.text || 'Sem Título para exibir'
+                    
+                                const repIDElement = document.createElement('p')
+                                repIDElement.innerHTML = `<strong>${reportContents[repID]}</strong><br> ${reportRef[repID].content.local}`
+                    
+                                if (document.getElementById('response')) {
+                                    document.getElementById('response').innerHTML = ''
+                                }
+                                report.appendChild(repIDElement)
+                                report.appendChild(link)
+                                if (!document.getElementById(`${repID}`)) {
+                                    document.getElementById('main').appendChild(report)
+                                }
                             }
                         }
                     }
