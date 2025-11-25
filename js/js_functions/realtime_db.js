@@ -375,7 +375,10 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
           const green = document.getElementById('green');
           green.innerHTML = "";
           for (const repID in reportRef) {
-            if (iGreen == 3 && iYellow == 3 && iRed == 3) break;
+            if (iGreen >= 3 && iYellow >= 3 && iRed >= 3) break;
+            if (reportRef[repID].content.status == 'red' && iRed >= 3 || 
+                reportRef[repID].content.status == 'yellow' && iYellow >= 3 || 
+                  reportRef[repID].content.status == 'green' && iGreen >= 3) break;
             const report = document.createElement("div");
             report.className = "chamado-card";
             report.setAttribute('data_id', repID);
@@ -406,8 +409,8 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
                         </ul>
                       </h2>
                     `;
-                    iRed++;
                   }
+                  iRed++;
                   break;
 
                 case "yellow":
@@ -429,8 +432,9 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
                         </ul>
                       </h2>
                     `;
-                    iYellow++;
+                    
                   }
+                  iYellow++;
                   break;
 
                 case "green":
@@ -452,8 +456,9 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
                         </ul>
                       </h2>
                     `;
-                    iGreen++;
+                    
                   }
+                  iGreen++;
                   break;
               }
             

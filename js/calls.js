@@ -7,7 +7,6 @@ var usualChoice;
   
 document.addEventListener('DOMContentLoaded', () => {
 
-
     loading.fire();
 
     readReports('general');

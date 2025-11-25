@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
           int2 = 0;
         for (const ID in resp) {
           if (!resp[ID]?.content.deleted && !resp[ID]?.deleted) {
-            if (resp[ID].selected_obj?.sel_lab_id == labID) {
+            if (resp[ID].selected_obj?.sel_lab_id == labID || resp[ID].content?.local == labID) {
               if (resp[ID].content.status == "red") {
                 int1++;
               } else if (resp[ID].content.status == "yellow") {
