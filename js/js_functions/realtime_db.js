@@ -1262,8 +1262,8 @@ export async function conutReportsByLab() {
   for (const id in delayedByMonth) {
     const ids = delayedByMonth[id].id
     if (ids.length > 0) {
-      for (const rId in ids) {   
-        delayCounts[ids[rId]][id]++
+      for (const rId in ids) {  
+        delayCounts[ids[rId]][id] = (delayCounts[ids[rId]][id] || 0) + 1
       }
     }
   }

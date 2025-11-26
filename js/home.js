@@ -139,10 +139,9 @@ countReportsByMonth().then(resp => {
             const repsByMonth = delayData[id];
             return { id, repsByMonth };
           })
-          .sort((a, b) => b.repsByMonth - a.repsByMonth).slice(0, 1);
-
+          .sort((a, b) => b.repsByMonth - a.repsByMonth);
         document.getElementById('most').textContent = latest[0].repsByMonth > 1? `${latest[0].id} (${latest[0].repsByMonth} chamados)` : `${latest[0].id} (${latest[0].repsByMonth} chamado)`;
-        document.getElementById('delay-lab').textContent = latest[0].repsByMonth > 1? `${delayLatest[0].id} (${delayLatest[0].repsByMonth} chamados)` : `${delayLatest[0].id} (${delayLatest[0].repsByMonth} chamado)`;
+        document.getElementById('delay-lab').textContent = delayLatest[0].repsByMonth > 1? `${delayLatest[0].id} (${delayLatest[0].repsByMonth} chamados)` : `${delayLatest[0].repsByMonth == 0? 'Nenhum local' : delayLatest[0].id} (${delayLatest[0].repsByMonth} chamado)`;
     })
 
 });
@@ -150,10 +149,9 @@ countReportsByMonth().then(resp => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-
     
-  const savedTheme = localStorage.getItem("theme") || "light-mode";
-  document.body.classList.add(savedTheme);
+    const savedTheme = localStorage.getItem("theme") || "light-mode";
+    document.body.classList.add(savedTheme);
 
     loading.fire()
 
@@ -719,7 +717,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (png) {
                 png.addEventListener('click',  (e) => {
-                    infosDiv.innerHTML = '<p style="margin: 9px;"></p>';
                     const classP = `${e.target.className}`;
                     if (classP.endsWith('choose')) {
                         png.className = 'sel-btn img';
