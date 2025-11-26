@@ -1,3 +1,5 @@
+/*
+Não sei oq isso faz
 :root {
   --primary-color: #003376;
   --secondary-color: #2c558a;
@@ -10,6 +12,7 @@
   --white-gray: #fffef7;
   --transition: all 0.3s ease;
 }
+*/
 
 /* Reset e base (clean e corporativo: minimalismo com tipografia refinada) */
 * {
@@ -22,15 +25,15 @@
 body {
   display: flex;
   height: 100vh;
-  background-color: #f8fafc; /* Cinza claro mais clean e corporativo */
-  color: #1e293b; /* Texto escuro profissional */
+  background-color: var(--bg-color); /* Cinza claro mais clean e corporativo */
+  color: var(--text-color); /* Texto escuro profissional */
 }
 
 /* Sidebar (clean: espaçamento consistente, corporativo: sombras sutis) */
 .sidebar {
   width: 240px;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb; /* Borda mais suave */
+  background: var(--bg-color);
+  border-right: 1px solid var(--border-color1); /* Borda mais suave */
   padding: 20px 0; /* Padding vertical para clean */
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05); /* Sombra insana sutil */
 }
@@ -40,13 +43,14 @@ body {
   font-weight: 700; /* Bold mais corporativo */
   margin-bottom: 40px;
   padding: 0 20px;
-  color: #1e293b;
+  color: var(--text-color);
 }
 
 .sidebar ul {
   list-style: none;
   padding: 0 20px; /* Padding interno clean */
 }
+
 
 .sidebar li {
   padding: 12px 16px; /* Padding mais equilibrado */
@@ -61,10 +65,10 @@ body {
 .sidebar li.active {
   background: linear-gradient(
     135deg,
-    #2f5cf3,
-    #3b82f6
+    var(--text-color2),
+    var(--text-color3)
   ); /* Gradiente corporativo insano */
-  color: #ffffff;
+  color: var(--bg-color);
   transform: translateX(4px); /* Micro-movimento insano */
   box-shadow: 0 4px 12px rgba(47, 92, 243, 0.3); /* Glow no hover */
 }
@@ -82,25 +86,25 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
+  background: var(--bg-color);
   padding: 16px 24px; /* Padding mais clean */
-  border-bottom: 1px solid #e5e7eb; /* Borda suave */
+  border-bottom: 1px solid var(--border-color1); /* Borda suave */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra corporativa */
 }
 
 .topbar input[type="search"] {
   width: 300px; /* Padronizado (prioridade sobre 30vw para desktop) */
   padding: 10px 16px; /* Padding mais confortável */
-  border: 1px solid #d1d5db; /* Borda cinza clean */
+  border: 1px solid var(--border-color3); /* Borda cinza clean */
   border-radius: 12px; /* Arredondado mais moderno */
-  background: #f9fafb; /* Fundo sutil */
+  background: var(--bg-color2); /* Fundo sutil */
   font-size: 14px;
   transition: all 0.2s ease; /* Transição insana */
 }
 
 .topbar input[type="search"]:focus {
   outline: none;
-  border-color: #2f5cf3;
+  border-color: var(--border-color2);
   box-shadow: 0 0 0 3px rgba(47, 92, 243, 0.1); /* Glow corporativo */
 }
 
@@ -132,7 +136,7 @@ main {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid #2f5cf3; /* Borda acento corporativo */
+  border: 2px solid var(--border-color2); /* Borda acento corporativo */
 }
 
 /* Dashboard (clean: padding generoso, overflow suave) */
@@ -140,7 +144,7 @@ main {
   flex: 1; /* Preenche espaço */
   padding: 24px; /* Padding clean */
   overflow-y: auto;
-  background: #f8fafc;
+  background: var(--bg-color2); /*f8fafc*/
 }
 
 /* Seções genéricas (mantidas, mas clean) */
@@ -154,29 +158,29 @@ main {
 .chamado-card {
   flex: 1;
   min-width: 250px;
-  background: #ffffff;
+  background: var(--card-color);
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Sombra mais insana */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transição fluida */
-  border: 1px solid #e5e7eb; /* Borda sutil corporativa */
+  border: 1px solid var(--border-color1); /* Borda sutil corporativa */
 }
 
 .chamado-card:hover {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12); /* Hover insano */
   transform: translateY(-4px); /* Elevação clean */
-  border-color: #2f5cf3;
+  border-color: var(--border-color2);
 }
 
 .chamado-card a {
-  color: #2f5cf3;
+  color: var(--text-color2);
   font-size: 0.9rem;
   text-decoration: underline;
   transition: color 0.2s ease;
 }
 
 .chamado-card a:hover {
-  color: #1e40af; /* Escurece insano */
+  color: var(--text-color-hover); /* Escurece insano */
 }
 
 #grafico1 {
@@ -197,7 +201,7 @@ main {
 
 .account-name {
   font-weight: 500;
-  color: #333;
+  color: var(--text-color4);
 }
 
 .account-img {
@@ -211,7 +215,7 @@ main {
   position: absolute;
   right: 0;
   top: 45px;
-  background: #fff;
+  background: var(--bg-color);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   list-style: none;
   padding: 10px 0;
@@ -227,25 +231,25 @@ main {
 
 .account-menu li a {
   text-decoration: none;
-  color: #333;
+  color: var(--text-color4);
   display: block;
   transition: background 0.2s ease;
 }
 
 .account-menu li a:hover {
-  background: #f0f0f0;
+  background: var(--bg-color-hover);
 }
 
 .btn-download {
-  background-color: #2f5cf3;
-  color: #ffffff;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--bg-color3), var(--bg-color4));
+  color: var(--text-color5);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(47,92,243,0.12);
   padding: 14px 24px;
   font-size: 16px;
   font-weight: 500;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
   display: inline-block;
   user-select: none;
@@ -254,8 +258,8 @@ main {
 }
 
 .btn-copy {
-  background-color: #ffffff;
-  color: #2f5cf3;
+  background-color: var(--text-color5);
+  color: var(--text-color2);
   padding: 14px 24px;
   font-size: 16px;
   font-weight: 500;
@@ -271,11 +275,11 @@ main {
   -webkit-user-drag: none;
 }
 .btn-copy:hover {
-  background-color: #ffffff;
+  background-color: var(--bg-color);
   transform: scale(1.05);
 }
 .btn-download:hover  {
-  background-color: #1e40af;
+  background-color: var(--bg-color3);
   transform: scale(1.05);
 }
 
@@ -293,7 +297,7 @@ main {
 
 .sel-btn {
   font-weight: 800;
-  background-color: white;
+  background-color: var(--bg-color);
   border: 1px solid var(--light-gray);
   border-radius: 4px;
   margin: 5px;
@@ -311,21 +315,21 @@ main {
 }
 
 .excel {  
-  color: darkgreen;
+  color: var(--text-color6);
 }
 
 .excel.choose, .csv.choose {
-  background-color: darkgreen;
-  color: white;
+  background-color: var(--text-color6);
+  color: var(--text-color5);
 }
 
 .img {
-  color: #003376;
+  color: var(--img-color);
 }
 
 .img.choose {
-  background-color: #003376;
-  color: white;
+  background-color: var(--img-color);
+  color: var(--text-color5);
 }
 
 .checkbox-container {
@@ -379,7 +383,7 @@ main {
   top: 2px;
   width: 5px;
   height: 10px;
-  border: solid white;
+  border: solid var(--bg-color);
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
@@ -393,8 +397,8 @@ main {
   gap: 14px;
   padding: 12px;
   border-radius: 16px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(59,130,246,0.02));
-  border: 1px solid rgba(59,130,246,0.08);
+  background: linear-gradient(180deg, var(--linear-color1), var(--linear-color2));
+  border: 1px solid var(--linear-border);
   box-shadow: 0 30px 70px rgba(11,18,32,0.12);
   backdrop-filter: blur(8px) saturate(120%);
 }
@@ -402,8 +406,8 @@ main {
 .f-graphic .graphic-data span {
   padding: 12px;
   border-radius: 12px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
-  border: 1px solid rgba(255,255,255,0.03);
+  background: linear-gradient(180deg, var(--linear-color3), var(--linear-color4));
+  border: 1px solid var(--linear-border2);
   display: flex;
   flex-direction: column;
   transition: transform 220ms cubic-bezier(.2,.9,.3,1), box-shadow 220ms;
@@ -417,7 +421,7 @@ main {
   display: flex;
   gap: 20px;
   padding: 20px;
-  background: #ffffff;
+  background: var(--bg-color);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
@@ -425,15 +429,6 @@ main {
 .graphic-actions {
   display: flex;
   margin-top: 0;
-}
-
-.btn-download {
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(90deg,#2f5cf3,#3b82f6);
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(47,92,243,0.12);
 }
 
 .grafico-box {
@@ -454,9 +449,11 @@ main {
   min-height: 150%;*/
   min-width: 45vw;
   min-height: 60vh;
+  background-color: var(--bg-color);
 }
 
 #grafico2 {
   max-width: 45vw;
   max-height: 60vh;
+  background-color: var(--bg-color);
 }

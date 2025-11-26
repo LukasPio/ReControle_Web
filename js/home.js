@@ -151,6 +151,10 @@ countReportsByMonth().then(resp => {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    
+  const savedTheme = localStorage.getItem("theme") || "light-mode";
+  document.body.classList.add(savedTheme);
+
     loading.fire()
 
     readReports('general-home');
