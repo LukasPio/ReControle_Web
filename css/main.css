@@ -31,7 +31,6 @@ body.dark-mode .swal2-popup {
   color: #7f7f7f;
 }
 
-
 body.dark-mode {
   --bg-color: #161616;
   --bg-color2: #232222;
@@ -98,11 +97,21 @@ body.dark-mode {
 .red {
   border: 2px solid red;
   transition: border-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.red:hover {
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2); /* Glow mais intenso */
 }
 
 .yellow {
   border: 2px solid yellow;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
   transition: border-color 0.3s ease, transform 0.2s ease;
+}
+
+.yellow:hover {
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2); /* Glow mais intenso */
 }
 
 .navbar {
@@ -245,46 +254,58 @@ body.dark-mode {
 body {
   display: flex;
   height: 100vh;
-  background-color: var(--bg-color5);
+  background-color: var(--bg-color2);
+  color: var(--text-color);
 }
 
-/* Sidebar */
+/* Sidebar 100% atualizada*/
 .sidebar {
   width: 240px;
   background: var(--bg-color);
-  border-right: 1px solid var(--bg-color2);
-  padding: 20px;
+  border-right: 1px solid var(--border-color1); /* Borda mais suave */
+  padding: 20px 0; /* Padding vertical para clean */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05); /* Sombra insana sutil */
 }
 
 .logo {
   font-size: 1.5rem;
-  font-weight: bold;
+  font-weight: 700; /* Bold mais corporativo */
   margin-bottom: 40px;
+  padding: 0 20px;
+  color: var(--text-color);
 }
 
 .sidebar ul {
   list-style: none;
+  padding: 0 20px; /* Padding interno clean */
 }
 
 .sidebar li {
-  padding: 12px 8px;
+  padding: 12px 16px; /* Padding mais equilibrado */
   border-radius: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px; /* Reduzido para clean */
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transição insana suave */
+  font-weight: 500;
 }
 
 .sidebar li:hover,
 .sidebar li.active {
-  background: var(--bg-color5);
-  color: var(--text-color2);
-  font-weight: bold;
+  background: linear-gradient(
+    135deg,
+    var(--bg-color3),
+    var(--bg-color4)
+  ); /* Gradiente corporativo insano */
+  color: var(--text-color5);
+  transform: translateX(4px); /* Micro-movimento insano */
+  box-shadow: 0 4px 12px rgba(47, 92, 243, 0.3); /* Glow no hover */
 }
 
 main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /*entender oq isso faz*/
 }
 
 /* Topbar */
@@ -298,16 +319,36 @@ main {
 }
 
 .topbar input[type="search"] {
-  width: 300px;
-  padding: 8px 12px;
+  width: 15vw; /* Fallback para telas menores */
+  min-width: 200px; /* Mínimo clean */
+  padding: 10px 16px;
   border: 1px solid var(--border-color3);
   border-radius: 20px;
+  background: var(--bg-color2);
+  transition: all 0.2s ease;
 }
+
+input[type="search"]:focus {
+  border-color: var(--border-color2);
+  box-shadow: 0 0 0 3px rgba(47, 92, 243, 0.1);
+}
+
+.topbar input[type="search"]:focus,
+input[type="search"]:focus {
+  outline: none;
+  border-color: var(--border-color2);
+  box-shadow: 0 0 0 3px rgba(47, 92, 243, 0.1);
+}
+
 
 .actions {
   display: flex;
   align-items: center;
   gap: 15px;
+}
+
+.actions img:hover {
+  transform: scale(1.1); /* Escala sutil */
 }
 
 .actions img {
@@ -332,6 +373,7 @@ main {
 .dashboard {
   padding: 30px;
   overflow-y: auto;
+  background: var(--bg-color2);
 }
 
 .chamados {
@@ -344,6 +386,7 @@ main {
 /* === Chamado Card === */
 .chamado-card {
   background: var(--bg-color);
+  border: 1px solid var(--border-color1);
   border-radius: 12px;
   padding: 16px;
   margin: 12px 0;
@@ -356,6 +399,7 @@ main {
 .chamado-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  border-color: var(--border-color2);
 }
 
 .chamado-card p {
