@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const select = document.getElementById("theme_select");
   const colorPicker = document.getElementById("t_color");
-
+ 
   const savedTheme = localStorage.getItem("theme") || "light-mode";
   document.body.classList.add(savedTheme);
   select.value = savedTheme;
@@ -25,11 +25,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   });
 
-  colorPicker.addEventListener("input", (event) => {
-    const color = event.target.value;
+  if (colorPicker) {
+    colorPicker.addEventListener("input", (event) => {
+      const color = event.target.value;
 
-    document.documentElement.style.setProperty("--primary-color", color);
-    localStorage.setItem("primaryColor", color);
-  });
+      document.documentElement.style.setProperty("--primary-color", color);
+      localStorage.setItem("primaryColor", color);
+    });
+  }
 
 });

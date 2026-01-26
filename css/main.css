@@ -1,3 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
 body.light-mode {
   --bg-color: #ffffff;
   --bg-color2: #f9fafb;
@@ -187,7 +201,7 @@ body.dark-mode {
 }
 
 .active {
-  background: var(--bg-color5);
+  background-color: var(--bg-color5);
   color: var(--text-color2);
   font-weight: bold;
 }
@@ -258,7 +272,7 @@ body {
   color: var(--text-color);
 }
 
-/* Sidebar 100% atualizada*/
+
 .sidebar {
   width: 240px;
   background: var(--bg-color);
@@ -295,7 +309,7 @@ body {
     135deg,
     var(--bg-color3),
     var(--bg-color4)
-  ); /* Gradiente corporativo insano */
+  ); 
   color: var(--text-color5);
   transform: translateX(4px); /* Micro-movimento insano */
   box-shadow: 0 4px 12px rgba(47, 92, 243, 0.3); /* Glow no hover */
@@ -536,7 +550,7 @@ input[type="search"]:focus {
 
 /* Upload de arquivo (clean: form corporativo com hover) */
 #file-upload {
-  display: flex;
+  display: flex; 
   max-width: 55vw;
   flex-direction: column;
   align-items: center;

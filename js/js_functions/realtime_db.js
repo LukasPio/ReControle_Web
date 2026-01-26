@@ -376,9 +376,6 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
           green.innerHTML = "";
           for (const repID in reportRef) {
             if (iGreen >= 3 && iYellow >= 3 && iRed >= 3) break;
-            if (reportRef[repID].content.status == 'red' && iRed >= 3 || 
-                reportRef[repID].content.status == 'yellow' && iYellow >= 3 || 
-                  reportRef[repID].content.status == 'green' && iGreen >= 3) break;
             const report = document.createElement("div");
             report.className = "chamado-card";
             report.setAttribute('data_id', repID);
@@ -482,9 +479,9 @@ export async function readReports(contentType, reportID = null, statusCalls = 'r
               report.appendChild(userElement);
               report.appendChild(statusAuthorDiv);
               if (reportRef[repID].content.status) {
-                if (reportRef[repID].content.status == 'red') red.appendChild(report);
-                if (reportRef[repID].content.status == 'yellow') yellow.appendChild(report);  
-                if (reportRef[repID].content.status == 'green') green.appendChild(report);  
+                if (reportRef[repID].content.status == 'red' && iRed <= 3) red.appendChild(report);
+                if (reportRef[repID].content.status == 'yellow' && iYellow <= 3) yellow.appendChild(report);  
+                if (reportRef[repID].content.status == 'green' && iGreen <= 3) green.appendChild(report);
               }
             }
           }

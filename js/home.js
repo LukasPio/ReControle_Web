@@ -130,7 +130,7 @@ countReportsByMonth().then(resp => {
         const latest = Object.entries(data)
           .map(([id]) => {
             const repsByMonth = data[id];
-            return { id, repsByMonth };
+            return { id, repsByMonth }; 
           })
           .sort((a, b) => b.repsByMonth - a.repsByMonth).slice(0, 1);
         

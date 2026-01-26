@@ -1,49 +1,22 @@
-/* Reset e base (clean e corporativo: minimalismo com tipografia refinada) */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-  display: flex;
-  height: 100vh;
-  background-color: var(--bg-color5); /* Cinza claro mais clean e corporativo */
-  color: var(--text-color); /* Texto escuro profissional */
-}
-
-
-/* Sidebar (clean: espaçamento consistente, corporativo: sombras sutis) */
-
-/* Main area (corporativo: flex clean) */
-
-/* Seções genéricas (mantidas, mas clean) */
-
 #red h2,#yellow h2,#green h2 {
   width: 100%;
 }
 
-/* Status colors (corporativo: badges coloridos clean com glow insano) */
-
-/* Gráfico (clean: padding consistente) */
-
-/* Botão criar relatório (FAB corporativo com rotação insana) */
 .btn-create-rep {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: linear-gradient(135deg, var(--bg-color3), var(--bg-color4)); /* Gradiente clean */
+  background: linear-gradient(135deg, var(--bg-color3), var(--bg-color4)); 
   color: var(--text-color5);
   padding: 14px 24px;
   font-size: 16px;
   font-weight: 500;
   border: none;
-  border-radius: 12px; /* Mais arredondado */
+  border-radius: 12px;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(47, 92, 243, 0.3); /* Sombra insana */
+  box-shadow: 0 4px 20px rgba(47, 92, 243, 0.3);
   z-index: 1000;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transição fluida */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-create-rep:hover {
@@ -51,30 +24,29 @@ body {
     135deg,
     var(--bg-color4),
     var(--bg-color3)
-  ); /* Escurece corporativo */
-  transform: scale(1.05) rotate(5deg); /* Escala + rotação insana */
+  );
+  transform: scale(1.05) rotate(5deg);
   box-shadow: 0 6px 25px rgba(47, 92, 243, 0.4);
 }
 
 /* Input search global (padronizado para evitar conflitos) */
 
-/* Responsividade (clean em mobile) */
 @media (max-width: 768px) {
   .sidebar {
-    width: 200px; /* Reduz em mobile */
+    width: 200px;
   }
 
   .topbar input[type="search"] {
-    width: 100%; /* Full width clean */
+    width: 100%;
     max-width: 250px;
   }
 
   .dashboard {
-    padding: 16px; /* Padding reduzido */
+    padding: 16px;
   }
 
   .chamados {
-    flex-direction: column; /* Stack vertical */
+    flex-direction: column;
   }
 
   .chamado-card {

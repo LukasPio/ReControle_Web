@@ -189,7 +189,7 @@ export async function createReportSwal (
                 else {
                     file = ''
                 }
-                timestamp = new Date().getTime();
+                timestamp = new Date().getTime() - 10800000;
 
                 if (priority) {
                     readReports('data').then(response => {

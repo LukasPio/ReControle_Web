@@ -75,6 +75,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       signInWithEmailAndPassword(auth, email, password ).then((userCredential) => {
         console.log('user loged: ' + userCredential.user.displayName);
+        if (localStorage.getItem('theme')) {
+          document.body.classList.remove("light-mode", "dark-mode");
+          document.body.classList.add(localStorage.getItem('theme'));
+
+          localStorage.setItem("theme", localStorage.getItem('theme'));
+          localStorage.setItem("confirmation", 1);
+
+          document.documentElement.style.setProperty("--primary-color", localStorage.getItem('primeryColor'));
+        }
         window.location.href = `./html/${home}`;
       }).catch((error) => errorSwalResponse(error))
     }
@@ -90,6 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
               console.log("User loged: " + userCredential.user.displayName);
               localStorage.setItem('email', email);
               localStorage.setItem('password', password);
+              if (localStorage.getItem('theme')) {
+                document.body.classList.remove("light-mode", "dark-mode");
+                document.body.classList.add(localStorage.getItem('theme'));
+
+                localStorage.setItem("theme", localStorage.getItem('theme'));
+                localStorage.setItem("confirmation", 1);
+
+                document.documentElement.style.setProperty("--primary-color", localStorage.getItem('primeryColor'));
+              }
               window.location.href = `./html/${home}`;
             }
             else
@@ -153,6 +171,16 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('email', JSON.stringify(email_ex));
             localStorage.setItem('password', JSON.stringify(password_ex));
             
+            if (localStorage.getItem('theme')) {
+              document.body.classList.remove("light-mode", "dark-mode");
+              document.body.classList.add(localStorage.getItem('theme'));
+
+              localStorage.setItem("theme", localStorage.getItem('theme'));
+              localStorage.setItem("confirmation", 1);
+
+              document.documentElement.style.setProperty("--primary-color", localStorage.getItem('primeryColor'));
+            }
+
             window.location.href = `./html/${home}`;
           }
           else

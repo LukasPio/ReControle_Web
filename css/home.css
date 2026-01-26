@@ -1,53 +1,28 @@
-
-/* Reset e base (clean e corporativo: minimalismo com tipografia refinada) */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-  display: flex;
-  height: 100vh;
-  background-color: var(--bg-color); /* Cinza claro mais clean e corporativo */
-  color: var(--text-color); /* Texto escuro profissional */
-}
-
-/* Sidebar (clean: espaçamento consistente, corporativo: sombras sutis) */
-
-
-/* Topbar (clean: padding reduzido, corporativo: foco em usabilidade) */
-
-
 .actions {
   display: flex;
   align-items: center;
-  gap: 16px; /* Gap mais clean */
+  gap: 16px;
 }
 
 .actions img {
-  width: 24px; /* Tamanho mais consistente */
+  width: 24px;
   height: 24px;
   object-fit: cover;
   cursor: pointer;
-  transition: transform 0.2s ease; /* Hover insano */
+  transition: transform 0.2s ease;
 }
 
 .actions img:hover {
-  transform: scale(1.1); /* Escala sutil */
+  transform: scale(1.1);
 }
 
 
-/* Dashboard (clean: padding generoso, overflow suave) */
 .dashboard {
-  flex: 1; /* Preenche espaço */
-  padding: 24px; /* Padding clean */
+  flex: 1; 
+  padding: 24px;
   overflow-y: auto;
-  background: var(--bg-color2); /*f8fafc*/
+  background: var(--bg-color2);
 }
-
-/* Seções genéricas (mantidas, mas clean) */
 
 #grafico1 {
   max-width:  50%;
@@ -123,7 +98,7 @@ body {
   -webkit-user-drag: none;
 }
 
-.btn-copy {
+/* .btn-copy {
   background-color: var(--text-color5);
   color: var(--text-color2);
   padding: 14px 24px;
@@ -143,7 +118,8 @@ body {
 .btn-copy:hover {
   background-color: var(--bg-color);
   transform: scale(1.05);
-}
+}*/ 
+
 .btn-download:hover  {
   background-color: var(--bg-color3);
   transform: scale(1.05);
@@ -312,8 +288,6 @@ body {
 }
 
 #grafico1{
-  /*min-width: 100%;
-  min-height: 150%;*/
   min-width: 45vw;
   min-height: 60vh;
   background-color: var(--bg-color);
